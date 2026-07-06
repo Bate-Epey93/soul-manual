@@ -1,0 +1,98 @@
+/* ===== Zen overlays: EFT tapping · solar plexus breathing · meditation timer ===== */
+
+.zen-overlay{position:fixed;inset:0;z-index:1000;background:#080706;display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.zen-overlay.open{display:flex;animation:zenFade .6s ease}
+@keyframes zenFade{from{opacity:0}to{opacity:1}}
+
+/* drifting ambient blobs (Endel-like) */
+.zen-bg{position:absolute;inset:0;pointer-events:none}
+.zen-blob{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(70px);opacity:.35;will-change:transform}
+.zen-blob.b1{background:radial-gradient(circle,var(--zen-c1,#C4A265) 0%,transparent 60%);top:-25vmax;left:-20vmax;animation:blobA 26s ease-in-out infinite alternate}
+.zen-blob.b2{background:radial-gradient(circle,var(--zen-c2,#6B5B8A) 0%,transparent 60%);bottom:-30vmax;right:-22vmax;animation:blobB 32s ease-in-out infinite alternate}
+.zen-blob.b3{background:radial-gradient(circle,var(--zen-c1,#C4A265) 0%,transparent 65%);bottom:-20vmax;left:-28vmax;opacity:.18;animation:blobA 40s ease-in-out infinite alternate-reverse}
+@keyframes blobA{from{transform:translate(0,0) scale(1)}to{transform:translate(14vmax,10vmax) scale(1.18)}}
+@keyframes blobB{from{transform:translate(0,0) scale(1.1)}to{transform:translate(-12vmax,-8vmax) scale(.92)}}
+@media (prefers-reduced-motion:reduce){.zen-blob{animation:none}}
+
+.zen-grain{position:absolute;inset:0;opacity:.05;pointer-events:none;background-image:repeating-conic-gradient(rgba(255,255,255,.06) 0 .0001deg,transparent 0 .0002deg)}
+
+/* top bar */
+.zen-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top)) 18px 0;z-index:5}
+.zen-kicker{font-family:monospace;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.32)}
+.zen-iconbtn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s;flex-shrink:0}
+.zen-iconbtn:hover{background:rgba(255,255,255,.1)}
+.zen-top-group{display:flex;gap:10px;align-items:center}
+
+/* center stage */
+.zen-stage{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:100%;max-width:560px;padding:0 24px;text-align:center}
+
+/* the pulsing / breathing orb */
+.zen-orb-wrap{position:relative;width:min(62vw,280px);height:min(62vw,280px);display:flex;align-items:center;justify-content:center;margin:26px 0}
+.zen-ring{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(255,255,255,.07)}
+.zen-orb{width:58%;height:58%;border-radius:50%;background:radial-gradient(circle at 42% 38%,var(--zen-hi,#F2E2AC) 0%,var(--zen-c1,#C4A265) 55%,rgba(196,162,101,.15) 100%);box-shadow:0 0 60px var(--zen-glow,rgba(196,162,101,.35)),0 0 140px var(--zen-glow,rgba(196,162,101,.22));transform:scale(1);display:flex;align-items:center;justify-content:center}
+.zen-orb.tapmode{transition:transform .18s ease-out,box-shadow .18s ease-out}
+.zen-orb.tapmode.beat{transform:scale(1.13);box-shadow:0 0 90px var(--zen-glow,rgba(196,162,101,.55)),0 0 190px var(--zen-glow,rgba(196,162,101,.3))}
+.zen-orb-label{font-family:monospace;font-size:15px;letter-spacing:.2em;color:rgba(10,9,8,.62);font-weight:600}
+.zen-echo{position:absolute;width:58%;height:58%;border-radius:50%;border:1.5px solid var(--zen-c1,#C4A265);opacity:0;pointer-events:none}
+.zen-echo.go{animation:echoOut 1.1s ease-out}
+@keyframes echoOut{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.75);opacity:0}}
+
+/* SVG countdown ring (timer mode) */
+.zen-svgring{position:absolute;inset:-7%;width:114%;height:114%;transform:rotate(-90deg)}
+.zen-svgring circle{fill:none;stroke-width:1.6}
+.zen-svgring .track{stroke:rgba(255,255,255,.06)}
+.zen-svgring .fill{stroke:var(--zen-c1,#C4A265);stroke-linecap:round;transition:stroke-dashoffset 1s linear;opacity:.7}
+
+/* text slots */
+.zen-point{font-family:monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--zen-c1,#C4A265);min-height:14px;margin-bottom:6px}
+.zen-phrase{font-family:'Cormorant Garamond',serif;font-size:clamp(21px,5.6vw,28px);font-weight:400;line-height:1.35;color:#EDE4D3;min-height:76px;display:flex;align-items:center;justify-content:center;transition:opacity .45s ease}
+.zen-phrase.dim{opacity:0}
+.zen-phrase em{color:var(--zen-c1,#C4A265);font-style:italic}
+.zen-sub{font-size:12px;color:rgba(255,255,255,.38);line-height:1.7;min-height:18px;max-width:420px;margin:10px auto 0;transition:opacity .45s ease}
+.zen-sub.dim{opacity:0}
+.zen-count{font-family:monospace;font-size:clamp(30px,8vw,40px);font-weight:300;letter-spacing:.08em;color:#EDE4D3;margin-top:4px}
+
+/* progress dots (tapping points) */
+.zen-dots{display:flex;gap:9px;justify-content:center;margin-top:22px;min-height:8px}
+.zen-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);transition:all .4s}
+.zen-dot.done{background:var(--zen-c1,#C4A265);opacity:.45}
+.zen-dot.now{background:var(--zen-c1,#C4A265);box-shadow:0 0 10px var(--zen-glow,rgba(196,162,101,.6));transform:scale(1.35)}
+
+/* bottom controls */
+.zen-bottom{position:absolute;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 24px calc(26px + env(safe-area-inset-bottom));z-index:5}
+.zen-controls{display:flex;gap:14px;align-items:center}
+.zen-ctl{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.7);border-radius:50%;width:46px;height:46px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s,transform .2s}
+.zen-ctl:active{transform:scale(.93)}
+.zen-ctl.main{width:62px;height:62px;font-size:20px;background:rgba(196,162,101,.14);border-color:rgba(196,162,101,.35);color:#E8DCC8}
+.zen-hint{font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.22)}
+
+/* buttons / duration chips */
+.zen-btn{background:rgba(196,162,101,.12);border:1px solid rgba(196,162,101,.4);color:#E8DCC8;font-family:monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:13px 30px;border-radius:30px;cursor:pointer;transition:all .3s}
+.zen-btn:hover{background:rgba(196,162,101,.22)}
+.zen-btn.ghost{background:none;border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.5)}
+.zen-chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0 6px}
+.zen-chip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-family:monospace;font-size:12px;padding:11px 20px;border-radius:26px;cursor:pointer;transition:all .3s}
+.zen-chip.sel{background:rgba(196,162,101,.16);border-color:#C4A265;color:#E8DCC8}
+
+/* floating action button — solar plexus timer */
+.zen-fab{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:900;width:54px;height:54px;border-radius:50%;border:1px solid rgba(196,162,101,.45);background:radial-gradient(circle at 40% 35%,#E8CE8E 0%,#C4A265 60%,#8a6f42 100%);box-shadow:0 4px 24px rgba(196,162,101,.35),0 0 50px rgba(196,162,101,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .25s;animation:fabGlow 5s ease-in-out infinite}
+.zen-fab:active{transform:scale(.92)}
+@keyframes fabGlow{0%,100%{box-shadow:0 4px 24px rgba(196,162,101,.3),0 0 40px rgba(196,162,101,.1)}50%{box-shadow:0 4px 30px rgba(196,162,101,.5),0 0 70px rgba(196,162,101,.2)}}
+
+/* injected buttons inside existing cards */
+.zen-begin{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:14px 0 4px;background:rgba(196,162,101,.09);border:1px solid rgba(196,162,101,.35);color:#E8DCC8;font-family:monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;padding:13px 16px;border-radius:10px;cursor:pointer;transition:all .3s}
+.zen-begin:hover{background:rgba(196,162,101,.18)}
+.zen-begin .zb-orb{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265);box-shadow:0 0 8px rgba(196,162,101,.6);animation:fabGlow 4s ease-in-out infinite}
+.eft-read-link{font-family:monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);background:none;border:none;cursor:pointer;padding:6px 0 0;display:block}
+.eft-read-link:hover{color:rgba(255,255,255,.6)}
+.eft-seq-hint{font-family:monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(196,162,101,.55);margin-top:8px;display:flex;align-items:center;gap:7px}
+.eft-seq-hint .zb-orb{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265);box-shadow:0 0 7px rgba(196,162,101,.55)}
+
+/* meditations-page timer banner */
+.zen-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(196,162,101,.1),rgba(107,91,138,.07));border:1px solid rgba(196,162,101,.25);border-radius:14px;padding:16px 18px;margin-bottom:20px;cursor:pointer;transition:all .3s}
+.zen-banner:hover{border-color:rgba(196,162,101,.5)}
+.zen-banner .zb-orb{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265 65%,#8a6f42);box-shadow:0 0 18px rgba(196,162,101,.4);animation:fabGlow 5s ease-in-out infinite}
+.zen-banner-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:#E8DCC8}
+.zen-banner-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+
+@media (max-height:640px){.zen-orb-wrap{width:min(48vw,200px);height:min(48vw,200px);margin:14px 0}.zen-phrase{min-height:58px}}
