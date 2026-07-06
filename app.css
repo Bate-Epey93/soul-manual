@@ -1,10 +1,216 @@
-/* ===== Zen overlays: EFT tapping · solar plexus breathing · meditation timer ===== */
+/* ===== Soul Manual — zen layer v2 =====
+   overlays · reader · today · nav · ledger · settings · toast · readability ===== */
+
+/* ---------------------------------------------------------------- */
+/* 1. READABILITY — larger, calmer reading surfaces; fewer borders  */
+/* ---------------------------------------------------------------- */
+.med-text{font-size:15.5px!important;line-height:1.9!important;color:rgba(255,255,255,.76)!important}
+.summary-text{font-size:15px!important;line-height:1.9!important;color:rgba(255,255,255,.78)!important}
+.summary-text p{margin-bottom:14px!important}
+.excerpt-text{font-size:16.5px!important;line-height:1.8!important;color:rgba(255,255,255,.75)!important}
+.crossref-text{font-size:14px!important;line-height:1.85!important;color:rgba(255,255,255,.72)!important}
+.card-subtitle{font-size:12.5px!important;color:rgba(255,255,255,.55)!important}
+.eft-intro,.eft-setup,.eft-closing{font-size:13.5px!important;line-height:1.85!important}
+.eft-setup{color:rgba(255,255,255,.74)!important}
+.eft-round-phrase{font-size:14px!important;color:rgba(255,255,255,.76)!important}
+.eft-point-location{font-size:12.5px!important}
+.crisis-step-detail{font-size:13px!important;line-height:1.8!important;color:rgba(255,255,255,.7)!important}
+.med-practice{font-size:13.5px!important;line-height:1.8!important;color:rgba(255,255,255,.75)!important}
+.med-carry{font-size:18px!important}
+
+/* soften card chrome: drop full-perimeter borders, add air */
+.concept-card,.med-card,.eft-seq-card,.dtree-card,.drama-card,.forge-protocol{border-color:transparent!important;background:rgba(255,255,255,.022)!important;border-radius:16px!important}
+.concept-card{padding:20px!important}
+.med-card{padding:20px!important;margin-bottom:14px!important}
+.eft-seq-card{padding:18px!important;margin-bottom:14px!important}
+.dtree-card,.drama-card,.forge-protocol{padding:22px!important;margin-bottom:20px!important}
+.crisis-card{border-color:rgba(184,134,11,.1)!important;padding:22px!important;margin-bottom:22px!important}
+.cards{gap:12px!important}
+.crossref-card{border-color:transparent!important;background:rgba(255,255,255,.018)!important}
+.container{padding:32px 18px 110px!important}
+
+/* hide the original 12-tab strip — replaced by grouped nav */
+.nav-tabs{display:none!important}
+
+/* ---------------------------------------------------------------- */
+/* 2. GROUPED NAV — bottom bar on mobile, floating pills on desktop */
+/* ---------------------------------------------------------------- */
+.znav{position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;justify-content:space-around;align-items:stretch;background:rgba(12,10,8,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.06);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.znav-item{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;color:rgba(255,255,255,.34);font-family:monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;-webkit-tap-highlight-color:transparent;transition:color .3s;border-radius:12px;min-width:56px}
+.znav-item .zi{font-size:17px;line-height:1;font-family:'Cormorant Garamond',serif}
+.znav-item.active{color:#C4A265}
+.znav-item.active .zi{text-shadow:0 0 14px rgba(196,162,101,.55)}
+@media (min-width:860px){
+  .znav{left:50%;right:auto;bottom:auto;top:14px;transform:translateX(-50%);border:1px solid rgba(255,255,255,.07);border-radius:30px;padding:4px 8px;gap:2px}
+  .znav-item{flex-direction:row;gap:8px;font-size:9.5px;padding:9px 16px}
+  .znav-item .zi{font-size:14px}
+  .container{padding-top:76px!important}
+}
+.zsubnav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+.zsubnav button{background:rgba(255,255,255,.035);border:none;color:rgba(255,255,255,.42);font-family:monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;padding:9px 16px;border-radius:20px;cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}
+.zsubnav button.active{background:rgba(196,162,101,.14);color:#C4A265}
+
+/* ---------------------------------------------------------------- */
+/* 3. TODAY PAGE                                                    */
+/* ---------------------------------------------------------------- */
+.today-date{font-family:monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:rgba(196,162,101,.55);margin-bottom:6px}
+.today-greet{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:#E8DCC8;margin-bottom:26px;line-height:1.2}
+.today-sec{font-family:monospace;font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.28);margin:26px 0 12px}
+.today-card{background:rgba(255,255,255,.025);border-radius:18px;padding:22px;cursor:pointer;transition:background .3s;-webkit-tap-highlight-color:transparent}
+.today-card:hover{background:rgba(255,255,255,.04)}
+.today-card .tc-kicker{font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;color:#C4A265}
+.today-card .tc-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:#E8DCC8;line-height:1.25;margin-bottom:6px}
+.today-card .tc-sub{font-size:13.5px;line-height:1.7;color:rgba(255,255,255,.55);font-style:italic}
+.today-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.tbtn{background:rgba(196,162,101,.1);border:none;color:#E8DCC8;font-family:monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:11px 20px;border-radius:22px;cursor:pointer;transition:background .3s;display:inline-flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
+.tbtn:hover{background:rgba(196,162,101,.2)}
+.tbtn.ghost{background:rgba(255,255,255,.04);color:rgba(255,255,255,.6)}
+.today-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.today-tile{background:rgba(255,255,255,.025);border:none;border-radius:18px;padding:20px 16px;cursor:pointer;text-align:center;transition:background .3s;-webkit-tap-highlight-color:transparent}
+.today-tile:hover{background:rgba(255,255,255,.045)}
+.today-tile .tt-icon{width:34px;height:34px;border-radius:50%;margin:0 auto 10px;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265 65%,#8a6f42);box-shadow:0 0 18px rgba(196,162,101,.35)}
+.today-tile .tt-icon.violet{background:radial-gradient(circle at 40% 35%,#BFB1DC,#6B5B8A 65%,#443a5c);box-shadow:0 0 18px rgba(107,91,138,.4)}
+.today-tile .tt-name{font-family:'Cormorant Garamond',serif;font-size:17px;color:#E8DCC8}
+.today-tile .tt-sub{font-family:monospace;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:4px}
+.today-ledger-line{font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin-top:26px;font-style:italic;cursor:pointer}
+.today-ledger-line em{color:rgba(196,162,101,.75);font-style:normal}
+
+/* ---------------------------------------------------------------- */
+/* 4. READER MODE                                                   */
+/* ---------------------------------------------------------------- */
+.reader{position:fixed;inset:0;z-index:950;background:#0C0B09;display:none;flex-direction:column}
+.reader.open{display:flex;animation:zenFade .4s ease}
+.reader-progress{position:absolute;top:0;left:0;height:2px;background:linear-gradient(90deg,#C4A265,rgba(196,162,101,.4));width:0;z-index:5;transition:width .15s linear}
+.reader-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 16px 10px;flex-shrink:0}
+.reader-kicker{font-family:monospace;font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:rgba(196,162,101,.6);text-align:center;flex:1;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reader-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.reader-body{max-width:620px;margin:0 auto;padding:26px 24px calc(80px + env(safe-area-inset-bottom))}
+.reader-number{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:#C4A265;opacity:.6;display:block;line-height:1}
+.reader-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:400;color:#EDE4D3;line-height:1.15;margin:10px 0 8px}
+.reader-subtitle{font-family:'Cormorant Garamond',serif;font-size:19px;font-style:italic;color:rgba(232,220,200,.55);margin-bottom:30px;line-height:1.4}
+.reader-text{font-size:17px;line-height:1.95;color:rgba(255,255,255,.82)}
+.reader-text p{margin-bottom:18px}
+.reader-text em{color:rgba(232,220,200,.9)}
+.reader-quote{font-family:'Cormorant Garamond',serif;font-size:19px;font-style:italic;line-height:1.7;color:rgba(232,220,200,.8);border-left:2px solid rgba(196,162,101,.4);padding:4px 0 4px 20px;margin:26px 0}
+.reader-attr{font-family:monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);margin:-14px 0 26px;padding-left:22px}
+.reader-block{background:rgba(212,160,56,.06);border-radius:14px;padding:18px 20px;margin:28px 0;font-size:15px;line-height:1.85;color:rgba(255,255,255,.78)}
+.reader-block-label{font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#D4A038;margin-bottom:8px}
+.reader-carry{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;text-align:center;color:#E8DCC8;line-height:1.5;margin:36px 0;padding:0 10px}
+.reader-actions{display:flex;justify-content:center;gap:12px;margin-top:34px;flex-wrap:wrap}
+.reader-fin{width:56px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,162,101,.4),transparent);margin:34px auto}
+
+/* ---------------------------------------------------------------- */
+/* 5. LEDGER PAGE                                                   */
+/* ---------------------------------------------------------------- */
+.ledger-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:26px}
+.ledger-stat{background:rgba(255,255,255,.025);border-radius:16px;padding:16px 10px;text-align:center}
+.ledger-stat .ls-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#E8DCC8;line-height:1.1}
+.ledger-stat .ls-label{font-family:monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.32);margin-top:5px}
+.ledger-day{font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(196,162,101,.5);margin:20px 0 8px}
+.ledger-row{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.018);border-radius:14px;padding:14px 16px;margin-bottom:8px}
+.ledger-row .lr-orb{width:12px;height:12px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265);box-shadow:0 0 8px rgba(196,162,101,.4)}
+.ledger-row .lr-orb.tap{background:radial-gradient(circle at 40% 35%,#BFB1DC,#6B5B8A);box-shadow:0 0 8px rgba(107,91,138,.5)}
+.ledger-row .lr-main{flex:1;min-width:0}
+.ledger-row .lr-title{font-size:13.5px;color:rgba(255,255,255,.75)}
+.ledger-row .lr-sub{font-family:monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:3px}
+.ledger-row .lr-delta{font-family:monospace;font-size:11px;color:#5BB88B;white-space:nowrap}
+.ledger-empty{text-align:center;color:rgba(255,255,255,.35);font-style:italic;font-size:13.5px;padding:40px 20px;line-height:1.8}
+
+/* intensity chips (0–10) in tapping sessions */
+.zen-scale{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.zen-scale button{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);font-family:monospace;font-size:11px;cursor:pointer;transition:all .25s;-webkit-tap-highlight-color:transparent}
+.zen-scale button.sel{background:rgba(196,162,101,.25);border-color:#C4A265;color:#F2E2AC;transform:scale(1.12)}
+.zen-scale-label{font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;margin-top:14px}
+
+/* ---------------------------------------------------------------- */
+/* 6. SETTINGS                                                      */
+/* ---------------------------------------------------------------- */
+.zgear{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:850;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .3s;-webkit-tap-highlight-color:transparent}
+.zgear:hover{color:rgba(255,255,255,.7)}
+@media (min-width:860px){.zgear{top:18px;right:18px}}
+.zsheet-wrap{position:fixed;inset:0;z-index:960;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
+.zsheet-wrap.open{display:flex;animation:zenFade .3s ease}
+.zsheet{background:#141210;border-radius:22px 22px 0 0;width:100%;max-width:560px;padding:26px 22px calc(30px + env(safe-area-inset-bottom));max-height:82vh;overflow-y:auto}
+@media (min-width:860px){.zsheet-wrap{align-items:center}.zsheet{border-radius:22px;padding-bottom:30px}}
+.zsheet h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:#E8DCC8;margin-bottom:20px}
+.zset-label{font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.32);margin:18px 0 10px}
+.zset-row{display:flex;gap:8px;flex-wrap:wrap}
+.zset-row button{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.55);font-family:monospace;font-size:11px;padding:10px 16px;border-radius:22px;cursor:pointer;transition:all .25s;-webkit-tap-highlight-color:transparent}
+.zset-row button.sel{background:rgba(196,162,101,.16);border-color:#C4A265;color:#E8DCC8}
+
+/* ---------------------------------------------------------------- */
+/* 7. UPDATE TOAST                                                  */
+/* ---------------------------------------------------------------- */
+.ztoast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);z-index:990;background:#1C1915;border:1px solid rgba(196,162,101,.35);border-radius:30px;padding:12px 20px;display:flex;align-items:center;gap:14px;opacity:0;pointer-events:none;transition:all .5s ease;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:92vw}
+.ztoast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.ztoast span{font-size:12.5px;color:rgba(255,255,255,.75);white-space:nowrap}
+.ztoast button{background:rgba(196,162,101,.16);border:none;color:#E8CE8E;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 16px;border-radius:18px;cursor:pointer}
+@media (min-width:860px){.ztoast{bottom:30px}}
+
+/* ---------------------------------------------------------------- */
+/* 8. LIGHT (PARCHMENT) THEME — for zen-layer components.           */
+/*    Original app surfaces are re-themed at runtime (see app.js).  */
+/* ---------------------------------------------------------------- */
+body.light{background:#F4ECDB!important;color:rgba(42,33,20,.85)!important}
+body.light::before{display:none}
+body.light .znav{background:rgba(244,236,219,.9);border-color:rgba(90,70,40,.12)}
+body.light .znav-item{color:rgba(90,70,40,.45)}
+body.light .znav-item.active{color:#8A6B34}
+body.light .zsubnav button{background:rgba(90,70,40,.06);color:rgba(90,70,40,.55)}
+body.light .zsubnav button.active{background:rgba(138,107,52,.14);color:#8A6B34}
+body.light .today-greet,body.light .today-card .tc-title,body.light .today-tile .tt-name{color:#33291A}
+body.light .today-card,body.light .today-tile,body.light .ledger-stat,body.light .ledger-row{background:rgba(90,70,40,.05)}
+body.light .today-card .tc-sub{color:rgba(60,48,28,.6)}
+body.light .today-card .tc-kicker{color:#8A6B34}
+body.light .today-sec,body.light .today-tile .tt-sub{color:rgba(90,70,40,.4)}
+body.light .today-date{color:rgba(138,107,52,.8)}
+body.light .today-ledger-line{color:rgba(60,48,28,.55)}
+body.light .tbtn{background:rgba(138,107,52,.12);color:#4A3A1E}
+body.light .tbtn.ghost{background:rgba(90,70,40,.07);color:rgba(60,48,28,.6)}
+body.light .reader{background:#F6EFDF}
+body.light .reader-title{color:#2C2313}
+body.light .reader-subtitle{color:rgba(70,56,32,.6)}
+body.light .reader-text{color:rgba(40,31,17,.85)}
+body.light .reader-text em{color:#5A4520}
+body.light .reader-quote{color:rgba(70,56,32,.8)}
+body.light .reader-block{background:rgba(138,107,52,.08);color:rgba(50,40,22,.85)}
+body.light .reader-carry{color:#3A2E17}
+body.light .reader-kicker{color:rgba(138,107,52,.75)}
+body.light .reader-attr{color:rgba(90,70,40,.4)}
+body.light .zen-iconbtn:not(.zen-overlay .zen-iconbtn){background:rgba(90,70,40,.06);border-color:rgba(90,70,40,.12);color:rgba(60,48,28,.6)}
+body.light .zgear{background:rgba(90,70,40,.06);border-color:rgba(90,70,40,.1);color:rgba(60,48,28,.5)}
+body.light .zsheet{background:#EFE6D2}
+body.light .zsheet h3{color:#33291A}
+body.light .zset-label{color:rgba(90,70,40,.45)}
+body.light .zset-row button{background:rgba(90,70,40,.06);border-color:rgba(90,70,40,.14);color:rgba(60,48,28,.6)}
+body.light .zset-row button.sel{background:rgba(138,107,52,.18);border-color:#8A6B34;color:#3A2E17}
+body.light .ztoast{background:#EFE6D2;border-color:rgba(138,107,52,.4)}
+body.light .ztoast span{color:rgba(50,40,22,.8)}
+body.light .ledger-stat .ls-num{color:#33291A}
+body.light .ledger-row .lr-title{color:rgba(50,40,22,.85)}
+body.light .ledger-day{color:rgba(138,107,52,.7)}
+body.light .ledger-empty{color:rgba(90,70,40,.5)}
+body.light .zen-banner{background:linear-gradient(135deg,rgba(138,107,52,.1),rgba(107,91,138,.06))}
+body.light .zen-banner-title{color:#33291A}
+body.light .zen-banner-sub{color:rgba(60,48,28,.55)}
+body.light .eft-read-link{color:rgba(90,70,40,.5)}
+/* readability overrides re-mapped for parchment */
+body.light .med-text,body.light .summary-text,body.light .crossref-text,body.light .crisis-step-detail,body.light .med-practice,body.light .eft-setup,body.light .eft-round-phrase{color:rgba(40,31,17,.82)!important}
+body.light .excerpt-text{color:rgba(60,48,28,.85)!important}
+body.light .card-subtitle{color:rgba(60,48,28,.6)!important}
+body.light .concept-card,body.light .med-card,body.light .eft-seq-card,body.light .dtree-card,body.light .drama-card,body.light .forge-protocol{background:rgba(90,70,40,.05)!important}
+body.light .crossref-card{background:rgba(90,70,40,.04)!important}
+
+/* the zen overlay itself always stays dark & immersive */
+.zen-overlay{color-scheme:dark}
+
+/* ================================================================ */
+/* ===== original zen overlay styles (v1) ===== */
 
 .zen-overlay{position:fixed;inset:0;z-index:1000;background:#080706;display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .zen-overlay.open{display:flex;animation:zenFade .6s ease}
 @keyframes zenFade{from{opacity:0}to{opacity:1}}
 
-/* drifting ambient blobs (Endel-like) */
 .zen-bg{position:absolute;inset:0;pointer-events:none}
 .zen-blob{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(70px);opacity:.35;will-change:transform}
 .zen-blob.b1{background:radial-gradient(circle,var(--zen-c1,#C4A265) 0%,transparent 60%);top:-25vmax;left:-20vmax;animation:blobA 26s ease-in-out infinite alternate}
@@ -16,17 +222,14 @@
 
 .zen-grain{position:absolute;inset:0;opacity:.05;pointer-events:none;background-image:repeating-conic-gradient(rgba(255,255,255,.06) 0 .0001deg,transparent 0 .0002deg)}
 
-/* top bar */
 .zen-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top)) 18px 0;z-index:5}
 .zen-kicker{font-family:monospace;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.32)}
 .zen-iconbtn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s;flex-shrink:0}
 .zen-iconbtn:hover{background:rgba(255,255,255,.1)}
 .zen-top-group{display:flex;gap:10px;align-items:center}
 
-/* center stage */
 .zen-stage{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:100%;max-width:560px;padding:0 24px;text-align:center}
 
-/* the pulsing / breathing orb */
 .zen-orb-wrap{position:relative;width:min(62vw,280px);height:min(62vw,280px);display:flex;align-items:center;justify-content:center;margin:26px 0}
 .zen-ring{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(255,255,255,.07)}
 .zen-orb{width:58%;height:58%;border-radius:50%;background:radial-gradient(circle at 42% 38%,var(--zen-hi,#F2E2AC) 0%,var(--zen-c1,#C4A265) 55%,rgba(196,162,101,.15) 100%);box-shadow:0 0 60px var(--zen-glow,rgba(196,162,101,.35)),0 0 140px var(--zen-glow,rgba(196,162,101,.22));transform:scale(1);display:flex;align-items:center;justify-content:center}
@@ -37,13 +240,11 @@
 .zen-echo.go{animation:echoOut 1.1s ease-out}
 @keyframes echoOut{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.75);opacity:0}}
 
-/* SVG countdown ring (timer mode) */
 .zen-svgring{position:absolute;inset:-7%;width:114%;height:114%;transform:rotate(-90deg)}
 .zen-svgring circle{fill:none;stroke-width:1.6}
 .zen-svgring .track{stroke:rgba(255,255,255,.06)}
 .zen-svgring .fill{stroke:var(--zen-c1,#C4A265);stroke-linecap:round;transition:stroke-dashoffset 1s linear;opacity:.7}
 
-/* text slots */
 .zen-point{font-family:monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--zen-c1,#C4A265);min-height:14px;margin-bottom:6px}
 .zen-phrase{font-family:'Cormorant Garamond',serif;font-size:clamp(21px,5.6vw,28px);font-weight:400;line-height:1.35;color:#EDE4D3;min-height:76px;display:flex;align-items:center;justify-content:center;transition:opacity .45s ease}
 .zen-phrase.dim{opacity:0}
@@ -52,13 +253,11 @@
 .zen-sub.dim{opacity:0}
 .zen-count{font-family:monospace;font-size:clamp(30px,8vw,40px);font-weight:300;letter-spacing:.08em;color:#EDE4D3;margin-top:4px}
 
-/* progress dots (tapping points) */
 .zen-dots{display:flex;gap:9px;justify-content:center;margin-top:22px;min-height:8px}
 .zen-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);transition:all .4s}
 .zen-dot.done{background:var(--zen-c1,#C4A265);opacity:.45}
 .zen-dot.now{background:var(--zen-c1,#C4A265);box-shadow:0 0 10px var(--zen-glow,rgba(196,162,101,.6));transform:scale(1.35)}
 
-/* bottom controls */
 .zen-bottom{position:absolute;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 24px calc(26px + env(safe-area-inset-bottom));z-index:5}
 .zen-controls{display:flex;gap:14px;align-items:center}
 .zen-ctl{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.7);border-radius:50%;width:46px;height:46px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s,transform .2s}
@@ -66,7 +265,6 @@
 .zen-ctl.main{width:62px;height:62px;font-size:20px;background:rgba(196,162,101,.14);border-color:rgba(196,162,101,.35);color:#E8DCC8}
 .zen-hint{font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.22)}
 
-/* buttons / duration chips */
 .zen-btn{background:rgba(196,162,101,.12);border:1px solid rgba(196,162,101,.4);color:#E8DCC8;font-family:monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:13px 30px;border-radius:30px;cursor:pointer;transition:all .3s}
 .zen-btn:hover{background:rgba(196,162,101,.22)}
 .zen-btn.ghost{background:none;border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.5)}
@@ -74,12 +272,11 @@
 .zen-chip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-family:monospace;font-size:12px;padding:11px 20px;border-radius:26px;cursor:pointer;transition:all .3s}
 .zen-chip.sel{background:rgba(196,162,101,.16);border-color:#C4A265;color:#E8DCC8}
 
-/* floating action button — solar plexus timer */
-.zen-fab{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:900;width:54px;height:54px;border-radius:50%;border:1px solid rgba(196,162,101,.45);background:radial-gradient(circle at 40% 35%,#E8CE8E 0%,#C4A265 60%,#8a6f42 100%);box-shadow:0 4px 24px rgba(196,162,101,.35),0 0 50px rgba(196,162,101,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .25s;animation:fabGlow 5s ease-in-out infinite}
+.zen-fab{position:fixed;right:16px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:790;width:52px;height:52px;border-radius:50%;border:1px solid rgba(196,162,101,.45);background:radial-gradient(circle at 40% 35%,#E8CE8E 0%,#C4A265 60%,#8a6f42 100%);box-shadow:0 4px 24px rgba(196,162,101,.35),0 0 50px rgba(196,162,101,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:21px;transition:transform .25s;animation:fabGlow 5s ease-in-out infinite}
 .zen-fab:active{transform:scale(.92)}
+@media (min-width:860px){.zen-fab{bottom:24px;right:24px}}
 @keyframes fabGlow{0%,100%{box-shadow:0 4px 24px rgba(196,162,101,.3),0 0 40px rgba(196,162,101,.1)}50%{box-shadow:0 4px 30px rgba(196,162,101,.5),0 0 70px rgba(196,162,101,.2)}}
 
-/* injected buttons inside existing cards */
 .zen-begin{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:14px 0 4px;background:rgba(196,162,101,.09);border:1px solid rgba(196,162,101,.35);color:#E8DCC8;font-family:monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;padding:13px 16px;border-radius:10px;cursor:pointer;transition:all .3s}
 .zen-begin:hover{background:rgba(196,162,101,.18)}
 .zen-begin .zb-orb{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265);box-shadow:0 0 8px rgba(196,162,101,.6);animation:fabGlow 4s ease-in-out infinite}
@@ -88,7 +285,6 @@
 .eft-seq-hint{font-family:monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(196,162,101,.55);margin-top:8px;display:flex;align-items:center;gap:7px}
 .eft-seq-hint .zb-orb{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265);box-shadow:0 0 7px rgba(196,162,101,.55)}
 
-/* meditations-page timer banner */
 .zen-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(196,162,101,.1),rgba(107,91,138,.07));border:1px solid rgba(196,162,101,.25);border-radius:14px;padding:16px 18px;margin-bottom:20px;cursor:pointer;transition:all .3s}
 .zen-banner:hover{border-color:rgba(196,162,101,.5)}
 .zen-banner .zb-orb{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265 65%,#8a6f42);box-shadow:0 0 18px rgba(196,162,101,.4);animation:fabGlow 5s ease-in-out infinite}
