@@ -33,6 +33,35 @@
 .nav-tabs{display:none!important}
 
 /* ---------------------------------------------------------------- */
+/* ENSŌ MOTIFS — brush-circle marks replacing emojis + watermarks   */
+/* ---------------------------------------------------------------- */
+.enso{display:inline-block;width:1.05em;height:1.05em;vertical-align:-0.16em}
+.enso-host{display:inline-block;margin-right:8px;line-height:0;vertical-align:middle}
+.med-icon .enso,.crossref-icon .enso{width:1.1em;height:1.1em}
+.page{position:relative}
+.page-enso{position:absolute;top:-42px;right:-64px;width:300px;height:300px;opacity:.05;pointer-events:none;z-index:-1}
+body.light .page-enso{opacity:.09}
+@media (max-width:520px){.page-enso{width:225px;height:225px;right:-52px;top:-30px}}
+.reader-enso{position:absolute;top:24px;right:-70px;z-index:0}
+.reader-bar,.reader-scroll,.reader-progress{position:relative;z-index:1}
+.zen-enso{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.zen-enso svg{opacity:.055;animation:ensoSpin 150s linear infinite}
+@keyframes ensoSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.zen-enso svg{animation:none}}
+.znav-item .zi{line-height:0}
+.znav-item .enso{width:18px;height:18px;vertical-align:0}
+@media (min-width:860px){.znav-item .enso{width:15px;height:15px}}
+.header-ornament .enso{width:24px;height:24px;opacity:.85}
+.zen-fab .enso{width:26px;height:26px;vertical-align:0}
+.tc-kicker .enso{width:13px;height:13px;vertical-align:-2px}
+.eft-seq-title .enso{width:20px;height:20px}
+.path-title .enso{width:20px;height:20px}
+.card-section-tag .enso-host,.filter-btn .enso-host{margin-right:5px}
+.card-section-tag .enso{width:9px;height:9px;vertical-align:-1px}
+.filter-btn .enso{width:11px;height:11px;vertical-align:-1px}
+.zgear{line-height:0}
+
+/* ---------------------------------------------------------------- */
 /* 2. GROUPED NAV — bottom bar on mobile, floating pills on desktop */
 /* ---------------------------------------------------------------- */
 .znav{position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;justify-content:space-around;align-items:stretch;background:rgba(12,10,8,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.06);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}

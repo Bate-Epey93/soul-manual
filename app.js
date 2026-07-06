@@ -97,6 +97,119 @@
     if (sheetWrap && sheetWrap.classList.contains('open')) { closeSheet(true); return; }
   });
 
+  /* ================================================================
+     ENSŌ — deterministic hand-brushed circle SVGs
+     ================================================================ */
+  function hash32(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function rng(seed) {
+    var a = hash32(String(seed));
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  // a single brush ring as a filled path: tapered ends, organic wobble, open gap
+  function ensoPath(seed, opts) {
+    opts = opts || {};
+    var r = rng(seed);
+    var R = 36, W = opts.w || 11;
+    var rot = opts.rot !== undefined ? opts.rot : r() * Math.PI * 2;
+    var gap = opts.gap !== undefined ? opts.gap : 0.55 + r() * 0.8;
+    var span = Math.PI * 2 - gap;
+    var wob = 2 + r() * 2.4, ph1 = r() * Math.PI * 2, ph2 = r() * Math.PI * 2;
+    var N = 44, outer = [], inner = [];
+    for (var k = 0; k <= N; k++) {
+      var t = k / N, th = rot + t * span;
+      var w = W * (0.3 + 0.7 * Math.pow(1 - t, 1.3)) * Math.min(1, 0.15 + t * 6);
+      var rad = R + Math.sin(t * Math.PI * 2 + ph1) * wob * 0.5 + Math.sin(t * Math.PI * 5 + ph2) * 0.8;
+      var co = Math.cos(th), si = Math.sin(th);
+      outer.push((50 + co * (rad + w / 2)).toFixed(1) + ' ' + (50 + si * (rad + w / 2)).toFixed(1));
+      inner.push((50 + co * (rad - w / 2)).toFixed(1) + ' ' + (50 + si * (rad - w / 2)).toFixed(1));
+    }
+    return 'M' + outer.join('L') + 'L' + inner.reverse().join('L') + 'Z';
+  }
+  function ensoSVG(seed, opts) {
+    opts = opts || {};
+    var fill = opts.color || 'currentColor';
+    var dot = opts.dot ? '<circle cx="50" cy="50" r="' + opts.dot + '" fill="' + fill + '"/>' : '';
+    return '<svg class="enso" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"' +
+      (opts.style ? ' style="' + opts.style + '"' : '') +
+      '><path d="' + ensoPath(seed, opts) + '" fill="' + fill + '"/>' + dot + '</svg>';
+  }
+
+  /* replace emojis (and abstract section glyphs) in rendered content with ensō marks */
+  var EMOJI_RE = /(?:[⌀-⏿☀-➿⬀-⯿️‍]|[\uD83C-\uD83E][\uDC00-\uDFFF])+/g;
+  var GLYPH_RE = /[◆◈✦◉△✧]️?/g;
+  var SWEEP_SEL = '[class*="icon"]:not([class*="zen"]):not([class*="enso"]),.eft-section-title,.edge-section-title,.arch-section-title,.drama-subsection-title,.mamba-warning-title,.eft-seq-title>span,.path-title>span';
+  var GLYPH_SEL = '.filter-btn,.card-section-tag';
+  function markWithEnso(el, re, seed) {
+    if (el.dataset.enso || el.closest('.zen-overlay')) return;
+    var found = false;
+    Array.prototype.slice.call(el.childNodes).forEach(function (n) {
+      if (n.nodeType !== 3) return;
+      re.lastIndex = 0;
+      if (re.test(n.nodeValue)) {
+        found = true;
+        n.nodeValue = n.nodeValue.replace(re, '').replace(/^\s+/, '');
+      }
+    });
+    if (!found) return;
+    el.dataset.enso = '1';
+    var host = document.createElement('span');
+    host.className = 'enso-host';
+    host.innerHTML = ensoSVG(seed);
+    // emoji-only marker next to a colored label: borrow its accent
+    if (!el.textContent.trim() && el.nextElementSibling && el.nextElementSibling.style && el.nextElementSibling.style.color) {
+      host.style.color = el.nextElementSibling.style.color;
+    }
+    el.insertBefore(host, el.firstChild);
+  }
+  function ensoSweep(root) {
+    root = root || document;
+    root.querySelectorAll(SWEEP_SEL).forEach(function (el, idx) {
+      markWithEnso(el, EMOJI_RE, (el.className || '') + '|' + el.textContent.slice(0, 24) + '|' + idx);
+    });
+    // section glyphs: seed by section name so every card of a section carries the same mark
+    root.querySelectorAll(GLYPH_SEL).forEach(function (el) {
+      markWithEnso(el, GLYPH_RE, 'section-' + el.textContent.replace(GLYPH_RE, '').trim());
+    });
+  }
+  // filtering concepts re-renders filters + cards — re-sweep (and re-theme) after
+  function wrapSetF() {
+    if (typeof window.setF !== 'function') return;
+    var orig = window.setF;
+    window.setF = function (s) {
+      orig(s);
+      var page = document.getElementById('page-concepts');
+      if (page) { ensoSweep(page); if (PREFS.theme === 'light') applyInlineTheme(true, page); }
+    };
+  }
+
+  /* faint watermark ensō behind a page */
+  function pageEnsoHTML(seed) {
+    return '<div class="page-enso">' + ensoSVG(seed, { w: 8, color: '#C4A265', style: 'width:100%;height:100%' }) + '</div>';
+  }
+  function addPageEnsos() {
+    document.querySelectorAll('.page').forEach(function (p) {
+      if (p.id === 'page-today' || p.id === 'page-ledger') return; // these render their own
+      var d = document.createElement('div');
+      d.innerHTML = pageEnsoHTML(p.id);
+      p.insertBefore(d.firstChild, p.firstChild);
+    });
+    var orn = document.querySelector('.header-ornament');
+    if (orn) {
+      orn.innerHTML = '<span class="line"></span>' +
+        ensoSVG('ornament', { w: 10, gap: 0.85, rot: -0.5, color: 'rgba(196,162,101,0.6)', style: 'width:24px;height:24px' }) +
+        '<span class="line"></span>';
+    }
+  }
+
   /* ---------- overlay skeleton ---------- */
   var ov = null, Z = {};
   function buildOverlay() {
@@ -104,7 +217,9 @@
     ov = document.createElement('div');
     ov.className = 'zen-overlay';
     ov.innerHTML =
-      '<div class="zen-bg"><div class="zen-blob b1"></div><div class="zen-blob b2"></div><div class="zen-blob b3"></div><div class="zen-grain"></div></div>' +
+      '<div class="zen-bg"><div class="zen-blob b1"></div><div class="zen-blob b2"></div><div class="zen-blob b3"></div>' +
+        '<div class="zen-enso">' + ensoSVG('overlay-enso', { w: 6.5, gap: 1.0, color: 'var(--zen-c1,#C4A265)', style: 'width:86vmin;height:86vmin' }) + '</div>' +
+        '<div class="zen-grain"></div></div>' +
       '<div class="zen-top">' +
         '<button class="zen-iconbtn" id="zClose" aria-label="Close">&#10005;</button>' +
         '<div class="zen-kicker" id="zKicker"></div>' +
@@ -265,7 +380,7 @@
 
     function showIntro() {
       Z.zOrb.classList.add('tapmode');
-      Z.zPhrase.innerHTML = '<em>' + seq.icon + '</em>&nbsp; ' + seq.title;
+      Z.zPhrase.innerHTML = ensoSVG('seq-' + seq.title, { w: 10, color: 'var(--zen-c1,#C4A265)', style: 'width:.8em;height:.8em;vertical-align:-.08em' }) + '&nbsp; ' + seq.title;
       Z.zSub.textContent = 'Find the feeling. Tap each point along with the pulse, speaking the phrase aloud.';
       Z.zChips.style.display = 'block';
       scaleRow(Z.zChips, 'how strong is it right now? (optional)', function (v) { before = v; });
@@ -542,7 +657,8 @@
         '<div class="reader-kicker" id="rKicker"></div>' +
         '<div style="width:38px"></div>' +
       '</div>' +
-      '<div class="reader-scroll" id="rScroll"><article class="reader-body" id="rBody"></article></div>';
+      '<div class="reader-scroll" id="rScroll"><article class="reader-body" id="rBody"></article></div>' +
+      '<div class="page-enso reader-enso">' + ensoSVG('reader', { w: 8, color: '#C4A265', style: 'width:100%;height:100%' }) + '</div>';
     document.body.appendChild(reader);
     ['rProg','rKicker','rScroll','rBody'].forEach(function (id) { rEls[id] = reader.querySelector('#' + id); });
     reader.querySelector('#rClose').onclick = function () { closeReader(false); };
@@ -559,7 +675,7 @@
     if (kind === 'med') {
       var m = MEDS[i];
       rEls.rKicker.textContent = (m.day + ' · Meditation').toUpperCase();
-      h += '<h1 class="reader-title">' + (m.icon ? m.icon + ' ' : '') + m.title + '</h1>';
+      h += '<h1 class="reader-title">' + ensoSVG('med-' + m.day, { w: 10, color: '#C4A265', style: 'width:24px;height:24px;margin-right:8px;vertical-align:-2px' }) + m.title + '</h1>';
       h += '<div class="reader-text"><p>' + m.text + '</p></div>';
       if (m.practice) h += '<div class="reader-block"><div class="reader-block-label">The practice</div>' + m.practice + '</div>';
       if (m.carry) h += '<div class="reader-carry">“' + m.carry + '”</div>';
@@ -599,11 +715,11 @@
      NAV — 5 groups · hash routing
      ================================================================ */
   var GROUPS = [
-    { id: 'today', label: 'Today', icon: '☉', pages: ['today'] },
-    { id: 'learn', label: 'Learn', icon: '❖', pages: ['concepts', 'arch', 'mirror', 'dramas', 'guide'] },
-    { id: 'practice', label: 'Practice', icon: '◉', pages: ['meditations', 'eft', 'forge', 'edge', 'ledger'] },
-    { id: 'mapg', label: 'Map', icon: '✦', pages: ['map', 'trees'] },
-    { id: 'crisisg', label: 'Crisis', icon: '⚑', pages: ['crisis'] }
+    { id: 'today', label: 'Today', enso: { w: 9, gap: 0.75, rot: -0.6, dot: 11 }, pages: ['today'] },
+    { id: 'learn', label: 'Learn', enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'arch', 'mirror', 'dramas', 'guide'] },
+    { id: 'practice', label: 'Practice', enso: { w: 13, gap: 0.45, rot: 0.9 }, pages: ['meditations', 'eft', 'forge', 'edge', 'ledger'] },
+    { id: 'mapg', label: 'Map', enso: { w: 5, gap: 2.6, rot: -2.2, dot: 5 }, pages: ['map', 'trees'] },
+    { id: 'crisisg', label: 'Crisis', enso: { w: 15, gap: 1.2, rot: -1.57 }, pages: ['crisis'] }
   ];
   var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
   var VALID = Object.keys(PAGE_LABELS);
@@ -620,7 +736,7 @@
     GROUPS.forEach(function (g) {
       var b = document.createElement('button');
       b.className = 'znav-item'; b.dataset.group = g.id;
-      b.innerHTML = '<span class="zi">' + g.icon + '</span><span>' + g.label + '</span>';
+      b.innerHTML = '<span class="zi">' + ensoSVG('nav-' + g.id, g.enso) + '</span><span>' + g.label + '</span>';
       b.onclick = function () { navTo(groupChoice[g.id] || g.pages[0]); };
       navEl.appendChild(b);
     });
@@ -697,12 +813,13 @@
       : 'Your ledger is empty. One breath begins it. &rarr;';
 
     page.innerHTML =
+      pageEnsoHTML('page-today') +
       '<div class="today-date">' + DAYS[now.getDay()].toUpperCase() + ' · ' + MONTHS[now.getMonth()].toUpperCase() + ' ' + now.getDate() + '</div>' +
       '<div class="today-greet">' + greet + '</div>' +
 
       '<div class="today-sec">Today’s Meditation</div>' +
       '<div class="today-card" id="tdMed">' +
-        '<div class="tc-kicker">' + (m.icon ? m.icon + ' ' : '') + m.day + '</div>' +
+        '<div class="tc-kicker">' + ensoSVG('med-' + m.day, { w: 10 }) + ' ' + m.day + '</div>' +
         '<div class="tc-title">' + m.title + '</div>' +
         (m.carry ? '<div class="tc-sub">“' + m.carry + '”</div>' : '') +
         '<div class="today-actions"><button class="tbtn" id="tdMedRead">Read</button><button class="tbtn ghost" id="tdMedBreathe">Breathe</button></div>' +
@@ -749,7 +866,8 @@
     var page = document.getElementById('page-ledger');
     var all = ledgerAll().slice().reverse();
     var st = weekStats();
-    var h = '<div style="margin-bottom:20px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">The Ledger</h2>' +
+    var h = pageEnsoHTML('page-ledger') +
+      '<div style="margin-bottom:20px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">The Ledger</h2>' +
       '<p style="font-size:12.5px;color:rgba(255,255,255,0.35)">A quiet record of practice. No streaks, no scores — just what you’ve done.</p></div>';
     h += '<div class="ledger-stats">' +
       '<div class="ledger-stat"><div class="ls-num">' + st.sessions + '</div><div class="ls-label">this week</div></div>' +
@@ -784,7 +902,9 @@
   var sheetWrap = null;
   function buildSettings() {
     var gear = document.createElement('button');
-    gear.className = 'zgear'; gear.innerHTML = '&#9881;'; gear.setAttribute('aria-label', 'Settings');
+    gear.className = 'zgear';
+    gear.innerHTML = ensoSVG('gear', { w: 6, gap: 2.7, rot: 0.5, dot: 7, style: 'width:16px;height:16px' });
+    gear.setAttribute('aria-label', 'Settings');
     gear.onclick = openSheet;
     document.body.appendChild(gear);
 
@@ -929,12 +1049,12 @@
     applyInlineTheme(light);
   }
   function themeDetailPanel() {
-    if (PREFS.theme === 'light') {
-      var dp = document.getElementById('detailPanel');
-      if (dp) applyInlineTheme(true, dp);
-    }
+    var dp = document.getElementById('detailPanel');
+    if (!dp) return;
+    ensoSweep(dp);
+    if (PREFS.theme === 'light') applyInlineTheme(true, dp);
   }
-  // concept detail renders fresh HTML — re-theme it when opened in light mode
+  // concept detail renders fresh HTML — re-theme + re-ensō it when opened
   function wrapOpenD() {
     if (typeof window.openD !== 'function') return;
     var orig = window.openD;
@@ -1026,7 +1146,7 @@
     var fab = document.createElement('button');
     fab.className = 'zen-fab';
     fab.setAttribute('aria-label', 'Solar plexus meditation timer');
-    fab.innerHTML = '&#9737;';
+    fab.innerHTML = ensoSVG('fab', { w: 12, gap: 0.8, rot: -0.9, dot: 9, color: 'rgba(26,20,10,0.78)', style: 'width:26px;height:26px' });
     fab.onclick = openTimer;
     document.body.appendChild(fab);
   }
@@ -1037,7 +1157,8 @@
   function boot() {
     try {
       hookEft(); hookMeds(); addFab();
-      createPages(); buildNav(); buildSettings(); wrapOpenD();
+      createPages(); buildNav(); buildSettings(); wrapOpenD(); wrapSetF();
+      ensoSweep(document); addPageEnsos();
       applyZoom(); applyTheme();
       window.addEventListener('hashchange', route);
       if (!location.hash) history.replaceState(null, '', '#/today');
