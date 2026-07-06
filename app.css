@@ -321,3 +321,12 @@ body.light .crossref-card{background:rgba(90,70,40,.04)!important}
 .zen-banner-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
 
 @media (max-height:640px){.zen-orb-wrap{width:min(48vw,200px);height:min(48vw,200px);margin:14px 0}.zen-phrase{min-height:58px}}
+
+/* ---------------------------------------------------------------- */
+/* MOBILE FIT — kill horizontal wobble; declutter legend + footer   */
+/* ---------------------------------------------------------------- */
+html{overflow-x:hidden;overflow-x:clip}
+body{overflow-x:hidden;overflow-x:clip}
+.container{overflow-x:clip;max-width:min(780px,100%)}
+.source-legend{display:none!important}
+.footer-text{font-size:10px}

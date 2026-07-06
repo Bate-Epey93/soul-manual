@@ -1,4 +1,4 @@
-const VERSION = 'soul-manual-v4';
+const VERSION = 'soul-manual-v5';
 const PRECACHE = [
   './',
   './index.html',

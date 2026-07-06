@@ -1332,10 +1332,19 @@
   /* ================================================================
      BOOT
      ================================================================ */
+  /* footer: keep only the Manifestor line */
+  function trimFooter() {
+    var ft = document.querySelector('.footer-text');
+    if (!ft) return;
+    var parts = ft.innerHTML.split(/<br\s*\/?>/i);
+    ft.innerHTML = parts[parts.length - 1];
+  }
+
   function boot() {
     try {
       hookEft(); hookMeds(); addFab();
       createPages(); buildNav(); buildSettings(); wrapOpenD(); wrapSetF();
+      trimFooter();
       ensoSweep(document); addPageEnsos();
       applyZoom(); applyTheme();
       window.addEventListener('hashchange', route);
