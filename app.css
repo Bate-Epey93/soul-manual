@@ -330,3 +330,32 @@ body{overflow-x:hidden;overflow-x:clip}
 .container{overflow-x:clip;max-width:min(780px,100%)}
 .source-legend{display:none!important}
 .footer-text{font-size:10px}
+
+/* ---------------------------------------------------------------- */
+/* LIQUID GLASS — Tahoe-style gloss on cards & buttons              */
+/* ---------------------------------------------------------------- */
+.glass{position:relative;isolation:isolate;border:1px solid rgba(255,255,255,.075)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -1px 0 rgba(0,0,0,.22),0 12px 32px -20px rgba(0,0,0,.75);transition:border-color .35s,box-shadow .35s,transform .16s;-webkit-tap-highlight-color:transparent}
+.glass::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;background:linear-gradient(168deg,rgba(255,255,255,.085),rgba(255,255,255,.02) 34%,rgba(255,255,255,0) 58%,rgba(255,255,255,.035) 92%)}
+.glass::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;opacity:0;transition:opacity .45s;background:radial-gradient(240px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.13),transparent 62%)}
+.glass:hover{border-color:rgba(255,255,255,.17)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(0,0,0,.22),0 16px 44px -18px rgba(0,0,0,.85)}
+.glass:hover::after,.glass.zpress::after{opacity:1}
+.glass.zpress{transform:scale(.985)}
+.glass.expanded,.glass.active{border-color:rgba(196,162,101,.38)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 0 32px -10px rgba(196,162,101,.4)}
+body.light .glass{border-color:rgba(85,65,35,.15)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.75),inset 0 -1px 0 rgba(90,70,40,.12),0 12px 30px -22px rgba(90,70,40,.5)}
+body.light .glass::before{background:linear-gradient(168deg,rgba(255,255,255,.55),rgba(255,255,255,.14) 36%,rgba(255,255,255,0) 60%,rgba(255,255,255,.28) 92%)}
+body.light .glass::after{background:radial-gradient(240px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.6),transparent 62%)}
+body.light .glass:hover{border-color:rgba(125,95,45,.32)!important}
+body.light .glass.expanded,body.light .glass.active{border-color:rgba(150,110,50,.5)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 0 26px -10px rgba(170,130,60,.45)}
+
+/* chapter marks on the 13 concept cards + detail view */
+.chapter-enso{margin-left:12px;align-self:center;flex-shrink:0;opacity:.75;line-height:0}
+.chapter-enso .enso{width:30px;height:30px}
+.detail-title-enso{display:inline-block;margin-left:14px;vertical-align:6px;opacity:.85;line-height:0}
+.detail-title-enso .enso{width:30px;height:30px}
+#detailContent{position:relative}
+.detail-enso{position:absolute;top:-6px;right:-28px;width:210px;height:210px;opacity:.06;pointer-events:none;z-index:-1}
+body.light .detail-enso{opacity:.1}
+.tc-kicker .enso{width:14px;height:14px;vertical-align:-2.5px}
+
+/* header: hide the contents inventory paragraph */
+.intro{display:none!important}

@@ -356,9 +356,82 @@
     window.setF = function (s) {
       orig(s);
       var page = document.getElementById('page-concepts');
-      if (page) { ensoSweep(page); if (PREFS.theme === 'light') applyInlineTheme(true, page); }
+      if (page) { ensoSweep(page); decorateConceptCards(); glassify(page); if (PREFS.theme === 'light') applyInlineTheme(true, page); }
     };
   }
+
+  /* the 13 chapters, each with a representative brush mark */
+  var CONCEPT_MOTIFS = {
+    evolution: 'spiral',      // consciousness expanding outward
+    karma: 'yinyang',         // cause and effect in balance
+    reverence: 'lotus',       // reverence for life
+    heart: 'heart',           // the heart as intelligence
+    light: 'candle',          // light & nonphysical reality
+    intuition: 'eye',         // inner seeing
+    intention: 'target',      // intention aimed
+    choice: 'fork',           // the engine of choice
+    addiction: 'wave',        // riding the craving wave
+    relationships: 'bond',    // spiritual partnership
+    power: 'mountain',        // authentic power, grounded
+    trust: 'torii',           // the sacred threshold
+    illusion: 'fog'           // the veil as teacher
+  };
+  function decorateConceptCards() {
+    document.querySelectorAll('.concept-card').forEach(function (card) {
+      if (card.querySelector('.chapter-enso')) return;
+      var m = (card.getAttribute('onclick') || '').match(/openD\('([^']+)'\)/);
+      var c = m && DATA.find(function (x) { return x.id === m[1]; });
+      if (!c) return;
+      var mark = document.createElement('span');
+      mark.className = 'chapter-enso';
+      mark.innerHTML = motifSVG(CONCEPT_MOTIFS[c.id], 'ch-' + c.id, { color: c.color });
+      card.appendChild(mark);
+    });
+  }
+  function decorateDetail(id) {
+    var c = DATA.find(function (x) { return x.id === id; });
+    var dc = document.getElementById('detailContent');
+    if (!c || !dc || dc.querySelector('.detail-enso')) return;
+    var wm = document.createElement('div');
+    wm.className = 'detail-enso';
+    wm.innerHTML = motifSVG(CONCEPT_MOTIFS[c.id], 'ch-' + c.id, { color: c.color, style: 'width:100%;height:100%' });
+    dc.insertBefore(wm, dc.firstChild);
+    var num = dc.querySelector('.detail-number');
+    if (num) {
+      var mk = document.createElement('span');
+      mk.className = 'detail-title-enso';
+      mk.innerHTML = motifSVG(CONCEPT_MOTIFS[c.id], 'ch-' + c.id, { color: c.color });
+      num.insertAdjacentElement('afterend', mk);
+    }
+  }
+
+  /* ---------- liquid glass finish ---------- */
+  var GLASS_SEL = '.concept-card,.med-card,.eft-seq-card,.dtree-card,.drama-card,.forge-protocol,.crisis-card,.today-card,.today-tile,.path-card,.crossref-card,.edge-card,.zen-banner,.excerpt-block,.proto-section,.lg-item,.tbtn,.zen-btn,.zen-chip,.zsubnav button,.filter-btn,.zen-begin,.back-btn';
+  function glassify(root) {
+    (root || document).querySelectorAll(GLASS_SEL).forEach(function (el) { el.classList.add('glass'); });
+  }
+  function glassPoint(g, e) {
+    var r = g.getBoundingClientRect();
+    g.style.setProperty('--mx', Math.round((e.clientX - r.left) / r.width * 100) + '%');
+    g.style.setProperty('--my', Math.round((e.clientY - r.top) / r.height * 100) + '%');
+  }
+  document.addEventListener('pointermove', function (e) {
+    var g = e.target.closest && e.target.closest('.glass');
+    if (g) glassPoint(g, e);
+  }, { passive: true });
+  document.addEventListener('pointerdown', function (e) {
+    var g = e.target.closest && e.target.closest('.glass');
+    if (!g) return;
+    glassPoint(g, e);
+    g.classList.add('zpress');
+    var up = function () {
+      g.classList.remove('zpress');
+      document.removeEventListener('pointerup', up);
+      document.removeEventListener('pointercancel', up);
+    };
+    document.addEventListener('pointerup', up);
+    document.addEventListener('pointercancel', up);
+  }, { passive: true });
 
   /* faint topical watermark behind each page */
   var PAGE_MOTIFS = {
@@ -932,6 +1005,7 @@
   function route() {
     var h = location.hash.replace(/^#\/?/, '');
     activate(VALID.indexOf(h) !== -1 ? h : 'today');
+    decorateConceptCards(); glassify();
   }
   function activate(page) {
     var g = groupOf(page);
@@ -1005,7 +1079,7 @@
 
       '<div class="today-sec">Suggested Chapter</div>' +
       '<div class="today-card" id="tdCh">' +
-        '<div class="tc-kicker" style="color:' + c.color + '">Chapter ' + c.number + ' · ' + c.section + '</div>' +
+        '<div class="tc-kicker" style="color:' + c.color + '">' + motifSVG(CONCEPT_MOTIFS[c.id], 'ch-' + c.id) + ' Chapter ' + c.number + ' · ' + c.section + '</div>' +
         '<div class="tc-title">' + c.title + '</div>' +
         '<div class="tc-sub">' + c.subtitle + '</div>' +
         '<div class="today-actions"><button class="tbtn" id="tdChRead">Read</button></div>' +
@@ -1236,7 +1310,7 @@
   function wrapOpenD() {
     if (typeof window.openD !== 'function') return;
     var orig = window.openD;
-    window.openD = function (id) { orig(id); themeDetailPanel(); };
+    window.openD = function (id) { orig(id); decorateDetail(id); themeDetailPanel(); glassify(document.getElementById('detailPanel')); };
   }
 
   /* ================================================================
