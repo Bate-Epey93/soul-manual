@@ -134,13 +134,181 @@
     }
     return 'M' + outer.join('L') + 'L' + inner.reverse().join('L') + 'Z';
   }
+  function svgWrap(body, opts) {
+    return '<svg class="enso" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"' +
+      (opts && opts.style ? ' style="' + opts.style + '"' : '') + '>' + body + '</svg>';
+  }
   function ensoSVG(seed, opts) {
     opts = opts || {};
     var fill = opts.color || 'currentColor';
     var dot = opts.dot ? '<circle cx="50" cy="50" r="' + opts.dot + '" fill="' + fill + '"/>' : '';
-    return '<svg class="enso" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"' +
-      (opts.style ? ' style="' + opts.style + '"' : '') +
-      '><path d="' + ensoPath(seed, opts) + '" fill="' + fill + '"/>' + dot + '</svg>';
+    return svgWrap('<path d="' + ensoPath(seed, opts) + '" fill="' + fill + '"/>' + dot, opts);
+  }
+
+  /* --- brush strokes along arbitrary polylines (sumi-e motifs) --- */
+  function crSpline(a, b, c, d, t) {
+    return 0.5 * ((2 * b) + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t);
+  }
+  function resample(pts, N) {
+    var out = [], k, t;
+    if (pts.length < 3) {
+      for (k = 0; k <= N; k++) { t = k / N; out.push([pts[0][0] + (pts[1][0] - pts[0][0]) * t, pts[0][1] + (pts[1][1] - pts[0][1]) * t]); }
+      return out;
+    }
+    var P = [pts[0]].concat(pts, [pts[pts.length - 1]]);
+    var segs = pts.length - 1;
+    for (k = 0; k <= N; k++) {
+      t = k / N * segs;
+      var i = Math.min(Math.floor(t), segs - 1), u = t - i;
+      out.push([crSpline(P[i][0], P[i + 1][0], P[i + 2][0], P[i + 3][0], u), crSpline(P[i][1], P[i + 1][1], P[i + 2][1], P[i + 3][1], u)]);
+    }
+    return out;
+  }
+  function strokePath(seed, pts, w, o) {
+    o = o || {};
+    var r = rng(seed);
+    var N = Math.max(14, pts.length * 6);
+    var P = resample(pts, N);
+    var ph = r() * 6.28, wob = 0.7 + r();
+    var L = [], R = [];
+    for (var i = 0; i <= N; i++) {
+      var t = i / N;
+      var a = P[Math.max(0, i - 1)], b = P[Math.min(N, i + 1)];
+      var dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1;
+      var nx = -dy / len, ny = dx / len;
+      var wt = o.taper === 'both'
+        ? w * (0.25 + 0.75 * Math.sin(Math.PI * t))
+        : w * (0.3 + 0.7 * Math.pow(1 - t, 1.15)) * Math.min(1, 0.15 + t * 6);
+      wt += Math.sin(t * 9 + ph) * wob * 0.4;
+      if (wt < 0.6) wt = 0.6;
+      L.push((P[i][0] + nx * wt / 2).toFixed(1) + ' ' + (P[i][1] + ny * wt / 2).toFixed(1));
+      R.push((P[i][0] - nx * wt / 2).toFixed(1) + ' ' + (P[i][1] - ny * wt / 2).toFixed(1));
+    }
+    return 'M' + L.join('L') + 'L' + R.reverse().join('L') + 'Z';
+  }
+  function ringPts(cx, cy, R, rot, frac) {
+    var pts = [], n = 9, span = Math.PI * 2 * (frac || 0.94);
+    for (var i = 0; i <= n; i++) {
+      var th = (rot || -1.2) + span * i / n;
+      pts.push([cx + Math.cos(th) * R, cy + Math.sin(th) * R]);
+    }
+    return pts;
+  }
+
+  /* --- motif library: each mark drawn as brush strokes (s) + ink dots (d) --- */
+  var MOTIFS = {
+    sun:      { s: [{ p: ringPts(50, 50, 22, -1.1), w: 8 }, { p: [[50, 9], [50, 19]], w: 5 }, { p: [[79, 21], [72, 28]], w: 5 }, { p: [[91, 50], [81, 50]], w: 5 }, { p: [[79, 79], [72, 72]], w: 5 }, { p: [[50, 91], [50, 81]], w: 5 }, { p: [[21, 79], [28, 72]], w: 5 }, { p: [[9, 50], [19, 50]], w: 5 }, { p: [[21, 21], [28, 28]], w: 5 }] },
+    sunrise:  { s: [{ p: [[10, 74], [90, 74]], w: 6 }, { p: [[27, 70], [32, 50], [50, 40], [68, 50], [73, 70]], w: 9 }, { p: [[50, 18], [50, 28]], w: 5 }, { p: [[26, 30], [33, 38]], w: 5 }, { p: [[74, 30], [67, 38]], w: 5 }] },
+    mountain: { s: [{ p: [[10, 82], [36, 34], [50, 56], [66, 24], [90, 82]], w: 8 }] },
+    lotus:    { s: [{ p: [[50, 32], [58, 46], [50, 64], [42, 46], [50, 34]], w: 6 }, { p: [[24, 60], [34, 42], [47, 58]], w: 6 }, { p: [[76, 60], [66, 42], [53, 58]], w: 6 }, { p: [[26, 68], [50, 78], [74, 68]], w: 7 }] },
+    bond:     { s: [{ p: ringPts(39, 50, 16, 0.6), w: 7 }, { p: ringPts(61, 50, 16, 3.7), w: 7 }] },
+    hammer:   { s: [{ p: [[34, 84], [58, 44]], w: 6 }, { p: [[44, 26], [72, 46]], w: 13 }] },
+    drop:     { s: [{ p: [[50, 16], [63, 44], [58, 68], [50, 76], [42, 68], [37, 44], [49, 18]], w: 7 }] },
+    yinyang:  { s: [{ p: ringPts(50, 50, 27, -1.4), w: 7 }, { p: [[50, 25], [37, 38], [62, 60], [50, 73]], w: 5 }], d: [[50, 37, 4], [50, 62, 4]] },
+    fog:      { s: [{ p: [[22, 36], [42, 31], [62, 40], [80, 35]], w: 6 }, { p: [[16, 52], [40, 47], [64, 56], [86, 51]], w: 6 }, { p: [[24, 68], [44, 63], [64, 71], [78, 67]], w: 6 }] },
+    weight:   { s: [{ p: [[24, 50], [76, 50]], w: 5 }, { p: [[29, 33], [29, 67]], w: 11 }, { p: [[71, 33], [71, 67]], w: 11 }] },
+    pin:      { s: [{ p: ringPts(50, 40, 16, -1.2), w: 7 }, { p: [[50, 58], [50, 85]], w: 7 }] },
+    target:   { s: [{ p: ringPts(50, 50, 27, -0.9), w: 8 }], d: [[50, 50, 9]] },
+    wave:     { s: [{ p: [[12, 74], [24, 52], [44, 40], [64, 44], [72, 58], [62, 66], [52, 60], [56, 50]], w: 8 }], d: [[80, 68, 3], [86, 60, 2.5]] },
+    wall:     { s: [{ p: [[24, 38], [76, 38]], w: 7 }, { p: [[16, 54], [68, 54]], w: 7 }, { p: [[32, 70], [84, 70]], w: 7 }] },
+    lightning:{ s: [{ p: [[58, 12], [40, 46], [56, 46], [38, 86]], w: 7 }] },
+    snake:    { s: [{ p: [[22, 80], [42, 68], [28, 52], [52, 38], [70, 28]], w: 6 }], d: [[74, 24, 4.5]] },
+    bone:     { s: [{ p: [[50, 30], [50, 70]], w: 7 }], d: [[43, 25, 5], [57, 25, 5], [43, 75, 5], [57, 75, 5]] },
+    game:     { s: [{ p: ringPts(50, 50, 26, -1.2), w: 7 }, { p: [[36, 28], [52, 50], [36, 72]], w: 4 }] },
+    chart:    { s: [{ p: [[26, 22], [26, 78]], w: 5 }, { p: [[26, 78], [82, 78]], w: 5 }, { p: [[34, 66], [48, 50], [60, 58], [76, 32]], w: 6 }] },
+    crescent: { s: [{ p: [[64, 18], [38, 28], [27, 52], [38, 76], [64, 82]], w: 13 }] },
+    star:     { s: [{ p: [[50, 16], [50, 84]], w: 6, taper: 'both' }, { p: [[16, 50], [84, 50]], w: 6, taper: 'both' }] },
+    check:    { s: [{ p: [[26, 52], [44, 70], [76, 28]], w: 9 }] },
+    warning:  { s: [{ p: [[50, 20], [82, 76], [18, 76], [47, 23]], w: 7 }], d: [[50, 58, 5]] },
+    magnify:  { s: [{ p: ringPts(44, 42, 18, -1.2), w: 7 }, { p: [[58, 56], [80, 80]], w: 8 }] },
+    sword:    { s: [{ p: [[26, 78], [64, 28]], w: 8 }, { p: [[40, 46], [58, 62]], w: 5 }] },
+    rose:     { s: [{ p: [[50, 44], [58, 50], [52, 58], [44, 52], [48, 44]], w: 5 }, { p: [[36, 40], [50, 32], [64, 42]], w: 5 }, { p: [[50, 60], [46, 84]], w: 5 }] },
+    flame:    { s: [{ p: [[46, 84], [36, 58], [48, 38], [44, 18]], w: 9 }, { p: [[58, 82], [66, 60], [56, 44]], w: 6 }] },
+    leaf:     { s: [{ p: [[50, 20], [65, 42], [58, 66], [50, 72], [42, 66], [35, 42], [49, 22]], w: 6 }, { p: [[50, 72], [52, 88]], w: 4 }] },
+    sprout:   { s: [{ p: [[50, 86], [50, 50]], w: 5 }, { p: [[50, 58], [36, 48], [28, 36]], w: 6 }, { p: [[50, 66], [64, 54], [72, 44]], w: 6 }] },
+    torii:    { s: [{ p: [[10, 28], [50, 20], [90, 28]], w: 9 }, { p: [[22, 42], [78, 42]], w: 6 }, { p: [[28, 38], [24, 86]], w: 8 }, { p: [[72, 38], [76, 86]], w: 8 }] },
+    house:    { s: [{ p: [[14, 52], [50, 18], [86, 52]], w: 8 }, { p: [[27, 54], [27, 84], [73, 84], [73, 54]], w: 6 }] },
+    road:     { s: [{ p: [[38, 92], [58, 72], [36, 52], [58, 32], [48, 10]], w: 12 }] },
+    fork:     { s: [{ p: [[50, 88], [50, 58], [34, 40], [26, 20]], w: 8 }, { p: [[50, 58], [66, 42], [74, 22]], w: 7 }] },
+    eye:      { s: [{ p: [[18, 50], [50, 33], [82, 50], [50, 66], [22, 52]], w: 6 }], d: [[50, 49, 6]] },
+    compass:  { s: [{ p: ringPts(50, 50, 26, -1.2), w: 7 }, { p: [[38, 62], [62, 38]], w: 6 }], d: [[50, 50, 3.5]] },
+    spiral:   { s: [{ p: [[52, 48], [58, 54], [50, 60], [42, 52], [48, 40], [62, 40], [68, 58], [50, 72], [30, 60], [28, 38]], w: 6 }] },
+    candle:   { s: [{ p: [[50, 44], [50, 78]], w: 9 }, { p: [[38, 80], [62, 80]], w: 5 }, { p: [[50, 22], [55, 30], [50, 38], [46, 30], [50, 24]], w: 4 }] },
+    letter:   { s: [{ p: [[18, 32], [82, 32], [82, 70], [18, 70], [18, 34]], w: 5 }, { p: [[22, 35], [50, 54], [78, 35]], w: 5 }] },
+    female:   { s: [{ p: ringPts(50, 36, 15, -1.2), w: 6 }, { p: [[50, 52], [50, 84]], w: 6 }, { p: [[38, 70], [62, 70]], w: 5 }] },
+    heart:    { s: [{ p: [[50, 76], [27, 52], [31, 33], [46, 35], [50, 44], [54, 35], [69, 33], [73, 52], [52, 74]], w: 7 }] },
+    signal:   { s: [{ p: [[36, 52], [50, 44], [64, 52]], w: 5 }, { p: [[28, 42], [50, 30], [72, 42]], w: 5 }], d: [[50, 62, 5]] },
+    coin:     { s: [{ p: ringPts(50, 50, 26, -1.0), w: 8 }, { p: [[40, 50], [60, 50]], w: 5 }] },
+    door:     { s: [{ p: [[30, 20], [70, 20], [70, 84], [30, 84], [30, 22]], w: 6 }], d: [[60, 52, 4]] },
+    diamond:  { s: [{ p: [[50, 22], [76, 50], [50, 78], [24, 50], [49, 24]], w: 6 }] },
+    triangle: { s: [{ p: [[50, 22], [80, 74], [20, 74], [48, 24]], w: 6 }] }
+  };
+  function motifSVG(name, seed, opts) {
+    var m = MOTIFS[name];
+    if (!m) return ensoSVG(seed, opts);
+    opts = opts || {};
+    var fill = opts.color || 'currentColor';
+    var body = '';
+    m.s.forEach(function (st, i) {
+      body += '<path d="' + strokePath(seed + '|' + i, st.p, st.w, st) + '" fill="' + fill + '"/>';
+    });
+    (m.d || []).forEach(function (d) {
+      body += '<circle cx="' + d[0] + '" cy="' + d[1] + '" r="' + d[2] + '" fill="' + fill + '"/>';
+    });
+    return svgWrap(body, opts);
+  }
+
+  /* emoji / glyph → motif */
+  var EMOJI_MAP = {
+    '🌅': 'sunrise', '☀': 'sun', '🌞': 'sun',
+    '🪨': 'mountain', '⛰': 'mountain', '🗻': 'mountain',
+    '🪷': 'lotus',
+    '🤝': 'bond', '🔗': 'bond',
+    '🧱': 'wall',
+    '⚒': 'hammer', '🔨': 'hammer', '🛠': 'hammer',
+    '💧': 'drop', '🌧': 'drop',
+    '☯': 'yinyang',
+    '🌫': 'fog', '🌬': 'fog', '💨': 'fog',
+    '🏋': 'weight',
+    '📍': 'pin',
+    '🎯': 'target', '◉': 'target',
+    '🌊': 'wave',
+    '⚡': 'lightning',
+    '🐍': 'snake',
+    '🦴': 'bone',
+    '🎾': 'game',
+    '📊': 'chart', '📈': 'chart',
+    '🌑': 'crescent', '🌙': 'crescent',
+    '✨': 'star', '⭐': 'star', '🌟': 'star', '✦': 'star', '✧': 'star',
+    '✅': 'check', '✔': 'check',
+    '⚠': 'warning',
+    '🔍': 'magnify', '🔎': 'magnify',
+    '⚔': 'sword', '🗡': 'sword', '🛡': 'sword', '🥋': 'sword',
+    '🌹': 'rose',
+    '🔥': 'flame',
+    '🕯': 'candle', '🪔': 'candle',
+    '🍁': 'leaf', '🍂': 'leaf',
+    '🌿': 'sprout', '🌱': 'sprout',
+    '🏛': 'torii', '⛩': 'torii',
+    '🏠': 'house', '🏡': 'house', '🚪': 'door',
+    '🧭': 'compass',
+    '🌀': 'spiral',
+    '💛': 'heart', '❤': 'heart', '💚': 'heart', '🧡': 'heart',
+    '🪞': 'eye', '👁': 'eye',
+    '✉': 'letter',
+    '♀': 'female',
+    '📡': 'signal',
+    '💰': 'coin', '🪙': 'coin',
+    '◆': 'diamond', '◈': 'diamond',
+    '△': 'triangle'
+  };
+  var EMOJI_KEYS = Object.keys(EMOJI_MAP);
+  function motifFor(emojiStr) {
+    if (!emojiStr) return null;
+    for (var i = 0; i < EMOJI_KEYS.length; i++) {
+      if (emojiStr.indexOf(EMOJI_KEYS[i]) !== -1) return EMOJI_MAP[EMOJI_KEYS[i]];
+    }
+    return null;
   }
 
   /* replace emojis (and abstract section glyphs) in rendered content with ensō marks */
@@ -150,12 +318,13 @@
   var GLYPH_SEL = '.filter-btn,.card-section-tag';
   function markWithEnso(el, re, seed) {
     if (el.dataset.enso || el.closest('.zen-overlay')) return;
-    var found = false;
+    var found = null;
     Array.prototype.slice.call(el.childNodes).forEach(function (n) {
       if (n.nodeType !== 3) return;
       re.lastIndex = 0;
-      if (re.test(n.nodeValue)) {
-        found = true;
+      var m = n.nodeValue.match(re);
+      if (m) {
+        if (!found) found = m[0];
         n.nodeValue = n.nodeValue.replace(re, '').replace(/^\s+/, '');
       }
     });
@@ -163,7 +332,7 @@
     el.dataset.enso = '1';
     var host = document.createElement('span');
     host.className = 'enso-host';
-    host.innerHTML = ensoSVG(seed);
+    host.innerHTML = motifSVG(motifFor(found), seed);
     // emoji-only marker next to a colored label: borrow its accent
     if (!el.textContent.trim() && el.nextElementSibling && el.nextElementSibling.style && el.nextElementSibling.style.color) {
       host.style.color = el.nextElementSibling.style.color;
@@ -191,9 +360,18 @@
     };
   }
 
-  /* faint watermark ensō behind a page */
-  function pageEnsoHTML(seed) {
-    return '<div class="page-enso">' + ensoSVG(seed, { w: 8, color: '#C4A265', style: 'width:100%;height:100%' }) + '</div>';
+  /* faint topical watermark behind each page */
+  var PAGE_MOTIFS = {
+    'page-today': 'sun', 'page-concepts': null /* ensō */, 'page-map': 'mountain',
+    'page-forge': 'flame', 'page-edge': 'wave', 'page-dramas': 'fog',
+    'page-arch': 'torii', 'page-mirror': 'eye', 'page-crisis': 'warning',
+    'page-trees': 'fork', 'page-eft': 'target', 'page-guide': 'road',
+    'page-meditations': 'lotus', 'page-ledger': 'chart'
+  };
+  function pageEnsoHTML(pageId) {
+    return '<div class="page-enso">' +
+      motifSVG(PAGE_MOTIFS[pageId], pageId, { w: 8, color: '#C4A265', style: 'width:100%;height:100%' }) +
+      '</div>';
   }
   function addPageEnsos() {
     document.querySelectorAll('.page').forEach(function (p) {
@@ -205,7 +383,7 @@
     var orn = document.querySelector('.header-ornament');
     if (orn) {
       orn.innerHTML = '<span class="line"></span>' +
-        ensoSVG('ornament', { w: 10, gap: 0.85, rot: -0.5, color: 'rgba(196,162,101,0.6)', style: 'width:24px;height:24px' }) +
+        motifSVG('torii', 'ornament', { color: 'rgba(196,162,101,0.6)', style: 'width:26px;height:26px' }) +
         '<span class="line"></span>';
     }
   }
@@ -380,7 +558,7 @@
 
     function showIntro() {
       Z.zOrb.classList.add('tapmode');
-      Z.zPhrase.innerHTML = ensoSVG('seq-' + seq.title, { w: 10, color: 'var(--zen-c1,#C4A265)', style: 'width:.8em;height:.8em;vertical-align:-.08em' }) + '&nbsp; ' + seq.title;
+      Z.zPhrase.innerHTML = motifSVG(motifFor(seq.icon), 'seq-' + seq.title, { color: 'var(--zen-c1,#C4A265)', style: 'width:.85em;height:.85em;vertical-align:-.08em' }) + '&nbsp; ' + seq.title;
       Z.zSub.textContent = 'Find the feeling. Tap each point along with the pulse, speaking the phrase aloud.';
       Z.zChips.style.display = 'block';
       scaleRow(Z.zChips, 'how strong is it right now? (optional)', function (v) { before = v; });
@@ -675,7 +853,7 @@
     if (kind === 'med') {
       var m = MEDS[i];
       rEls.rKicker.textContent = (m.day + ' · Meditation').toUpperCase();
-      h += '<h1 class="reader-title">' + ensoSVG('med-' + m.day, { w: 10, color: '#C4A265', style: 'width:24px;height:24px;margin-right:8px;vertical-align:-2px' }) + m.title + '</h1>';
+      h += '<h1 class="reader-title">' + motifSVG(motifFor(m.icon), 'med-' + m.day, { color: '#C4A265', style: 'width:26px;height:26px;margin-right:8px;vertical-align:-3px' }) + m.title + '</h1>';
       h += '<div class="reader-text"><p>' + m.text + '</p></div>';
       if (m.practice) h += '<div class="reader-block"><div class="reader-block-label">The practice</div>' + m.practice + '</div>';
       if (m.carry) h += '<div class="reader-carry">“' + m.carry + '”</div>';
@@ -715,11 +893,11 @@
      NAV — 5 groups · hash routing
      ================================================================ */
   var GROUPS = [
-    { id: 'today', label: 'Today', enso: { w: 9, gap: 0.75, rot: -0.6, dot: 11 }, pages: ['today'] },
-    { id: 'learn', label: 'Learn', enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'arch', 'mirror', 'dramas', 'guide'] },
-    { id: 'practice', label: 'Practice', enso: { w: 13, gap: 0.45, rot: 0.9 }, pages: ['meditations', 'eft', 'forge', 'edge', 'ledger'] },
-    { id: 'mapg', label: 'Map', enso: { w: 5, gap: 2.6, rot: -2.2, dot: 5 }, pages: ['map', 'trees'] },
-    { id: 'crisisg', label: 'Crisis', enso: { w: 15, gap: 1.2, rot: -1.57 }, pages: ['crisis'] }
+    { id: 'today', label: 'Today', motif: 'sun', pages: ['today'] },
+    { id: 'learn', label: 'Learn', motif: null, enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'arch', 'mirror', 'dramas', 'guide'] },
+    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'eft', 'forge', 'edge', 'ledger'] },
+    { id: 'mapg', label: 'Map', motif: 'road', pages: ['map', 'trees'] },
+    { id: 'crisisg', label: 'Crisis', motif: 'warning', pages: ['crisis'] }
   ];
   var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
   var VALID = Object.keys(PAGE_LABELS);
@@ -736,7 +914,7 @@
     GROUPS.forEach(function (g) {
       var b = document.createElement('button');
       b.className = 'znav-item'; b.dataset.group = g.id;
-      b.innerHTML = '<span class="zi">' + ensoSVG('nav-' + g.id, g.enso) + '</span><span>' + g.label + '</span>';
+      b.innerHTML = '<span class="zi">' + (g.motif ? motifSVG(g.motif, 'nav-' + g.id) : ensoSVG('nav-' + g.id, g.enso)) + '</span><span>' + g.label + '</span>';
       b.onclick = function () { navTo(groupChoice[g.id] || g.pages[0]); };
       navEl.appendChild(b);
     });
@@ -819,7 +997,7 @@
 
       '<div class="today-sec">Today’s Meditation</div>' +
       '<div class="today-card" id="tdMed">' +
-        '<div class="tc-kicker">' + ensoSVG('med-' + m.day, { w: 10 }) + ' ' + m.day + '</div>' +
+        '<div class="tc-kicker">' + motifSVG(motifFor(m.icon), 'med-' + m.day) + ' ' + m.day + '</div>' +
         '<div class="tc-title">' + m.title + '</div>' +
         (m.carry ? '<div class="tc-sub">“' + m.carry + '”</div>' : '') +
         '<div class="today-actions"><button class="tbtn" id="tdMedRead">Read</button><button class="tbtn ghost" id="tdMedBreathe">Breathe</button></div>' +
@@ -1146,7 +1324,7 @@
     var fab = document.createElement('button');
     fab.className = 'zen-fab';
     fab.setAttribute('aria-label', 'Solar plexus meditation timer');
-    fab.innerHTML = ensoSVG('fab', { w: 12, gap: 0.8, rot: -0.9, dot: 9, color: 'rgba(26,20,10,0.78)', style: 'width:26px;height:26px' });
+    fab.innerHTML = motifSVG('sun', 'fab', { color: 'rgba(26,20,10,0.78)', style: 'width:28px;height:28px' });
     fab.onclick = openTimer;
     document.body.appendChild(fab);
   }
