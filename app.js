@@ -6,7 +6,7 @@
 
   /* ---------- preferences ---------- */
   var PK = 'soulzen-prefs';
-  var PREFS = { theme: 'dark', zoom: 1, pattern: 'solar', sound: true, haptics: true };
+  var PREFS = { theme: 'dark', zoom: 1, pattern: 'solar', sound: true, haptics: true, ambient: true };
   try { Object.assign(PREFS, JSON.parse(localStorage.getItem(PK)) || {}); } catch (e) {}
   if (localStorage.getItem('soulzen-sound') === 'off') { PREFS.sound = false; localStorage.removeItem('soulzen-sound'); }
   function savePrefs() { localStorage.setItem(PK, JSON.stringify(PREFS)); }
@@ -45,6 +45,37 @@
   }
   function chimeStart() { bell(0, 523.25, 0.12, 2.4); }
   function chimeEnd() { bell(0, 523.25, 0.12, 2.6); bell(1.3, 659.25, 0.1, 2.6); bell(2.6, 783.99, 0.08, 3.2); }
+
+  /* ---------- ambient drone (overlays) ---------- */
+  var amb = null;
+  function startAmbient() {
+    if (!PREFS.sound || !PREFS.ambient || amb) return;
+    var a = ac(); if (!a) return;
+    var t = a.currentTime;
+    var master = a.createGain(); master.gain.setValueAtTime(0.0001, t); master.gain.exponentialRampToValueAtTime(0.055, t + 3.5);
+    var filt = a.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = 420; filt.Q.value = 0.6;
+    var oscs = [];
+    [[55, 'triangle', 0.5], [82.41, 'sine', 0.28], [110, 'sine', 0.22], [110.5, 'triangle', 0.16]].forEach(function (spec) {
+      var o = a.createOscillator(); o.type = spec[1]; o.frequency.value = spec[0];
+      var g = a.createGain(); g.gain.value = spec[2];
+      o.connect(g); g.connect(filt); o.start(); oscs.push(o);
+    });
+    filt.connect(master); master.connect(a.destination);
+    var lfo = a.createOscillator(); lfo.frequency.value = 0.05;
+    var lg = a.createGain(); lg.gain.value = 140; lfo.connect(lg); lg.connect(filt.frequency); lfo.start();
+    amb = { a: a, master: master, oscs: oscs, lfo: lfo };
+  }
+  function stopAmbient() {
+    if (!amb) return; var a = amb.a, t = a.currentTime, keep = amb;
+    amb = null;
+    try {
+      keep.master.gain.cancelScheduledValues(t); keep.master.gain.setValueAtTime(keep.master.gain.value || 0.05, t);
+      keep.master.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+      keep.oscs.forEach(function (o) { try { o.stop(t + 1.8); } catch (e) {} });
+      try { keep.lfo.stop(t + 1.8); } catch (e) {}
+    } catch (e) {}
+  }
+  function syncAmbient() { if (PREFS.sound && PREFS.ambient && ov && ov.classList.contains('open')) startAmbient(); else stopAmbient(); }
   function buzz(p) { if (PREFS.haptics && navigator.vibrate) { try { navigator.vibrate(p); } catch (e) {} } }
 
   /* ---------- wake lock ---------- */
@@ -137,6 +168,27 @@
   function svgWrap(body, opts) {
     return '<svg class="enso" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"' +
       (opts && opts.style ? ' style="' + opts.style + '"' : '') + '>' + body + '</svg>';
+  }
+  /* open centerline arc for a self-drawing (stroke-dashoffset) ensō */
+  function ensoCenterPath(seed, gap, rot) {
+    var r = rng(seed), R = 38, g = gap !== undefined ? gap : 0.9, span = Math.PI * 2 - g;
+    var rt = rot !== undefined ? rot : -0.7 + r() * 0.5, ph1 = r() * 6.28, ph2 = r() * 6.28, wob = 1.4 + r() * 1.6, N = 64, pts = [];
+    for (var k = 0; k <= N; k++) {
+      var t = k / N, th = rt + t * span, rad = R + Math.sin(t * 6.28 + ph1) * wob * 0.5 + Math.sin(t * 15.7 + ph2) * 0.7;
+      pts.push((50 + Math.cos(th) * rad).toFixed(2) + ' ' + (50 + Math.sin(th) * rad).toFixed(2));
+    }
+    return 'M' + pts.join('L');
+  }
+  function drawEnsoSVG(seed, opts) {
+    opts = opts || {};
+    return '<svg class="enso draw-enso" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"' +
+      (opts.style ? ' style="' + opts.style + '"' : '') +
+      '><path pathLength="100" d="' + ensoCenterPath(seed, opts.gap, opts.rot) + '" fill="none" stroke="' + (opts.color || 'currentColor') +
+      '" stroke-width="' + (opts.w || 3) + '" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function redrawOverlayEnso() {
+    if (!ov) return; var p = ov.querySelector('.draw-enso path'); if (!p) return;
+    p.style.animation = 'none'; void p.getBoundingClientRect(); p.style.animation = '';
   }
   function ensoSVG(seed, opts) {
     opts = opts || {};
@@ -469,7 +521,7 @@
     ov.className = 'zen-overlay';
     ov.innerHTML =
       '<div class="zen-bg"><div class="zen-blob b1"></div><div class="zen-blob b2"></div><div class="zen-blob b3"></div>' +
-        '<div class="zen-enso">' + ensoSVG('overlay-enso', { w: 6.5, gap: 1.0, color: 'var(--zen-c1,#C4A265)', style: 'width:86vmin;height:86vmin' }) + '</div>' +
+        '<div class="zen-enso">' + drawEnsoSVG('overlay-enso', { w: 2.4, gap: 0.9, color: 'var(--zen-c1,#C4A265)', style: 'width:86vmin;height:86vmin' }) + '</div>' +
         '<div class="zen-grain"></div></div>' +
       '<div class="zen-top">' +
         '<button class="zen-iconbtn" id="zClose" aria-label="Close">&#10005;</button>' +
@@ -501,6 +553,7 @@
       PREFS.sound = !PREFS.sound; savePrefs();
       Z.zSound.style.opacity = PREFS.sound ? '1' : '0.35';
       if (PREFS.sound) tick();
+      syncAmbient();
     };
   }
   document.addEventListener('keydown', function (e) {
@@ -540,10 +593,12 @@
     ov.classList.add('open');
     document.body.style.overflow = 'hidden';
     lockScreen(); pushLayer('overlay');
+    redrawOverlayEnso();
+    startAmbient();
   }
   function closeOverlay(fromPop) {
     var cb = S && S.onClose;
-    stopSession(); unlockScreen();
+    stopSession(); unlockScreen(); stopAmbient();
     if (ov) ov.classList.remove('open');
     document.body.style.overflow = '';
     popLayer('overlay', fromPop);
@@ -766,7 +821,7 @@
       Z.zOrb.style.transition = 'transform ' + p[1] + 'ms cubic-bezier(.4,0,.4,1)';
       Z.zOrb.style.transform = 'scale(' + p[2] + ')';
       buzz(pi === 0 ? 30 : 15);
-      if (pi === 0) { cycle++; if (onCycle) onCycle(cycle); }
+      if (pi === 0) { cycle++; redrawOverlayEnso(); if (onCycle) onCycle(cycle); }
       after(p[1], function () { phase((pi + 1) % pattern().steps.length); });
     }
     phase(0);
@@ -1028,6 +1083,9 @@
     if (page === 'map') decorateMap();
     if (page === 'guide') decorateEntry();
     if (page === 'eft') refreshEftStats();
+    if (page === 'mirror') decorateMirror();
+    var pe = document.getElementById('page-' + page);
+    if (pe) { var s = pe.querySelector('.page-enso svg'); if (s) { s.style.animation = 'none'; void s.offsetWidth; s.style.animation = ''; } }
   }
 
   /* ================================================================
@@ -1090,6 +1148,7 @@
       '</div>';
 
     sec.entry = entryTodayHTML();
+    sec.mirror = mirrorCardHTML();
     sec.quarter = quarterCardHTML();
     sec.debt = debtBarHTML();
 
@@ -1114,9 +1173,9 @@
       : 'Your ledger is empty. One breath begins it. &rarr;';
     sec.ledger = '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
 
-    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'quarter', 'debt', 'chapter', 'practice', 'ledger']
-      : slot === 'evening' ? ['head', 'wave', 'med', 'chapter', 'entry', 'quarter', 'debt', 'practice', 'ledger']
-      : ['head', 'med', 'wave', 'entry', 'quarter', 'debt', 'chapter', 'practice', 'ledger'];
+    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'chapter', 'quarter', 'practice', 'ledger']
+      : slot === 'evening' ? ['head', 'wave', 'mirror', 'med', 'chapter', 'entry', 'quarter', 'practice', 'ledger']
+      : ['head', 'med', 'wave', 'entry', 'chapter', 'quarter', 'mirror', 'practice', 'ledger'];
     page.innerHTML = pageEnsoHTML('page-today') + order.map(function (k) { return sec[k] || ''; }).join('');
 
     function on(id, fn) { var el = page.querySelector('#' + id); if (el) el.onclick = fn; }
@@ -1133,6 +1192,12 @@
     on('tdDebt', function () { navTo('map'); });
     on('tdWaveEdit', function () { waveEditing = true; renderToday(); glassify(page); });
     on('tdEntryCta', function () { navTo('guide'); });
+    on('tdMirrorMore', function () { navTo('mirror'); });
+    var mSave = page.querySelector('#tdMirrorSave');
+    if (mSave) mSave.onclick = function () {
+      var inp = page.querySelector('#tdMirrorInput'), v = inp.value.trim(); if (!v) return;
+      journalWrite(v); mSave.textContent = 'Saved ✓'; buzz(15);
+    };
     page.querySelectorAll('[data-wave]').forEach(function (b) {
       b.onclick = function () { logWave(+b.dataset.wave, ''); waveEditing = false; renderToday(); glassify(page); buzz(20); };
     });
@@ -1253,8 +1318,17 @@
     sheet.appendChild(optRow('Theme', [{ v: 'dark', n: 'Night' }, { v: 'light', n: 'Parchment' }], PREFS.theme, function (v) { PREFS.theme = v; savePrefs(); applyTheme(); }));
     sheet.appendChild(optRow('Text size', [{ v: 0.92, n: 'S' }, { v: 1, n: 'M' }, { v: 1.08, n: 'L' }, { v: 1.18, n: 'XL' }], PREFS.zoom, function (v) { PREFS.zoom = parseFloat(v); savePrefs(); applyZoom(); }));
     sheet.appendChild(optRow('Breathing pattern', Object.keys(PATTERNS).map(function (k) { return { v: k, n: PATTERNS[k].name }; }), PREFS.pattern, function (v) { PREFS.pattern = v; savePrefs(); }));
-    sheet.appendChild(optRow('Sound', [{ v: 'on', n: 'On' }, { v: 'off', n: 'Off' }], PREFS.sound ? 'on' : 'off', function (v) { PREFS.sound = v === 'on'; savePrefs(); }));
+    sheet.appendChild(optRow('Sound', [{ v: 'on', n: 'On' }, { v: 'off', n: 'Off' }], PREFS.sound ? 'on' : 'off', function (v) { PREFS.sound = v === 'on'; savePrefs(); syncAmbient(); }));
+    sheet.appendChild(optRow('Ambient drone', [{ v: 'on', n: 'On' }, { v: 'off', n: 'Off' }], PREFS.ambient ? 'on' : 'off', function (v) { PREFS.ambient = v === 'on'; savePrefs(); syncAmbient(); }));
     sheet.appendChild(optRow('Haptics', [{ v: 'on', n: 'On' }, { v: 'off', n: 'Off' }], PREFS.haptics ? 'on' : 'off', function (v) { PREFS.haptics = v === 'on'; savePrefs(); }));
+    var data = document.createElement('div');
+    data.innerHTML = '<div class="zset-label">Your data</div><div class="zset-row"><button id="zExport">Export backup</button><button id="zImport">Import</button></div><div class="zset-hint">A private JSON backup of your wave, ledger, map, journal and settings — kept only on this device unless you export it.</div>';
+    data.querySelector('#zExport').onclick = exportData;
+    var fin = document.createElement('input'); fin.type = 'file'; fin.accept = 'application/json,.json'; fin.style.display = 'none';
+    fin.onchange = function () { if (fin.files && fin.files[0]) importData(fin.files[0]); };
+    data.appendChild(fin);
+    data.querySelector('#zImport').onclick = function () { fin.click(); };
+    sheet.appendChild(data);
     sheetWrap.classList.add('open');
   }
   function closeSheet() { sheetWrap.classList.remove('open'); }
@@ -1379,7 +1453,7 @@
   function wrapOpenD() {
     if (typeof window.openD !== 'function') return;
     var orig = window.openD;
-    window.openD = function (id) { orig(id); decorateDetail(id); themeDetailPanel(); glassify(document.getElementById('detailPanel')); };
+    window.openD = function (id) { orig(id); decorateDetail(id); themeDetailPanel(); glassify(document.getElementById('detailPanel')); tintCards(document.getElementById('detailPanel')); };
   }
 
   /* ================================================================
@@ -1825,7 +1899,7 @@
     var m = s.match(/border-(?:left|top|right|bottom|color)\s*:[^;]*?(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/);
     return m ? m[1] : null;
   }
-  var TINT_SEL = '.map-hz, .map-q, .map-thread, .proto-block, .entry-week, .map-cadence-row, #tdEntry';
+  var TINT_SEL = '.map-hz, .map-q, .map-thread, .proto-block, .entry-week, .map-cadence-row, #tdEntry, .forge-card, .masc-card, .orisha-card, .orisha-teaching, .mirror-quote, .crisis-card, .excerpt-block, .eft-seq-card, .forge-protocol, .dtree-card, .drama-card';
   function tintCards(root) {
     (root || document).querySelectorAll(TINT_SEL).forEach(function (el) {
       if (el.dataset.tinted) return;
@@ -1848,6 +1922,89 @@
       el.style.setProperty('--tint-bg2', rgba(rgb, light ? 0.06 : 0.04));
       el.style.setProperty('--tint-bd', rgba(rgb, light ? 0.34 : 0.3));
     });
+  }
+
+  /* ================================================================
+     LIFE LAYER 3 — Mirror journal · export/backup  (Pair 3)
+     ================================================================ */
+  var JOURNAL_PROMPTS = [
+    'Where did you choose presence over performance today?',
+    'What did you meet today that asked you to become someone new?',
+    'What are you gripping that is already leaving?',
+    'Where did the fear of not being enough steer you — and what would love have done instead?',
+    'What did you give today, and did it come from fullness or from depletion?',
+    'What truth did you not say out loud today?',
+    'Where did you move first, as the one who initiates, instead of waiting?',
+    'What went well today that you would normally overlook?',
+    'What did today teach you about the man you are becoming?',
+    'Where did you touch your center — and where did you lose it?',
+    'What are you grateful for, in this exact configuration of your life?',
+    'What small thing, handled today, kept a larger thing from growing?'
+  ];
+  function journalPromptIdx() { var n = new Date(); return Math.floor((n - new Date(n.getFullYear(), 0, 0)) / 864e5) % JOURNAL_PROMPTS.length; }
+  var JK = 'soulzen-journal';
+  function journalAll() { try { return JSON.parse(localStorage.getItem(JK)) || []; } catch (e) { return []; } }
+  function journalSave(a) { saveStore(JK, a.slice(-500)); }
+  function journalToday() { var day = todayISO(), a = journalAll(); for (var i = a.length - 1; i >= 0; i--) if (isoDay(a[i].t) === day) return a[i]; return null; }
+  function journalWrite(text) {
+    var a = journalAll(), day = todayISO(), q = JOURNAL_PROMPTS[journalPromptIdx()];
+    for (var i = a.length - 1; i >= 0; i--) { if (isoDay(a[i].t) === day) { a[i].a = text; a[i].q = q; a[i].t = Date.now(); journalSave(a); return; } }
+    a.push({ t: Date.now(), q: q, a: text }); journalSave(a);
+  }
+  function mirrorCardHTML() {
+    var q = JOURNAL_PROMPTS[journalPromptIdx()], j = journalToday();
+    return '<div class="today-sec">Evening Mirror</div>' +
+      '<div class="today-card glass mirror-card" id="tdMirror">' +
+        '<div class="mirror-q">' + q + '</div>' +
+        '<textarea class="mirror-input" id="tdMirrorInput" rows="2" placeholder="One honest line…">' + (j ? esc(j.a) : '') + '</textarea>' +
+        '<div class="today-actions"><button class="tbtn" id="tdMirrorSave">' + (j ? 'Saved ✓' : 'Save') + '</button>' +
+          '<button class="tbtn ghost" id="tdMirrorMore">Past reflections →</button></div>' +
+      '</div>';
+  }
+  function decorateMirror() {
+    var mc = document.getElementById('mirrorContent'); if (!mc) return;
+    var panel = document.getElementById('mirrorJournal');
+    if (!panel) { panel = document.createElement('div'); panel.id = 'mirrorJournal'; mc.insertBefore(panel, mc.firstChild); }
+    renderMirrorJournal();
+  }
+  function renderMirrorJournal() {
+    var panel = document.getElementById('mirrorJournal'); if (!panel) return;
+    var q = JOURNAL_PROMPTS[journalPromptIdx()], j = journalToday(), all = journalAll().slice().reverse();
+    var past = all.filter(function (e) { return e.a; }).map(function (e) {
+      return '<div class="mj-entry glass"><div class="mj-date">' + dayLabel(e.t) + '</div><div class="mj-q">' + esc(e.q || '') + '</div><div class="mj-a">' + esc(e.a) + '</div></div>';
+    }).join('');
+    panel.innerHTML = '<div class="mj-head"><h3 class="mj-title">The Mirror Journal</h3><p class="mj-sub">One honest line a day. Private to this device.</p></div>' +
+      '<div class="mj-today glass"><div class="mirror-q">' + q + '</div><textarea class="mirror-input" id="mjInput" rows="2" placeholder="One honest line…">' + (j ? esc(j.a) : '') + '</textarea><button class="tbtn" id="mjSave">' + (j ? 'Saved ✓' : 'Save') + '</button></div>' +
+      (past ? '<div class="mj-list">' + past + '</div>' : '<div class="mj-empty">No reflections yet. Tonight can be the first.</div>');
+    var save = panel.querySelector('#mjSave'), inp = panel.querySelector('#mjInput');
+    save.onclick = function () { var v = inp.value.trim(); if (!v) return; journalWrite(v); renderMirrorJournal(); buzz(15); if (document.getElementById('page-today').classList.contains('active')) renderToday(); };
+    glassify(panel);
+  }
+
+  /* ---- export / import backup ---- */
+  function exportData() {
+    var out = {};
+    for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('soulzen') === 0) out[k] = localStorage.getItem(k); }
+    var payload = { app: 'soul-manual', version: 1, exported: new Date().toISOString(), data: out };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = 'soul-manual-backup-' + todayISO() + '.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
+  }
+  function importData(file) {
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var obj = JSON.parse(rd.result), data = obj && obj.data ? obj.data : obj;
+        if (!data || typeof data !== 'object') throw 0;
+        var keys = Object.keys(data).filter(function (k) { return k.indexOf('soulzen') === 0; });
+        if (!keys.length) throw 0;
+        keys.forEach(function (k) { localStorage.setItem(k, data[k]); });
+        alert('Backup restored — ' + keys.length + ' items. Reloading.'); location.reload();
+      } catch (e) { alert('That file could not be read as a Soul Manual backup.'); }
+    };
+    rd.readAsText(file);
   }
 
   /* ================================================================
