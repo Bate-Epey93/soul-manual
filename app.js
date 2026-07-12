@@ -6,7 +6,7 @@
 
   /* ---------- preferences ---------- */
   var PK = 'soulzen-prefs';
-  var PREFS = { theme: 'dark', zoom: 1, pattern: 'solar', sound: true, haptics: true, ambient: true };
+  var PREFS = { theme: 'dark', zoom: 1, pattern: 'solar', sound: true, haptics: true, ambient: true, reminders: { on: false, morning: '08:00', evening: '20:00' }, lastNudge: '' };
   try { Object.assign(PREFS, JSON.parse(localStorage.getItem(PK)) || {}); } catch (e) {}
   if (localStorage.getItem('soulzen-sound') === 'off') { PREFS.sound = false; localStorage.removeItem('soulzen-sound'); }
   function savePrefs() { localStorage.setItem(PK, JSON.stringify(PREFS)); }
@@ -1321,6 +1321,28 @@
     sheet.appendChild(optRow('Sound', [{ v: 'on', n: 'On' }, { v: 'off', n: 'Off' }], PREFS.sound ? 'on' : 'off', function (v) { PREFS.sound = v === 'on'; savePrefs(); syncAmbient(); }));
     sheet.appendChild(optRow('Ambient drone', [{ v: 'on', n: 'On' }, { v: 'off', n: 'Off' }], PREFS.ambient ? 'on' : 'off', function (v) { PREFS.ambient = v === 'on'; savePrefs(); syncAmbient(); }));
     sheet.appendChild(optRow('Haptics', [{ v: 'on', n: 'On' }, { v: 'off', n: 'Off' }], PREFS.haptics ? 'on' : 'off', function (v) { PREFS.haptics = v === 'on'; savePrefs(); }));
+
+    var rp = reminderPrefs();
+    sheet.appendChild(optRow('Daily reminders', [{ v: 'on', n: 'On' }, { v: 'off', n: 'Off' }], rp.on ? 'on' : 'off', function (v) {
+      if (v === 'on') enableReminders().then(openSheet);
+      else disableReminders().then(openSheet);
+    }));
+    if (rp.on) {
+      var rt = document.createElement('div');
+      rt.className = 'zset-times';
+      rt.innerHTML = '<label>Morning<input type="time" id="remM" value="' + rp.morning + '"></label>' +
+        '<label>Evening<input type="time" id="remE" value="' + rp.evening + '"></label>';
+      rt.querySelector('#remM').onchange = function (e) { PREFS.reminders.morning = e.target.value || '08:00'; savePrefs(); scheduleReminders(); };
+      rt.querySelector('#remE').onchange = function (e) { PREFS.reminders.evening = e.target.value || '20:00'; savePrefs(); scheduleReminders(); };
+      sheet.appendChild(rt);
+    }
+    var rHint = document.createElement('div');
+    rHint.className = 'zset-hint';
+    rHint.textContent = triggerSupported()
+      ? 'A gentle nudge each morning and evening, even when the app is closed.'
+      : 'A gentle morning and evening nudge. On iPhone these arrive best while the app has been opened that day; a nudge also greets you inside the app.';
+    sheet.appendChild(rHint);
+
     var data = document.createElement('div');
     data.innerHTML = '<div class="zset-label">Your data</div><div class="zset-row"><button id="zExport">Export backup</button><button id="zImport">Import</button></div><div class="zset-hint">A private JSON backup of your wave, ledger, map, journal and settings — kept only on this device unless you export it.</div>';
     data.querySelector('#zExport').onclick = exportData;
@@ -1471,6 +1493,86 @@
     requestAnimationFrame(function () { toastEl.classList.add('show'); });
     if (!btnLabel) setTimeout(function () { toastEl.classList.remove('show'); }, 5000);
   }
+  /* ================================================================
+     REMINDERS — gentle daily nudges (best-effort local notifications)
+     ================================================================ */
+  function reminderPrefs() {
+    var r = PREFS.reminders || {};
+    return { on: !!r.on, morning: r.morning || '08:00', evening: r.evening || '20:00' };
+  }
+  function notifSupported() { return 'Notification' in window && 'serviceWorker' in navigator; }
+  function triggerSupported() { return notifSupported() && 'showTrigger' in Notification.prototype && typeof window.TimestampTrigger !== 'undefined'; }
+  var REMINDER_MSGS = {
+    morning: { title: 'A minute before the phone', body: 'Check your wave and choose the first move.' },
+    evening: { title: 'How did the day land?', body: 'A breath, and the evening Mirror.' }
+  };
+  function parseHM(hhmm) { var p = String(hhmm).split(':'); return { h: +p[0] || 0, m: +p[1] || 0 }; }
+  function nextOccur(hhmm, dayOffset) { var t = parseHM(hhmm), d = new Date(); d.setDate(d.getDate() + dayOffset); d.setHours(t.h, t.m, 0, 0); return d; }
+  var fgTimers = [];
+  function clearFgTimers() { fgTimers.forEach(clearTimeout); fgTimers = []; }
+  function scheduleReminders() {
+    if (!notifSupported() || Notification.permission !== 'granted') return Promise.resolve();
+    clearFgTimers();
+    return navigator.serviceWorker.ready.then(function (reg) {
+      // clear our previously scheduled/shown notifications
+      return reg.getNotifications({ includeTriggered: true }).catch(function () { return []; }).then(function (pending) {
+        pending.forEach(function (n) { if (n.tag && n.tag.indexOf('soul-rem') === 0) n.close(); });
+        var r = reminderPrefs();
+        if (!r.on) return;
+        var now = Date.now();
+        [['morning', r.morning], ['evening', r.evening]].forEach(function (s) {
+          var kind = s[0], hhmm = s[1], msg = REMINDER_MSGS[kind];
+          if (triggerSupported()) {
+            for (var day = 0; day < 7; day++) {
+              var when = nextOccur(hhmm, day).getTime();
+              if (when <= now + 30000) continue;
+              try {
+                reg.showNotification(msg.title, {
+                  tag: 'soul-rem-' + kind + '-' + nextOccur(hhmm, day).toDateString(),
+                  body: msg.body, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', silent: false,
+                  showTrigger: new window.TimestampTrigger(when), data: { url: './#/today' }
+                });
+              } catch (e) {}
+            }
+          } else {
+            var delay = nextOccur(hhmm, 0).getTime() - now;
+            if (delay > 3000 && delay < 20 * 3600 * 1000) {
+              fgTimers.push(setTimeout(function () {
+                if (Notification.permission === 'granted') navigator.serviceWorker.ready.then(function (rg) {
+                  rg.showNotification(msg.title, { body: msg.body, icon: 'icons/icon-192.png', data: { url: './#/today' }, tag: 'soul-rem-fg-' + kind });
+                });
+              }, delay));
+            }
+          }
+        });
+      });
+    }).catch(function () {});
+  }
+  function enableReminders() {
+    if (!notifSupported()) { showToast('Notifications aren’t supported here', null); return Promise.resolve(false); }
+    var p = Notification.permission === 'default' ? Notification.requestPermission() : Promise.resolve(Notification.permission);
+    return Promise.resolve(p).then(function (perm) {
+      if (perm !== 'granted') { showToast('Notifications are blocked — allow them in your browser settings', null); return false; }
+      PREFS.reminders = reminderPrefs(); PREFS.reminders.on = true; savePrefs();
+      return scheduleReminders().then(function () { return true; });
+    });
+  }
+  function disableReminders() {
+    PREFS.reminders = reminderPrefs(); PREFS.reminders.on = false; savePrefs();
+    clearFgTimers(); return scheduleReminders();
+  }
+  function maybeInAppNudge() {
+    if (!reminderPrefs().on) return;
+    var today = todayISO();
+    if (PREFS.lastNudge === today) return;
+    if (waveToday() || journalToday()) return;
+    if (ledgerAll().some(function (e) { return isoDay(e.t) === today; })) return;
+    PREFS.lastNudge = today; savePrefs();
+    var hr = new Date().getHours();
+    var msg = hr < 12 ? 'Good morning — a minute before the day?' : hr < 18 ? 'A pause in the afternoon?' : 'How did the day land? A breath, and the Mirror.';
+    setTimeout(function () { showToast(msg, 'Open', function () { navTo('today'); }); }, 1600);
+  }
+
   function registerSW() {
     if (!('serviceWorker' in navigator)) return;
     if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
@@ -2028,6 +2130,11 @@
       window.addEventListener('hashchange', route);
       if (!location.hash) history.replaceState(null, '', '#/today');
       route();
+      if (reminderPrefs().on) scheduleReminders();
+      maybeInAppNudge();
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible' && reminderPrefs().on) scheduleReminders();
+      });
     } catch (e) { console.error('zen layer:', e); }
     registerSW();
   }

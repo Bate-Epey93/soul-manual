@@ -1,4 +1,4 @@
-const VERSION = 'soul-manual-v10';
+const VERSION = 'soul-manual-v11';
 const PRECACHE = [
   './',
   './index.html',
@@ -39,6 +39,20 @@ self.addEventListener('fetch', (e) => {
         }
         return res;
       });
+    })
+  );
+});
+
+// Reminder notifications: focus an existing window or open the app.
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || './';
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if ('focus' in c) { if ('navigate' in c) { try { c.navigate(url); } catch (x) {} } return c.focus(); }
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(url);
     })
   );
 });
