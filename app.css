@@ -435,3 +435,80 @@ body.light .mapdebt-form input{background:rgba(90,70,40,.05);border-color:rgba(9
 .mcheck{position:absolute;left:0;top:2px;width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(196,162,101,.4);background:rgba(0,0,0,.2);color:#0A0908;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .3s,border-color .3s;-webkit-tap-highlight-color:transparent;z-index:2}
 .map-ms.checked .mcheck,.map-act.checked .mcheck{background:#C4A265;border-color:#C4A265}
 .map-ms.checked .map-ms-text,.map-act.checked .map-act-text{opacity:.5;text-decoration:line-through;text-decoration-color:rgba(196,162,101,.4)}
+
+/* ---------------------------------------------------------------- */
+/* PAIR 2 — 30-day entry · EFT charts · adaptive · heatmap          */
+/* ---------------------------------------------------------------- */
+.tc-nudge{font-size:12.5px;line-height:1.6;color:var(--wave-tint,#C4A265);margin-top:8px;font-style:italic;opacity:.85}
+.today-entry-cta{display:block;width:100%;text-align:left;background:rgba(196,162,101,.08);border:1px dashed rgba(196,162,101,.3);color:#E8DCC8;font-family:'Cormorant Garamond',serif;font-size:16px;padding:15px 18px;border-radius:14px;cursor:pointer;margin-bottom:8px;transition:background .3s;-webkit-tap-highlight-color:transparent}
+.today-entry-cta:hover{background:rgba(196,162,101,.14)}
+#tdEntry .q-act{cursor:pointer}
+
+/* entry tracker (Paths page) */
+.entry-tracker{padding:18px 20px;border-radius:16px;margin:14px 0 20px}
+.et-title{font-family:'Cormorant Garamond',serif;font-size:18px;color:#E8DCC8;display:block;margin-bottom:6px}
+.et-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.et-day{font-family:'Cormorant Garamond',serif;font-size:22px;color:#E8DCC8}
+.et-streak{font-family:monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--wave-tint,#C4A265)}
+.et-bar{height:6px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:12px}
+.et-bar span{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#D4A038,#D4AF37);transition:width .6s ease}
+.et-sub{font-size:12.5px;line-height:1.65;color:rgba(255,255,255,.5);margin-bottom:14px}
+.entry-tracker .tbtn{width:100%;justify-content:center}
+body.light .et-sub{color:rgba(60,45,25,.62)}
+body.light .et-title,body.light .et-day{color:#3a2c18}
+
+/* EFT per-sequence stat + ledger progress */
+.eft-stat{font-family:monospace;font-size:9.5px;letter-spacing:.1em;color:var(--wave-tint,#C4A265);margin-top:8px;opacity:.85}
+.eft-prog{display:flex;flex-direction:column;gap:10px}
+.ep-row{padding:14px 16px;border-radius:14px}
+.ep-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:#E8DCC8;margin-bottom:2px}
+.ep-meta{font-family:monospace;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.4);margin-bottom:10px}
+.ep-nums{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.ep-before{font-family:'Cormorant Garamond',serif;font-size:22px;color:rgba(184,92,56,.9)}
+.ep-arrow{color:rgba(255,255,255,.3)}
+.ep-after{font-family:'Cormorant Garamond',serif;font-size:22px;color:rgba(123,160,91,.95)}
+.ep-none{font-size:11px;color:rgba(255,255,255,.35)}
+.ep-bars{display:flex;flex-direction:column;gap:5px}
+.ep-track{height:6px;border-radius:4px;background:rgba(255,255,255,.05);overflow:hidden}
+.ep-fill{display:block;height:100%;border-radius:4px}
+.ep-fill.b{background:rgba(184,92,56,.7)}
+.ep-fill.a{background:rgba(123,160,91,.85)}
+body.light .ep-title{color:#3a2c18}
+
+/* practice heatmap */
+.heatmap{padding:16px;border-radius:16px}
+.heat{display:flex;gap:4px;justify-content:space-between}
+.heat-col{display:flex;flex-direction:column;gap:4px;flex:1}
+.heat-cell{width:100%;aspect-ratio:1;border-radius:3px;background:rgba(255,255,255,.04)}
+.heat-cell.future{background:transparent}
+.heat-cell.l1{background:rgba(196,162,101,.3)}
+.heat-cell.l2{background:rgba(196,162,101,.5)}
+.heat-cell.l3{background:rgba(196,162,101,.72)}
+.heat-cell.l4{background:rgba(224,184,76,.95)}
+.heat-legend{display:flex;align-items:center;gap:5px;justify-content:flex-end;margin-top:10px;font-family:monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.heat-legend i{width:11px;height:11px;border-radius:3px;display:inline-block;background:rgba(255,255,255,.04)}
+.heat-legend i.l1{background:rgba(196,162,101,.3)}
+.heat-legend i.l2{background:rgba(196,162,101,.5)}
+.heat-legend i.l3{background:rgba(196,162,101,.72)}
+.heat-legend i.l4{background:rgba(224,184,76,.95)}
+body.light .heat-cell{background:rgba(90,70,40,.08)}
+body.light .heat-legend{color:rgba(60,45,25,.45)}
+
+/* ---------------------------------------------------------------- */
+/* TINTED CARDS — whole-card wash for one-sided-border cards        */
+/* ---------------------------------------------------------------- */
+.tinted-card{
+  background:
+    linear-gradient(158deg, var(--tint-bg), var(--tint-bg2) 58%, transparent 100%),
+    rgba(255,255,255,.014) !important;
+  border:1px solid var(--tint-bd) !important;
+  border-radius:16px !important;
+}
+.tinted-card:hover{border-color:var(--tint-bd)!important}
+.tinted-card .map-hz-year,.tinted-card .map-q-theme,.tinted-card .entry-week-title,.tinted-card .proto-block-key{color:#EDE4D3}
+body.light .tinted-card{
+  background:
+    linear-gradient(158deg, var(--tint-bg), var(--tint-bg2) 58%, transparent 100%),
+    rgba(255,255,255,.5) !important;
+}
+body.light .tinted-card .map-hz-year,body.light .tinted-card .map-q-theme,body.light .tinted-card .entry-week-title,body.light .tinted-card .proto-block-key{color:#3a2c18}

@@ -1005,7 +1005,7 @@
   function route() {
     var h = location.hash.replace(/^#\/?/, '');
     activate(VALID.indexOf(h) !== -1 ? h : 'today');
-    decorateConceptCards(); glassify();
+    decorateConceptCards(); glassify(); tintCards();
   }
   function activate(page) {
     var g = groupOf(page);
@@ -1026,6 +1026,8 @@
     if (page === 'today') renderToday();
     if (page === 'ledger') renderLedger();
     if (page === 'map') decorateMap();
+    if (page === 'guide') decorateEntry();
+    if (page === 'eft') refreshEftStats();
   }
 
   /* ================================================================
@@ -1058,7 +1060,8 @@
     var page = document.getElementById('page-today');
     var now = new Date();
     var mi = todayMedIndex(), m = MEDS[mi];
-    var ci = suggestedChapterIndex(), c = DATA[ci];
+    var adapt = adaptiveChapter(), ci = adapt.ci, c = DATA[ci];
+    var wnow = waveToday(), lowDay = wnow && wnow.v <= 2;
     var hr = now.getHours();
     var slot = hr < 12 ? 'morning' : hr < 18 ? 'day' : 'evening';
     var greet = slot === 'morning' ? 'Good morning, Beet.' : slot === 'day' ? 'Good afternoon, Beet.' : 'Good evening, Beet.';
@@ -1079,18 +1082,23 @@
         '<div class="tc-kicker">' + motifSVG(motifFor(m.icon), 'med-' + m.day) + ' ' + m.day + '</div>' +
         '<div class="tc-title">' + m.title + '</div>' +
         (m.carry ? '<div class="tc-sub">“' + m.carry + '”</div>' : '') +
-        '<div class="today-actions"><button class="tbtn" id="tdMedRead">Read</button><button class="tbtn ghost" id="tdMedBreathe">Breathe</button></div>' +
+        (lowDay ? '<div class="tc-nudge">A low day — the breath may serve you more than the page.</div>' : '') +
+        '<div class="today-actions">' + (lowDay
+          ? '<button class="tbtn" id="tdMedBreathe">Breathe</button><button class="tbtn ghost" id="tdMedRead">Read</button>'
+          : '<button class="tbtn" id="tdMedRead">Read</button><button class="tbtn ghost" id="tdMedBreathe">Breathe</button>') +
+        '</div>' +
       '</div>';
 
+    sec.entry = entryTodayHTML();
     sec.quarter = quarterCardHTML();
     sec.debt = debtBarHTML();
 
     sec.chapter =
-      '<div class="today-sec">Suggested Chapter</div>' +
+      '<div class="today-sec">' + (adapt.reason ? 'For You, Today' : 'Suggested Chapter') + '</div>' +
       '<div class="today-card" id="tdCh">' +
         '<div class="tc-kicker" style="color:' + c.color + '">' + motifSVG(CONCEPT_MOTIFS[c.id], 'ch-' + c.id) + ' Chapter ' + c.number + ' · ' + c.section + '</div>' +
         '<div class="tc-title">' + c.title + '</div>' +
-        '<div class="tc-sub">' + c.subtitle + '</div>' +
+        '<div class="tc-sub">' + (adapt.reason || c.subtitle) + '</div>' +
         '<div class="today-actions"><button class="tbtn" id="tdChRead">Read</button></div>' +
       '</div>';
 
@@ -1106,9 +1114,9 @@
       : 'Your ledger is empty. One breath begins it. &rarr;';
     sec.ledger = '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
 
-    var order = slot === 'morning' ? ['head', 'wave', 'med', 'quarter', 'debt', 'chapter', 'practice', 'ledger']
-      : slot === 'evening' ? ['head', 'wave', 'med', 'chapter', 'quarter', 'debt', 'practice', 'ledger']
-      : ['head', 'med', 'wave', 'quarter', 'debt', 'chapter', 'practice', 'ledger'];
+    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'quarter', 'debt', 'chapter', 'practice', 'ledger']
+      : slot === 'evening' ? ['head', 'wave', 'med', 'chapter', 'entry', 'quarter', 'debt', 'practice', 'ledger']
+      : ['head', 'med', 'wave', 'entry', 'quarter', 'debt', 'chapter', 'practice', 'ledger'];
     page.innerHTML = pageEnsoHTML('page-today') + order.map(function (k) { return sec[k] || ''; }).join('');
 
     function on(id, fn) { var el = page.querySelector('#' + id); if (el) el.onclick = fn; }
@@ -1124,8 +1132,25 @@
     on('tdQ', function () { navTo('map'); });
     on('tdDebt', function () { navTo('map'); });
     on('tdWaveEdit', function () { waveEditing = true; renderToday(); glassify(page); });
+    on('tdEntryCta', function () { navTo('guide'); });
     page.querySelectorAll('[data-wave]').forEach(function (b) {
       b.onclick = function () { logWave(+b.dataset.wave, ''); waveEditing = false; renderToday(); glassify(page); buzz(20); };
+    });
+    page.querySelectorAll('[data-entry]').forEach(function (r) {
+      r.onclick = function () {
+        entryToggle(r.dataset.entry);
+        var onNow = entryChecksToday().indexOf(r.dataset.entry) !== -1;
+        r.classList.toggle('checked', onNow); var chk = r.querySelector('.q-check'); if (chk) chk.textContent = onNow ? '✓' : '';
+        var card = r.closest('#tdEntry'); if (card) {
+          var rows = card.querySelectorAll('[data-entry]'), done = 0;
+          rows.forEach(function (x) { if (x.classList.contains('checked')) done++; });
+          var bar = card.querySelector('.q-prog-bar span'), num = card.querySelector('.q-prog-num'), pct = rows.length ? Math.round(done / rows.length * 100) : 0;
+          if (bar) bar.style.width = pct + '%'; if (num) num.textContent = done + '/' + rows.length;
+          var kick = card.querySelector('.tc-kicker'); var wi = entryWeekIdx(entryDay()), w = ENTRY.weeks[wi], streak = entryStreak();
+          if (kick && w) kick.textContent = w.week + ' · ' + w.focus + (streak > 1 ? ' · ' + streak + '-day streak' : '');
+        }
+        buzz(12);
+      };
     });
     page.querySelectorAll('[data-qa]').forEach(function (r) {
       r.onclick = function (e) {
@@ -1141,6 +1166,7 @@
         buzz(12);
       };
     });
+    tintCards(page);
   }
 
   /* ================================================================
@@ -1165,7 +1191,9 @@
       '<div class="ledger-stat"><div class="ls-num">' + st.minutes + '</div><div class="ls-label">breath minutes</div></div>' +
       '<div class="ledger-stat"><div class="ls-num">' + st.total + '</div><div class="ls-label">all time</div></div>' +
       '</div>';
+    h += heatmapHTML();
     h += waveChartHTML();
+    h += eftChartHTML();
     if (!all.length) {
       h += '<div class="ledger-empty">Nothing here yet.<br>Complete a tapping session or sit with the timer,<br>and it will be remembered.</div>';
     } else {
@@ -1339,6 +1367,7 @@
     if (meta) meta.setAttribute('content', light ? '#F4ECDB' : '#0A0908');
     if (light && !lightBuilt) { buildLightCSS(); lightBuilt = true; }
     applyInlineTheme(light);
+    retintTheme();
   }
   function themeDetailPanel() {
     var dp = document.getElementById('detailPanel');
@@ -1630,6 +1659,195 @@
     var dp = document.createElement('div'); dp.id = 'mapDebt'; mc.insertBefore(dp, mc.firstChild); renderMapDebt();
     mc.querySelectorAll('.map-hz').forEach(function (hz, i) { hz.querySelectorAll('.map-ms').forEach(function (ms, j) { addCheck(ms, 'ms', 'h' + i + 'm' + j); }); });
     mc.querySelectorAll('.map-q').forEach(function (q, i) { q.querySelectorAll('.map-act').forEach(function (act, j) { addCheck(act, 'qa', 'q' + i + 'a' + j); }); });
+    tintCards(mc);
+  }
+
+  /* ================================================================
+     LIFE LAYER 2 — 30-day entry · EFT charts · adaptive · heatmap
+     ================================================================ */
+  function avg(a) { return a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : 0; }
+  function dayMidnight(t) { var d = new Date(t); return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+
+  /* ---- 30-Day Entry program ---- */
+  var EK = 'soulzen-entry';
+  function entryStore() { var s = store(EK); s.checks = s.checks || {}; return s; }
+  function entrySave(s) { saveStore(EK, s); }
+  function entryStarted() { return !!entryStore().start; }
+  function entryDay() { var s = entryStore(); if (!s.start) return 0; return Math.round((dayMidnight(Date.now()) - dayMidnight(s.start)) / 864e5) + 1; }
+  function entryWeekIdx(day) { return Math.max(0, Math.min(3, Math.floor((day - 1) / 7))); }
+  function entryStartToday() { var s = entryStore(); s.start = dayMidnight(Date.now()); entrySave(s); }
+  function entryReset() { saveStore(EK, { checks: {} }); }
+  function entryChecksToday() { return entryStore().checks[todayISO()] || []; }
+  function entryToggle(key) {
+    var s = entryStore(), day = todayISO(), arr = s.checks[day] || [], i = arr.indexOf(key);
+    if (i === -1) arr.push(key); else arr.splice(i, 1);
+    s.checks[day] = arr; entrySave(s);
+  }
+  function entryStreak() {
+    var s = entryStore(); if (!s.start) return 0; var streak = 0, d = new Date();
+    for (var back = 0; back < 90; back++) {
+      var day = new Date(d.getFullYear(), d.getMonth(), d.getDate() - back);
+      var has = (s.checks[isoDay(day.getTime())] || []).length > 0;
+      if (has) streak++; else if (back > 0) break;
+    }
+    return streak;
+  }
+  function entryTodayHTML() {
+    if (typeof ENTRY === 'undefined') return '';
+    if (!entryStarted()) return '<button class="today-entry-cta glass" id="tdEntryCta">Begin the 30-Day Entry — one small thing at a time →</button>';
+    var day = entryDay();
+    if (day > 30) return '<div class="today-sec">The 30-Day Entry</div>' +
+      '<div class="today-card glass" id="tdEntry"><div class="tc-kicker">Complete</div><div class="tc-title" style="font-size:19px">Thirty days done.</div><div class="tc-sub">The rhythm is yours now — revisit any week from Paths.</div></div>';
+    var wi = entryWeekIdx(day), w = ENTRY.weeks[wi], checks = entryChecksToday(), streak = entryStreak(), done = 0;
+    var items = w.items.map(function (it, j) {
+      var key = 'w' + wi + 'i' + j, on = checks.indexOf(key) !== -1; if (on) done++;
+      return '<div class="q-act' + (on ? ' checked' : '') + '" data-entry="' + key + '"><span class="q-check">' + (on ? '✓' : '') + '</span><div class="q-act-body"><div class="q-act-text" style="-webkit-line-clamp:3">' + it + '</div></div></div>';
+    }).join('');
+    return '<div class="today-sec">The 30-Day Entry · Day ' + day + ' of 30</div>' +
+      '<div class="today-card glass" id="tdEntry" style="border-left:3px solid ' + w.color + '">' +
+        '<div class="tc-kicker" style="color:' + w.color + '">' + w.week + ' · ' + w.focus + (streak > 1 ? ' · ' + streak + '-day streak' : '') + '</div>' +
+        '<div class="tc-title" style="font-size:19px">' + w.title + '</div>' +
+        '<div class="q-prog"><div class="q-prog-bar"><span style="width:' + (done / w.items.length * 100) + '%;background:' + w.color + '"></span></div><span class="q-prog-num">' + done + '/' + w.items.length + '</span></div>' +
+        items +
+      '</div>';
+  }
+  function decorateEntry() {
+    var host = document.getElementById('moneyEntry'); if (!host) return;
+    var sec = null; host.querySelectorAll('.proto-section').forEach(function (s) { if (s.querySelector('.entry-week')) sec = s; });
+    if (!sec) return;
+    var panel = sec.querySelector('#entryTracker');
+    if (!panel) { panel = document.createElement('div'); panel.id = 'entryTracker'; var intro = sec.querySelector('.proto-intro'); if (intro) intro.insertAdjacentElement('afterend', panel); else sec.insertBefore(panel, sec.firstChild); }
+    renderEntryTracker();
+    tintCards(host);
+  }
+  function renderEntryTracker() {
+    var panel = document.getElementById('entryTracker'); if (!panel) return;
+    if (!entryStarted()) {
+      panel.innerHTML = '<div class="entry-tracker glass"><div class="et-title">The onramp</div><div class="et-sub">Begin when you’re ready. Thirty days, one small thing at a time — today’s items will appear on your Today screen.</div><button class="tbtn" id="etStart">Begin the 30-Day Entry</button></div>';
+      panel.querySelector('#etStart').onclick = function () { entryStartToday(); renderEntryTracker(); buzz(20); };
+    } else {
+      var day = entryDay(), done = day > 30;
+      panel.innerHTML = '<div class="entry-tracker glass"><div class="et-head"><span class="et-day">' + (done ? 'Complete' : 'Day ' + day + ' of 30') + '</span><span class="et-streak">' + entryStreak() + '-day streak</span></div>' +
+        '<div class="et-bar"><span style="width:' + Math.min(100, day / 30 * 100) + '%"></span></div>' +
+        '<div class="et-sub">' + (done ? 'The thirty days are done — the weeks below stay as reference.' : 'Today’s items live on your Today screen. The four weeks below are the full protocol.') + '</div>' +
+        '<button class="tbtn ghost" id="etReset">Reset</button></div>';
+      panel.querySelector('#etReset').onclick = function () { if (confirm('Reset the 30-Day Entry? Its check history will be cleared.')) { entryReset(); renderEntryTracker(); } };
+    }
+    glassify(panel);
+  }
+
+  /* ---- adaptive suggestion ---- */
+  function chapterIdx(id) { var i = DATA.findIndex(function (c) { return c.id === id; }); return i === -1 ? suggestedChapterIndex() : i; }
+  function recentCharged() {
+    // judge only the genuine most-recent rated tap within the window
+    var cut = Date.now() - 2 * 864e5, l = ledgerAll();
+    for (var i = l.length - 1; i >= 0; i--) {
+      var e = l[i]; if (e.k !== 'tap' || e.t < cut) continue;
+      if (e.after == null) continue;
+      return e.after >= 6 ? e : null;
+    }
+    return null;
+  }
+  function adaptiveChapter() {
+    var t = waveToday(), rc = recentCharged();
+    if (rc) return { ci: chapterIdx('addiction'), reason: 'Your last tapping (“' + esc(rc.label) + '”) stayed near ' + rc.after + '. Inner Healing speaks to what stays charged.' };
+    if (t && t.v <= 2) return { ci: chapterIdx('illusion'), reason: 'You logged low today — this one reframes the trough as teacher, not verdict.' };
+    if (t && t.v >= 5) return { ci: chapterIdx('intention'), reason: 'You’re at the peak — a clear day to aim intention.' };
+    return { ci: suggestedChapterIndex(), reason: '' };
+  }
+
+  /* ---- EFT before→after aggregation ---- */
+  function eftAgg() { var l = ledgerAll(), by = {}; l.forEach(function (e) { if (e.k !== 'tap') return; var k = e.label || 'Session'; (by[k] = by[k] || []).push(e); }); return by; }
+  function eftChartHTML() {
+    var by = eftAgg(), keys = Object.keys(by); if (!keys.length) return '';
+    var h = '<div class="ledger-day" style="margin-top:24px">EFT · charge before → after</div><div class="eft-prog">';
+    keys.forEach(function (k) {
+      var arr = by[k], both = arr.filter(function (e) { return e.before != null && e.after != null; });
+      var meta = arr.length + ' session' + (arr.length > 1 ? 's' : ''), body;
+      if (both.length) {
+        var b = avg(both.map(function (e) { return e.before; })), a = avg(both.map(function (e) { return e.after; })), dd = b - a;
+        meta += Math.abs(dd) < 0.05 ? ' · no avg change' : dd > 0 ? ' · avg drop ' + dd.toFixed(1) : ' · avg rise ' + (-dd).toFixed(1);
+        body = '<div class="ep-nums"><span class="ep-before">' + b.toFixed(1) + '</span><span class="ep-arrow">→</span><span class="ep-after">' + a.toFixed(1) + '</span></div>' +
+          '<div class="ep-bars"><div class="ep-track"><span class="ep-fill b" style="width:' + (b / 10 * 100) + '%"></span></div><div class="ep-track"><span class="ep-fill a" style="width:' + (a / 10 * 100) + '%"></span></div></div>';
+      } else { body = '<div class="ep-nums"><span class="ep-none">intensity not logged</span></div>'; }
+      h += '<div class="ep-row glass"><div class="ep-title">' + esc(k) + '</div><div class="ep-meta">' + meta + '</div>' + body + '</div>';
+    });
+    return h + '</div>';
+  }
+  function refreshEftStats() {
+    if (typeof EFT === 'undefined') return; var by = eftAgg();
+    document.querySelectorAll('.eft-seq-card').forEach(function (card, i) {
+      var seq = EFT.sequences[i]; if (!seq) return; var arr = by[seq.title] || [], el = card.querySelector('.eft-stat');
+      if (!arr.length) { if (el) el.remove(); return; }
+      var both = arr.filter(function (e) { return e.before != null && e.after != null; });
+      var txt = arr.length + ' session' + (arr.length > 1 ? 's' : '');
+      if (both.length) txt = 'avg ' + avg(both.map(function (e) { return e.before; })).toFixed(1) + ' → ' + avg(both.map(function (e) { return e.after; })).toFixed(1) + ' · ' + txt;
+      if (!el) { el = document.createElement('div'); el.className = 'eft-stat'; var hint = card.querySelector('.eft-seq-hint'); if (hint) hint.insertAdjacentElement('afterend', el); else card.appendChild(el); }
+      el.textContent = txt;
+    });
+  }
+
+  /* ---- practice heatmap ---- */
+  function heatmapHTML() {
+    var l = ledgerAll(); if (!l.length) return '';
+    var byDay = {}; l.forEach(function (e) { var k = isoDay(e.t); byDay[k] = (byDay[k] || 0) + 1; });
+    var now = new Date(), end = new Date(now.getFullYear(), now.getMonth(), now.getDate()), weeks = 12;
+    var lastSun = new Date(end.getFullYear(), end.getMonth(), end.getDate() - end.getDay());
+    var firstSun = new Date(lastSun.getFullYear(), lastSun.getMonth(), lastSun.getDate() - 7 * (weeks - 1));
+    var html = '<div class="heat">';
+    for (var w = 0; w < weeks; w++) {
+      html += '<div class="heat-col">';
+      for (var dd = 0; dd < 7; dd++) {
+        var cell = new Date(firstSun.getFullYear(), firstSun.getMonth(), firstSun.getDate() + w * 7 + dd);
+        if (cell.getTime() > end.getTime()) { html += '<div class="heat-cell future"></div>'; continue; }
+        var cnt = byDay[isoDay(cell.getTime())] || 0, lvl = cnt === 0 ? 0 : cnt === 1 ? 1 : cnt === 2 ? 2 : cnt <= 4 ? 3 : 4;
+        html += '<div class="heat-cell l' + lvl + '" title="' + isoDay(cell.getTime()) + ' · ' + cnt + ' session' + (cnt === 1 ? '' : 's') + '"></div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    return '<div class="ledger-day" style="margin-top:24px">Practice · last 12 weeks</div><div class="heatmap glass">' + html +
+      '<div class="heat-legend"><span>less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><span>more</span></div></div>';
+  }
+
+  /* ---- tinted cards: whole-card wash for one-sided-border cards ---- */
+  function toRGB(c) {
+    if (!c) return null;
+    var m = c.match(/rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+    if (m) return [+m[1], +m[2], +m[3]];
+    m = c.match(/^#([0-9a-fA-F]{6})$/); if (m) { var n = parseInt(m[1], 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+    m = c.match(/^#([0-9a-fA-F]{3})$/); if (m) { return [parseInt(m[1][0] + m[1][0], 16), parseInt(m[1][1] + m[1][1], 16), parseInt(m[1][2] + m[1][2], 16)]; }
+    return null;
+  }
+  function rgba(rgb, a) { return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + a + ')'; }
+  function inlineAccent(el) {
+    var s = el.getAttribute('style') || '';
+    var m = s.match(/border-(?:left|top|right|bottom|color)\s*:[^;]*?(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/);
+    return m ? m[1] : null;
+  }
+  var TINT_SEL = '.map-hz, .map-q, .map-thread, .proto-block, .entry-week, .map-cadence-row, #tdEntry';
+  function tintCards(root) {
+    (root || document).querySelectorAll(TINT_SEL).forEach(function (el) {
+      if (el.dataset.tinted) return;
+      var rgb = toRGB(inlineAccent(el)); if (!rgb) return;
+      el.dataset.tinted = '1';
+      el.classList.add('tinted-card', 'glass');
+      var light = PREFS.theme === 'light';
+      el.style.setProperty('--tint', rgba(rgb, 1));
+      el.style.setProperty('--tint-bg', rgba(rgb, light ? 0.16 : 0.13));
+      el.style.setProperty('--tint-bg2', rgba(rgb, light ? 0.06 : 0.04));
+      el.style.setProperty('--tint-bd', rgba(rgb, light ? 0.34 : 0.3));
+      el.style.borderLeft = ''; el.style.borderTop = ''; el.style.borderRight = ''; el.style.borderBottom = ''; el.style.borderColor = '';
+    });
+  }
+  function retintTheme() {
+    var light = PREFS.theme === 'light';
+    document.querySelectorAll('.tinted-card').forEach(function (el) {
+      var rgb = toRGB(el.style.getPropertyValue('--tint')); if (!rgb) return;
+      el.style.setProperty('--tint-bg', rgba(rgb, light ? 0.16 : 0.13));
+      el.style.setProperty('--tint-bg2', rgba(rgb, light ? 0.06 : 0.04));
+      el.style.setProperty('--tint-bd', rgba(rgb, light ? 0.34 : 0.3));
+    });
   }
 
   /* ================================================================
