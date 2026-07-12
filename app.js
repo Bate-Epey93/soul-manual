@@ -117,7 +117,10 @@
 
   /* ---------- layered history (back button closes overlays) ---------- */
   var layers = [];
-  function pushLayer(name) { history.pushState({ zenLayer: name }, ''); layers.push(name); }
+  var handoff = false;
+  function pushLayer(name) { if (handoff) history.replaceState({ zenLayer: name }, ''); else history.pushState({ zenLayer: name }, ''); layers.push(name); }
+  // close the current layer and open another without a spurious history.back()/popstate
+  function layerHandoff(closeFn, openFn) { handoff = true; try { closeFn(true); openFn(); } finally { handoff = false; } }
   function popLayer(name, fromPop) {
     var i = layers.lastIndexOf(name);
     if (i !== -1) { layers.splice(i, 1); if (!fromPop) { try { history.back(); } catch (e) {} } }
@@ -838,7 +841,7 @@
     Z.zPoint.textContent = m.title;
     Z.zSub.innerHTML = m.carry ? '“' + m.carry + '”' : '';
     Z.zRead.style.display = 'flex';
-    Z.zRead.onclick = function () { closeOverlay(false); openReader('med', i); };
+    Z.zRead.onclick = function () { layerHandoff(closeOverlay, function () { openReader('med', i); }); };
     newSession();
     var start = Date.now();
     S.onClose = function () {
@@ -1004,7 +1007,7 @@
     rEls.rBody.innerHTML = h;
     var act = rEls.rBody.querySelector('#rAct1');
     if (act) act.onclick = kind === 'med'
-      ? function () { closeReader(false); openMedBreath(i); }
+      ? function () { layerHandoff(closeReader, function () { openMedBreath(i); }); }
       : function () { closeReader(false); navTo('concepts'); openD(DATA[i].id); themeDetailPanel(); };
     rEls.rScroll.scrollTop = 0; rEls.rProg.style.width = '0';
     reader.classList.add('open');
@@ -1150,7 +1153,6 @@
     sec.entry = entryTodayHTML();
     sec.mirror = mirrorCardHTML();
     sec.quarter = quarterCardHTML();
-    sec.debt = debtBarHTML();
 
     sec.chapter =
       '<div class="today-sec">' + (adapt.reason ? 'For You, Today' : 'Suggested Chapter') + '</div>' +
@@ -1189,7 +1191,6 @@
     on('tdLedger', function () { navTo('ledger'); });
     on('tdQMap', function (e) { e.stopPropagation(); navTo('map'); });
     on('tdQ', function () { navTo('map'); });
-    on('tdDebt', function () { navTo('map'); });
     on('tdWaveEdit', function () { waveEditing = true; renderToday(); glassify(page); });
     on('tdEntryCta', function () { navTo('guide'); });
     on('tdMirrorMore', function () { navTo('mirror'); });
@@ -1202,10 +1203,11 @@
       b.onclick = function () { logWave(+b.dataset.wave, ''); waveEditing = false; renderToday(); glassify(page); buzz(20); };
     });
     page.querySelectorAll('[data-entry]').forEach(function (r) {
+      r.addEventListener('keydown', kbToggle);
       r.onclick = function () {
         entryToggle(r.dataset.entry);
         var onNow = entryChecksToday().indexOf(r.dataset.entry) !== -1;
-        r.classList.toggle('checked', onNow); var chk = r.querySelector('.q-check'); if (chk) chk.textContent = onNow ? '✓' : '';
+        r.classList.toggle('checked', onNow); r.setAttribute('aria-checked', onNow); var chk = r.querySelector('.q-check'); if (chk) chk.textContent = onNow ? '✓' : '';
         var card = r.closest('#tdEntry'); if (card) {
           var rows = card.querySelectorAll('[data-entry]'), done = 0;
           rows.forEach(function (x) { if (x.classList.contains('checked')) done++; });
@@ -1218,10 +1220,11 @@
       };
     });
     page.querySelectorAll('[data-qa]').forEach(function (r) {
+      r.addEventListener('keydown', kbToggle);
       r.onclick = function (e) {
         e.stopPropagation();
         var s = mapStore(), k = r.dataset.qa; s.qa[k] = !s.qa[k]; mapSave(s);
-        var onNow = s.qa[k]; r.classList.toggle('checked', onNow); var chk = r.querySelector('.q-check'); if (chk) chk.textContent = onNow ? '✓' : '';
+        var onNow = s.qa[k]; r.classList.toggle('checked', onNow); r.setAttribute('aria-checked', onNow); var chk = r.querySelector('.q-check'); if (chk) chk.textContent = onNow ? '✓' : '';
         var card = r.closest('#tdQ'); if (card) {
           var rows = card.querySelectorAll('[data-qa]'), done = 0;
           rows.forEach(function (x) { if (x.classList.contains('checked')) done++; });
@@ -1240,8 +1243,9 @@
   function dayLabel(t) {
     var d = new Date(t), today = new Date();
     var midnight = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    var yMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1).getTime();
     if (t >= midnight) return 'Today';
-    if (t >= midnight - 864e5) return 'Yesterday';
+    if (t >= yMidnight) return 'Yesterday';
     return DAYS[d.getDay()] + ', ' + MONTHS[d.getMonth()].slice(0, 3) + ' ' + d.getDate();
   }
   function renderLedger() {
@@ -1351,9 +1355,11 @@
     data.appendChild(fin);
     data.querySelector('#zImport').onclick = function () { fin.click(); };
     sheet.appendChild(data);
+    var wasOpen = sheetWrap.classList.contains('open');
     sheetWrap.classList.add('open');
+    if (!wasOpen) pushLayer('sheet');
   }
-  function closeSheet() { sheetWrap.classList.remove('open'); }
+  function closeSheet(fromPop) { sheetWrap.classList.remove('open'); popLayer('sheet', fromPop); }
 
   function applyZoom() { document.documentElement.style.zoom = PREFS.zoom === 1 ? '' : PREFS.zoom; }
 
@@ -1652,6 +1658,7 @@
      LIFE LAYER — wave check-in · live Map · debt · (Pair 1)
      ================================================================ */
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function kbToggle(e) { if (e.key === ' ' || e.key === 'Enter' || e.key === 'Spacebar') { e.preventDefault(); e.currentTarget.click(); } }
   function fmtMoney(n) { return Math.round(n).toLocaleString('en-US'); }
   function store(k) { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } }
   function saveStore(k, o) { try { localStorage.setItem(k, JSON.stringify(o)); } catch (e) {} }
@@ -1771,7 +1778,7 @@
     var s = mapStore(), acts = q.actions || [], done = 0;
     var rows = acts.map(function (a, j) {
       var key = 'q' + qi + 'a' + j, on = !!s.qa[key]; if (on) done++;
-      return '<div class="q-act' + (on ? ' checked' : '') + '" data-qa="' + key + '"><span class="q-check">' + (on ? '✓' : '') + '</span>' +
+      return '<div class="q-act' + (on ? ' checked' : '') + '" data-qa="' + key + '" role="checkbox" tabindex="0" aria-checked="' + on + '" aria-label="' + esc(a.tag) + '"><span class="q-check">' + (on ? '✓' : '') + '</span>' +
         '<div class="q-act-body"><div class="q-act-tag">' + a.tag + '</div><div class="q-act-text">' + a.text + '</div></div></div>';
     }).join('');
     var pct = acts.length ? Math.round(done / acts.length * 100) : 0;
@@ -1799,7 +1806,7 @@
       '<div class="mapdebt-head"><span class="mapdebt-title">Debt Thermometer</span><span class="mapdebt-zero">zero · Jan 2028</span></div>' +
       '<div class="mapdebt-nums"><span class="mapdebt-cur">$' + fmtMoney(d.current) + '</span><span class="mapdebt-sub">remaining · $' + fmtMoney(d.paid) + ' cleared · ' + d.months + ' mo left</span></div>' +
       '<div class="debt-bar big"><span style="width:' + d.pct.toFixed(0) + '%"></span></div>' +
-      '<div class="mapdebt-form"><input id="mapDebtInput" type="number" inputmode="decimal" placeholder="new balance, or -payment" /><button class="tbtn" id="mapDebtSave">Update</button></div>' +
+      '<div class="mapdebt-form"><input id="mapDebtInput" type="text" inputmode="text" autocomplete="off" placeholder="new balance, or -payment" /><button class="tbtn" id="mapDebtSave">Update</button></div>' +
       '<div class="mapdebt-hint">Enter a new balance, or a negative number (e.g. -250) to log a payment.</div>' +
     '</div>';
     host.querySelector('#mapDebtSave').onclick = function () {
@@ -1814,9 +1821,10 @@
     var s = mapStore(), on = !!s[bag][key];
     el.classList.add('has-check'); el.classList.toggle('checked', on); el.dataset.ckey = bag + '|' + key;
     var b = document.createElement('button'); b.className = 'mcheck'; b.textContent = on ? '✓' : '';
+    b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', 'Mark done');
     b.onclick = function (e) {
       e.stopPropagation(); var st = mapStore(); st[bag][key] = !st[bag][key]; mapSave(st);
-      var nowOn = st[bag][key]; b.textContent = nowOn ? '✓' : ''; el.classList.toggle('checked', nowOn); buzz(12);
+      var nowOn = st[bag][key]; b.textContent = nowOn ? '✓' : ''; b.setAttribute('aria-pressed', nowOn); el.classList.toggle('checked', nowOn); buzz(12);
     };
     el.insertBefore(b, el.firstChild);
   }
@@ -1877,7 +1885,7 @@
     var wi = entryWeekIdx(day), w = ENTRY.weeks[wi], checks = entryChecksToday(), streak = entryStreak(), done = 0;
     var items = w.items.map(function (it, j) {
       var key = 'w' + wi + 'i' + j, on = checks.indexOf(key) !== -1; if (on) done++;
-      return '<div class="q-act' + (on ? ' checked' : '') + '" data-entry="' + key + '"><span class="q-check">' + (on ? '✓' : '') + '</span><div class="q-act-body"><div class="q-act-text" style="-webkit-line-clamp:3">' + it + '</div></div></div>';
+      return '<div class="q-act' + (on ? ' checked' : '') + '" data-entry="' + key + '" role="checkbox" tabindex="0" aria-checked="' + on + '"><span class="q-check">' + (on ? '✓' : '') + '</span><div class="q-act-body"><div class="q-act-text" style="-webkit-line-clamp:3">' + it + '</div></div></div>';
     }).join('');
     return '<div class="today-sec">The 30-Day Entry · Day ' + day + ' of 30</div>' +
       '<div class="today-card glass" id="tdEntry" style="border-left:3px solid ' + w.color + '">' +

@@ -590,3 +590,24 @@ body.light .debt-bar{background:rgba(184,92,56,.14)}
 .zset-times input[type=time]:focus{outline:none;border-color:rgba(196,162,101,.5)}
 body.light .zset-times label{color:rgba(51,41,26,.55)}
 body.light .zset-times input[type=time]{background:rgba(90,70,40,.05);border-color:rgba(90,70,40,.18);color:#33291A;color-scheme:light}
+
+/* ---------------------------------------------------------------- */
+/* POLISH v12 — review fixes: light controls · reduced-motion · a11y */
+/* ---------------------------------------------------------------- */
+/* gold-on-light controls made legible in Parchment (app.css never auto-remaps) */
+body.light .today-entry-cta{background:rgba(138,107,52,.1)!important;border-color:rgba(138,107,52,.42)!important;color:#4A3A1E!important}
+body.light .zen-begin{background:rgba(138,107,52,.1);border-color:rgba(138,107,52,.4);color:#4A3A1E}
+body.light .ztoast button{background:rgba(138,107,52,.2);color:#3E2F18}
+body.light .reader-block-label{color:#8A6B34}
+/* unify stray golds to the #C4A265 family */
+.heat-cell.l4{background:rgba(196,162,101,.95)}
+.reader-block-label{color:#C4A265}
+/* lift the faintest section captions to a legible contrast */
+.today-sec{color:rgba(255,255,255,.4)}
+/* keyboard focus ring for the checklist/toggle controls */
+.q-act:focus-visible,.mcheck:focus-visible,.wave-dot:focus-visible{outline:2px solid rgba(196,162,101,.7);outline-offset:2px;border-radius:12px}
+/* reduced-motion: silence decorative + perpetual motion, keep functional breathing/countdown */
+@media (prefers-reduced-motion:reduce){
+  .zen-fab,.zen-begin .zb-orb,.zen-banner .zb-orb,.zen-fab .enso,.zen-echo.go{animation:none!important}
+  .page,.concept-card,.med-card,.today-card,.eft-seq-card,.crossref-card,.header{animation:none!important}
+}
