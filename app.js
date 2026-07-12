@@ -1022,8 +1022,10 @@
         subnavEl.appendChild(b);
       });
     }
+    waveEditing = false;
     if (page === 'today') renderToday();
     if (page === 'ledger') renderLedger();
+    if (page === 'map') decorateMap();
   }
 
   /* ================================================================
@@ -1058,42 +1060,58 @@
     var mi = todayMedIndex(), m = MEDS[mi];
     var ci = suggestedChapterIndex(), c = DATA[ci];
     var hr = now.getHours();
-    var greet = hr < 12 ? 'Good morning, Beet.' : hr < 18 ? 'Good afternoon, Beet.' : 'Good evening, Beet.';
+    var slot = hr < 12 ? 'morning' : hr < 18 ? 'day' : 'evening';
+    var greet = slot === 'morning' ? 'Good morning, Beet.' : slot === 'day' ? 'Good afternoon, Beet.' : 'Good evening, Beet.';
     var st = weekStats();
-    var ledgerLine = st.sessions
-      ? 'This week: <em>' + st.sessions + ' session' + (st.sessions > 1 ? 's' : '') + '</em>' + (st.minutes ? ' · <em>' + st.minutes + ' min</em> of breath' : '') + ' &rarr;'
-      : 'Your ledger is empty. One breath begins it. &rarr;';
+    applyWaveTint();
 
-    page.innerHTML =
-      pageEnsoHTML('page-today') +
+    var sec = {};
+    sec.head =
+      '<div class="today-wavewash"></div>' +
       '<div class="today-date">' + DAYS[now.getDay()].toUpperCase() + ' · ' + MONTHS[now.getMonth()].toUpperCase() + ' ' + now.getDate() + '</div>' +
-      '<div class="today-greet">' + greet + '</div>' +
+      '<div class="today-greet">' + greet + '</div>';
 
-      '<div class="today-sec">Today’s Meditation</div>' +
+    sec.wave = waveCardHTML(slot);
+
+    sec.med =
+      '<div class="today-sec">' + (slot === 'evening' ? 'Tonight’s Contemplation' : 'Today’s Meditation') + '</div>' +
       '<div class="today-card" id="tdMed">' +
         '<div class="tc-kicker">' + motifSVG(motifFor(m.icon), 'med-' + m.day) + ' ' + m.day + '</div>' +
         '<div class="tc-title">' + m.title + '</div>' +
         (m.carry ? '<div class="tc-sub">“' + m.carry + '”</div>' : '') +
         '<div class="today-actions"><button class="tbtn" id="tdMedRead">Read</button><button class="tbtn ghost" id="tdMedBreathe">Breathe</button></div>' +
-      '</div>' +
+      '</div>';
 
+    sec.quarter = quarterCardHTML();
+    sec.debt = debtBarHTML();
+
+    sec.chapter =
       '<div class="today-sec">Suggested Chapter</div>' +
       '<div class="today-card" id="tdCh">' +
         '<div class="tc-kicker" style="color:' + c.color + '">' + motifSVG(CONCEPT_MOTIFS[c.id], 'ch-' + c.id) + ' Chapter ' + c.number + ' · ' + c.section + '</div>' +
         '<div class="tc-title">' + c.title + '</div>' +
         '<div class="tc-sub">' + c.subtitle + '</div>' +
         '<div class="today-actions"><button class="tbtn" id="tdChRead">Read</button></div>' +
-      '</div>' +
+      '</div>';
 
+    sec.practice =
       '<div class="today-sec">Practice</div>' +
       '<div class="today-tiles">' +
         '<button class="today-tile" id="tdTimer"><div class="tt-icon"></div><div class="tt-name">Solar Plexus</div><div class="tt-sub">meditation timer</div></button>' +
         '<button class="today-tile" id="tdEft"><div class="tt-icon violet"></div><div class="tt-name">EFT Tapping</div><div class="tt-sub">guided sequences</div></button>' +
-      '</div>' +
+      '</div>';
 
-      '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
+    var ledgerLine = st.sessions
+      ? 'This week: <em>' + st.sessions + ' session' + (st.sessions > 1 ? 's' : '') + '</em>' + (st.minutes ? ' · <em>' + st.minutes + ' min</em> of breath' : '') + ' &rarr;'
+      : 'Your ledger is empty. One breath begins it. &rarr;';
+    sec.ledger = '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
 
-    function on(id, fn) { page.querySelector('#' + id).onclick = fn; }
+    var order = slot === 'morning' ? ['head', 'wave', 'med', 'quarter', 'debt', 'chapter', 'practice', 'ledger']
+      : slot === 'evening' ? ['head', 'wave', 'med', 'chapter', 'quarter', 'debt', 'practice', 'ledger']
+      : ['head', 'med', 'wave', 'quarter', 'debt', 'chapter', 'practice', 'ledger'];
+    page.innerHTML = pageEnsoHTML('page-today') + order.map(function (k) { return sec[k] || ''; }).join('');
+
+    function on(id, fn) { var el = page.querySelector('#' + id); if (el) el.onclick = fn; }
     on('tdMed', function () { openReader('med', mi); });
     on('tdMedRead', function (e) { e.stopPropagation(); openReader('med', mi); });
     on('tdMedBreathe', function (e) { e.stopPropagation(); openMedBreath(mi); });
@@ -1102,6 +1120,27 @@
     on('tdTimer', openTimer);
     on('tdEft', function () { navTo('eft'); });
     on('tdLedger', function () { navTo('ledger'); });
+    on('tdQMap', function (e) { e.stopPropagation(); navTo('map'); });
+    on('tdQ', function () { navTo('map'); });
+    on('tdDebt', function () { navTo('map'); });
+    on('tdWaveEdit', function () { waveEditing = true; renderToday(); glassify(page); });
+    page.querySelectorAll('[data-wave]').forEach(function (b) {
+      b.onclick = function () { logWave(+b.dataset.wave, ''); waveEditing = false; renderToday(); glassify(page); buzz(20); };
+    });
+    page.querySelectorAll('[data-qa]').forEach(function (r) {
+      r.onclick = function (e) {
+        e.stopPropagation();
+        var s = mapStore(), k = r.dataset.qa; s.qa[k] = !s.qa[k]; mapSave(s);
+        var onNow = s.qa[k]; r.classList.toggle('checked', onNow); var chk = r.querySelector('.q-check'); if (chk) chk.textContent = onNow ? '✓' : '';
+        var card = r.closest('#tdQ'); if (card) {
+          var rows = card.querySelectorAll('[data-qa]'), done = 0;
+          rows.forEach(function (x) { if (x.classList.contains('checked')) done++; });
+          var bar = card.querySelector('.q-prog-bar span'), num = card.querySelector('.q-prog-num'), pct = rows.length ? Math.round(done / rows.length * 100) : 0;
+          if (bar) bar.style.width = pct + '%'; if (num) num.textContent = done + '/' + rows.length;
+        }
+        buzz(12);
+      };
+    });
   }
 
   /* ================================================================
@@ -1126,6 +1165,7 @@
       '<div class="ledger-stat"><div class="ls-num">' + st.minutes + '</div><div class="ls-label">breath minutes</div></div>' +
       '<div class="ledger-stat"><div class="ls-num">' + st.total + '</div><div class="ls-label">all time</div></div>' +
       '</div>';
+    h += waveChartHTML();
     if (!all.length) {
       h += '<div class="ledger-empty">Nothing here yet.<br>Complete a tapping session or sit with the timer,<br>and it will be remembered.</div>';
     } else {
@@ -1401,6 +1441,195 @@
     fab.innerHTML = motifSVG('sun', 'fab', { color: 'rgba(26,20,10,0.78)', style: 'width:28px;height:28px' });
     fab.onclick = openTimer;
     document.body.appendChild(fab);
+  }
+
+  /* ================================================================
+     LIFE LAYER — wave check-in · live Map · debt · (Pair 1)
+     ================================================================ */
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmtMoney(n) { return Math.round(n).toLocaleString('en-US'); }
+  function store(k) { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } }
+  function saveStore(k, o) { try { localStorage.setItem(k, JSON.stringify(o)); } catch (e) {} }
+  function isoDay(t) { var d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function todayISO() { return isoDay(Date.now()); }
+
+  /* ---- wave (emotional authority) ---- */
+  var WK = 'soulzen-wave';
+  var WAVE_STATES = [
+    { v: 1, label: 'In the trough', short: 'Trough', tint: '#5A7B8C' },
+    { v: 2, label: 'Low, still moving', short: 'Low', tint: '#6E7FA3' },
+    { v: 3, label: 'Level', short: 'Level', tint: '#C4A265' },
+    { v: 4, label: 'Rising', short: 'Rising', tint: '#D4A038' },
+    { v: 5, label: 'At the peak', short: 'Peak', tint: '#E0B84C' }
+  ];
+  var waveEditing = false;
+  function waveState(v) { var i = Math.max(1, Math.min(5, Math.round(+v) || 3)); return WAVE_STATES[i - 1]; }
+  function waveAll() { try { return JSON.parse(localStorage.getItem(WK)) || []; } catch (e) { return []; } }
+  function waveSave(a) { saveStore(WK, a.slice(-500)); }
+  function waveToday() { var day = todayISO(), a = waveAll(); for (var i = a.length - 1; i >= 0; i--) if (isoDay(a[i].t) === day) return a[i]; return null; }
+  function logWave(v, note) {
+    var a = waveAll(), day = todayISO();
+    for (var i = a.length - 1; i >= 0; i--) { if (isoDay(a[i].t) === day) { a[i] = { t: Date.now(), v: v, note: note || '' }; waveSave(a); return; } }
+    a.push({ t: Date.now(), v: v, note: note || '' }); waveSave(a);
+  }
+  function waveGuidance() {
+    var t = waveToday(); if (!t) return '';
+    if (t.v <= 2) return 'Low in the wave. Your authority says wait — this is not a deciding day. Let it complete first.';
+    if (t.v >= 5) return 'At the peak. The high is information, not a mandate — let a big yes ripen past the crest.';
+    return 'Level enough to see clearly. A choice that has moved through a full wave can be made here.';
+  }
+  function waveSparkline() {
+    var a = waveAll(); if (!a.length) return '';
+    var byDay = {}; a.forEach(function (e) { byDay[isoDay(e.t)] = e.v; });
+    var now = new Date(), days = [], n = 21;
+    for (var i = n - 1; i >= 0; i--) { var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i); days.push(byDay[isoDay(d.getTime())] || null); }
+    var W = 220, H = 42, pad = 5, pts = [];
+    days.forEach(function (v, i) { if (v == null) return; var x = pad + (W - 2 * pad) * i / (n - 1); var y = H - pad - (H - 2 * pad) * ((v - 1) / 4); pts.push([x, y]); });
+    if (!pts.length) return '';
+    var poly = pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+    var dots = pts.map(function (p) { return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.2" fill="var(--wave-tint,#C4A265)"/>'; }).join('');
+    return '<svg class="wave-spark" viewBox="0 0 ' + W + ' ' + H + '">' +
+      (pts.length > 1 ? '<polyline points="' + poly + '" fill="none" stroke="var(--wave-tint,#C4A265)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>' : '') +
+      dots + '</svg>';
+  }
+  function applyWaveTint() {
+    var t = waveToday();
+    document.documentElement.style.setProperty('--wave-tint', t ? waveState(t.v).tint : '#C4A265');
+    document.body.classList.toggle('has-wave', !!t);
+  }
+  function waveChartHTML() {
+    var a = waveAll(); if (!a.length) return '';
+    var byDay = {}; a.forEach(function (e) { byDay[isoDay(e.t)] = e.v; });
+    var now = new Date(), N = 30, bars = '', logged = 0;
+    for (var i = N - 1; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      var v = byDay[isoDay(d.getTime())];
+      if (v) {
+        logged++;
+        var ws = waveState(v);
+        bars += '<div class="wc-bar" title="' + isoDay(d.getTime()) + ' · ' + ws.label + '"><span style="height:' + (ws.v / 5 * 100) + '%;background:' + ws.tint + '"></span></div>';
+      } else {
+        bars += '<div class="wc-bar empty"><span></span></div>';
+      }
+    }
+    return '<div class="ledger-day" style="margin-top:24px">Your Wave · last 30 days</div>' +
+      '<div class="wave-chart glass">' +
+        '<div class="wc-bars">' + bars + '</div>' +
+        '<div class="wc-foot"><span>trough</span><span>' + logged + ' day' + (logged === 1 ? '' : 's') + ' logged</span><span>peak</span></div>' +
+      '</div>';
+  }
+  function waveCardHTML(slot) {
+    var wave = waveToday(), spark = waveSparkline();
+    if (!wave || waveEditing) {
+      var q = slot === 'evening' ? 'How did the day land in you?' : 'Where are you in your wave?';
+      return '<div class="today-sec">Emotional Weather</div>' +
+        '<div class="today-card glass wave-card" id="tdWave">' +
+          '<div class="wave-q">' + q + '</div>' +
+          '<div class="wave-scale">' + WAVE_STATES.map(function (w) {
+            return '<button class="wave-dot' + (wave && Math.round(+wave.v) === w.v ? ' on' : '') + '" data-wave="' + w.v + '" style="--wd:' + w.tint + '" aria-label="' + w.label + '"><span></span><em>' + w.short + '</em></button>';
+          }).join('') + '</div>' +
+          (spark ? '<div class="wave-spark-wrap">' + spark + '</div>' : '') +
+        '</div>';
+    }
+    var ws = waveState(wave.v);
+    return '<div class="today-sec">Emotional Weather</div>' +
+      '<div class="today-card glass wave-card logged" id="tdWave">' +
+        '<div class="wave-status"><span class="wave-orb" style="background:' + ws.tint + '"></span>' +
+          '<div class="wave-status-body"><div class="wave-state">' + ws.label + (wave.note ? ' · <em>' + esc(wave.note) + '</em>' : '') + '</div>' +
+          '<div class="wave-guide">' + waveGuidance() + '</div></div></div>' +
+        (spark ? '<div class="wave-spark-wrap">' + spark + '</div>' : '') +
+        '<div class="today-actions"><button class="tbtn ghost" id="tdWaveEdit">Change</button></div>' +
+      '</div>';
+  }
+
+  /* ---- live Map: quarters, milestones, debt ---- */
+  var MK = 'soulzen-map';
+  function mapStore() { var s = store(MK); s.ms = s.ms || {}; s.qa = s.qa || {}; s.debt = s.debt || { start: 15000, current: 15000, zero: '2028-01-01' }; return s; }
+  function mapSave(s) { saveStore(MK, s); }
+  function quarterRange(qstr) { var m = String(qstr).match(/Q(\d)\s*(\d{4})/); if (!m) return null; var q = +m[1]; return { y: +m[2], s: (q - 1) * 3, e: (q - 1) * 3 + 2 }; }
+  function currentQuarterIndex() {
+    if (!window.MAP || !MAP.quarters) return 0;
+    var now = new Date(), y = now.getFullYear(), mo = now.getMonth(), items = MAP.quarters.items, i, r;
+    for (i = 0; i < items.length; i++) { r = quarterRange(items[i].q); if (r && y === r.y && mo >= r.s && mo <= r.e) return i; }
+    for (i = 0; i < items.length; i++) { r = quarterRange(items[i].q); if (r && (y < r.y || (y === r.y && mo <= r.e))) return i; }
+    return items.length - 1;
+  }
+  function debtInfo() {
+    var d = mapStore().debt, paid = Math.max(0, d.start - d.current), pct = d.start ? Math.min(100, paid / d.start * 100) : 0;
+    var p = String(d.zero).split('-'), zy = +p[0], zm = (+p[1] || 1) - 1, now = new Date();
+    var months = Math.max(0, (zy - now.getFullYear()) * 12 + (zm - now.getMonth()));
+    return { start: d.start, current: d.current, paid: paid, pct: pct, months: months };
+  }
+  function quarterCardHTML() {
+    if (!window.MAP || !MAP.quarters) return '';
+    var qi = currentQuarterIndex(), q = MAP.quarters.items[qi]; if (!q) return '';
+    var s = mapStore(), acts = q.actions || [], done = 0;
+    var rows = acts.map(function (a, j) {
+      var key = 'q' + qi + 'a' + j, on = !!s.qa[key]; if (on) done++;
+      return '<div class="q-act' + (on ? ' checked' : '') + '" data-qa="' + key + '"><span class="q-check">' + (on ? '✓' : '') + '</span>' +
+        '<div class="q-act-body"><div class="q-act-tag">' + a.tag + '</div><div class="q-act-text">' + a.text + '</div></div></div>';
+    }).join('');
+    var pct = acts.length ? Math.round(done / acts.length * 100) : 0;
+    return '<div class="today-sec">This Quarter · ' + q.q + '</div>' +
+      '<div class="today-card glass" id="tdQ">' +
+        '<div class="tc-kicker" style="color:' + q.focus + '">' + q.window + '</div>' +
+        '<div class="tc-title" style="font-size:19px">' + q.theme + '</div>' +
+        '<div class="q-prog"><div class="q-prog-bar"><span style="width:' + pct + '%;background:' + q.focus + '"></span></div><span class="q-prog-num">' + done + '/' + acts.length + '</span></div>' +
+        rows +
+        '<div class="today-actions"><button class="tbtn ghost" id="tdQMap">Open the Map →</button></div>' +
+      '</div>';
+  }
+  function debtBarHTML() {
+    var d = debtInfo();
+    return '<div class="today-sec">The Debt</div>' +
+      '<div class="today-card glass" id="tdDebt">' +
+        '<div class="debt-row"><span class="debt-cur">$' + fmtMoney(d.current) + '</span><span class="debt-meta">$' + fmtMoney(d.paid) + ' cleared · ' + d.months + ' mo to zero</span></div>' +
+        '<div class="debt-bar"><span style="width:' + d.pct.toFixed(0) + '%"></span></div>' +
+        '<div class="debt-foot">Zero date · Jan 2028 — tap to update</div>' +
+      '</div>';
+  }
+  function renderMapDebt() {
+    var host = document.getElementById('mapDebt'); if (!host) return; var d = debtInfo();
+    host.innerHTML = '<div class="mapdebt glass">' +
+      '<div class="mapdebt-head"><span class="mapdebt-title">Debt Thermometer</span><span class="mapdebt-zero">zero · Jan 2028</span></div>' +
+      '<div class="mapdebt-nums"><span class="mapdebt-cur">$' + fmtMoney(d.current) + '</span><span class="mapdebt-sub">remaining · $' + fmtMoney(d.paid) + ' cleared · ' + d.months + ' mo left</span></div>' +
+      '<div class="debt-bar big"><span style="width:' + d.pct.toFixed(0) + '%"></span></div>' +
+      '<div class="mapdebt-form"><input id="mapDebtInput" type="number" inputmode="decimal" placeholder="new balance, or -payment" /><button class="tbtn" id="mapDebtSave">Update</button></div>' +
+      '<div class="mapdebt-hint">Enter a new balance, or a negative number (e.g. -250) to log a payment.</div>' +
+    '</div>';
+    host.querySelector('#mapDebtSave').onclick = function () {
+      var el = host.querySelector('#mapDebtInput'), v = parseFloat(el.value); if (isNaN(v)) return;
+      var s = mapStore(); s.debt.current = v < 0 ? Math.max(0, s.debt.current + v) : Math.max(0, v); mapSave(s);
+      renderMapDebt(); buzz(20);
+      if (document.getElementById('page-today').classList.contains('active')) renderToday();
+    };
+    glassify(host);
+  }
+  function addCheck(el, bag, key) {
+    var s = mapStore(), on = !!s[bag][key];
+    el.classList.add('has-check'); el.classList.toggle('checked', on); el.dataset.ckey = bag + '|' + key;
+    var b = document.createElement('button'); b.className = 'mcheck'; b.textContent = on ? '✓' : '';
+    b.onclick = function (e) {
+      e.stopPropagation(); var st = mapStore(); st[bag][key] = !st[bag][key]; mapSave(st);
+      var nowOn = st[bag][key]; b.textContent = nowOn ? '✓' : ''; el.classList.toggle('checked', nowOn); buzz(12);
+    };
+    el.insertBefore(b, el.firstChild);
+  }
+  function syncMapChecks() {
+    var s = mapStore();
+    document.querySelectorAll('#mapContent [data-ckey]').forEach(function (el) {
+      var parts = el.dataset.ckey.split('|'), on = !!(s[parts[0]] && s[parts[0]][parts[1]]);
+      el.classList.toggle('checked', on);
+      var b = el.querySelector('.mcheck'); if (b) b.textContent = on ? '✓' : '';
+    });
+  }
+  function decorateMap() {
+    var mc = document.getElementById('mapContent'); if (!mc) return;
+    if (mc.dataset.live) { renderMapDebt(); syncMapChecks(); return; }
+    mc.dataset.live = '1';
+    var dp = document.createElement('div'); dp.id = 'mapDebt'; mc.insertBefore(dp, mc.firstChild); renderMapDebt();
+    mc.querySelectorAll('.map-hz').forEach(function (hz, i) { hz.querySelectorAll('.map-ms').forEach(function (ms, j) { addCheck(ms, 'ms', 'h' + i + 'm' + j); }); });
+    mc.querySelectorAll('.map-q').forEach(function (q, i) { q.querySelectorAll('.map-act').forEach(function (act, j) { addCheck(act, 'qa', 'q' + i + 'a' + j); }); });
   }
 
   /* ================================================================
