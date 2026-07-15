@@ -611,3 +611,42 @@ body.light .reader-block-label{color:#8A6B34}
   .zen-fab,.zen-begin .zb-orb,.zen-banner .zb-orb,.zen-fab .enso,.zen-echo.go{animation:none!important}
   .page,.concept-card,.med-card,.today-card,.eft-seq-card,.crossref-card,.header{animation:none!important}
 }
+
+/* ---------------------------------------------------------------- */
+/* v13 — START HERE: curated first-read cross-references            */
+/* ---------------------------------------------------------------- */
+.starthere{margin:0 0 20px;padding:18px;border-radius:16px;background:rgba(196,162,101,.05);border:1px solid rgba(196,162,101,.2)}
+.sh-title{font-family:monospace;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#C4A265;display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.sh-title .enso{width:20px;height:20px}
+.sh-sub{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:14px;font-style:italic}
+.sh-pick{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:12px;background:rgba(255,255,255,.03);cursor:pointer;margin-bottom:8px;transition:background .3s;-webkit-tap-highlight-color:transparent}
+.sh-pick:last-child{margin-bottom:0}
+.sh-pick:hover{background:rgba(255,255,255,.055)}
+.sh-mark{flex-shrink:0;line-height:0;margin-top:1px}
+.sh-mark .enso{width:22px;height:22px}
+.sh-src{font-size:13.5px;font-weight:600;line-height:1.4}
+.sh-why{font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.62);margin-top:3px}
+.sh-today{font-family:monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;background:var(--wave-tint,#C4A265);color:#0A0908;border-radius:9px;padding:2.5px 8px;margin-left:8px;vertical-align:2px;white-space:nowrap}
+/* staggered self-draw of the three marks */
+.sh-title .draw-enso path{animation-duration:2s}
+.sh-p0 .draw-enso path{animation-delay:.2s;animation-duration:1.6s}
+.sh-p1 .draw-enso path{animation-delay:.55s;animation-duration:1.6s}
+.sh-p2 .draw-enso path{animation-delay:.9s;animation-duration:1.6s}
+/* the chosen cards in the full list */
+.crossref-card.sh-marked{background:rgba(196,162,101,.05)!important}
+.sh-cardmark{margin-left:8px;line-height:0;display:inline-block;vertical-align:-2px;color:#C4A265;flex-shrink:0}
+.sh-cardwhy{font-size:12px;font-style:italic;color:rgba(196,162,101,.8);margin-top:7px;line-height:1.55}
+/* parchment */
+body.light .starthere{background:rgba(138,107,52,.07);border-color:rgba(138,107,52,.28)}
+body.light .sh-title{color:#8A6B34}
+body.light .sh-sub{color:rgba(60,45,25,.55)}
+body.light .sh-pick{background:rgba(255,255,255,.4)}
+body.light .sh-why{color:rgba(60,45,25,.68)}
+body.light .sh-cardwhy{color:rgba(138,107,52,.95)}
+body.light .crossref-card.sh-marked{background:rgba(138,107,52,.06)!important}
+
+/* v13 — tap-target hit extension (visual size unchanged) */
+.zen-scale button,.zgear,.zen-iconbtn{position:relative}
+.zen-scale button::after{content:'';position:absolute;inset:-6px;border-radius:50%}
+.zgear::after{content:'';position:absolute;inset:-5px;border-radius:50%}
+.zen-iconbtn::after{content:'';position:absolute;inset:-4px;border-radius:50%}

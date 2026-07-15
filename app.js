@@ -460,6 +460,118 @@
     }
   }
 
+  /* ================================================================
+     START HERE — curated first-read cross-references per chapter
+     (3 picks + adaptive alternates; baked from a curation workflow)
+     ================================================================ */
+var CURATED = {
+    "evolution": { picks: [{"source": "Black Radical Thought — Fanon · Ngũgĩ · Diop · Baldwin", "why": "Names your not-enough fear as the borrowed gaze: build Ontario as a sovereign man, not an applicant."}, {"source": "Attached — Levine & Heller", "why": "Shows the Aloof for what it is: the wall against being held. Letting Marie hold you is the evolution."}, {"source": "When the Body Says No — Maté", "why": "Your wave is instrumentation, not weakness — performed calm overrides the very signal you decide by."}], adaptive: [{"cond": "lowWave", "source": "When Things Fall Apart — Chödrön", "why": "On trough days, don't force resolution — falling apart is your 3-line curriculum, not failure."}, {"cond": "aloofCharged", "source": "Feminist Thought — bell hooks · Audre Lorde", "why": "Your composure is the boyhood amputation still running; your wave is what patriarchy failed to sever."}, {"cond": "poorMeCharged", "source": "Nonviolent Communication — Rosenberg", "why": "Needs aren't burdens — say them as requests. Giving from depletion is jackal turned on yourself."}] },
+    "karma": { picks: [{"source": "Feminist Thought — bell hooks · Audre Lorde", "why": "Names the engine under both your dramas — buried feeling returning as pattern. Your wave exists to feel it."}, {"source": "Black Radical Thought — Fanon · Ngũgĩ · Diop · Baldwin", "why": "Separates inherited freight from your ledger — the zero start isn't evidence you're not enough."}, {"source": "Nonviolent Communication — Rosenberg", "why": "Hear the need under Marie's frustration; name your own instead of going silent. One sentence stops the loop."}], adaptive: [{"cond": "lowWave", "source": "Letters to a Young Poet — Rilke", "why": "On trough days the sadness may be the future arriving, not the past billing you. Host it, don't audit it."}, {"cond": "aloofCharged", "source": "When Things Fall Apart — Chödrön", "why": "Shenpa is your withdrawal impulse. Feel it without acting on it — that is the Aloof loop's exact break point."}, {"cond": "poorMeCharged", "source": "When the Body Says No — Maté", "why": "Giving from depletion is billed to your body. Interrupt the pattern before it escalates into illness."}] },
+    "reverence": { picks: [{"source": "When Things Fall Apart — Chödrön", "why": "Reverence for the parts your calm hides — the direct answer to 'not enough' and the Aloof performance."}, {"source": "Tao Te Ching — Lao Tzu", "why": "Names your season: the low rung beneath your craft is where water gathers — Ọ̀ṣun logic for the $4k climb."}, {"source": "Feminist Thought — bell hooks · Audre Lorde", "why": "Love is what you do: the call made when the wave says withdraw is how presence for Marie stays real."}], adaptive: [{"cond": "lowWave", "source": "The Four Agreements — Ruiz", "why": "On trough days 'your best varies daily' — meet the depleted day without reading it as not-enough."}, {"cond": "aloofCharged", "source": "Attached — Levine & Heller", "why": "When Marie starts to look like a demand, that's the avoidant lens, not her — regulate, inform, look again."}, {"cond": "poorMeCharged", "source": "When the Body Says No — Maté", "why": "Giving from depletion is disreverence toward your own body — consult that oracle before you deploy again."}] },
+    "heart": { picks: [{"source": "Nonviolent Communication — Rosenberg", "why": "Swaps verdicts for feelings — the one-line grammar that reads your wave and actually reaches Marie."}, {"source": "Of Water and the Spirit — Somé", "why": "Grief needs witness, not composure — micro-rituals for the Douala losses you carry into your first winter."}, {"source": "The Inner Game of Tennis — Gallwey", "why": "Trust the wave: clarity arrives on its own schedule, and a seed is not a failed rose — neither are you."}], adaptive: [{"cond": "lowWave", "source": "Letters to a Young Poet — Rilke", "why": "On trough days: your sadness is the next self arriving — host it, don't handle it offstage."}, {"cond": "aloofCharged", "source": "Black Radical Thought — Fanon · Ngũgĩ · Diop · Baldwin", "why": "When Aloof flares: Baldwin names armored composure as slow death — feel the rage, keep the heart open."}, {"cond": "poorMeCharged", "source": "When the Body Says No — Maté", "why": "When Poor Me flares: naming needs is cardiac medicine — silent carrying breaks the body, not just the mood."}] },
+    "light": { picks: [{"source": "Black Radical Thought — Fanon · Ngũgĩ · Diop · Baldwin", "why": "Your not-enough fear says imitate; Fanon says your Douala-Ontario in-between is the light only you can emit."}, {"source": "Feminist Thought — bell hooks · Audre Lorde", "why": "Don't defer aliveness until the debt clears: your Ọ̀ṣun joy is the fuel of the rebuild, not its reward."}, {"source": "Nonviolent Communication — Rosenberg", "why": "Under the Aloof silence and the depleted giving sit real needs; name them, feed them, the dramas retire."}], adaptive: [{"cond": "lowWave", "source": "Tao Te Ching — Lao Tzu", "why": "On trough days there's no state to build — only debris to set down. Rest at the source; begin again."}, {"cond": "highWave", "source": "Can't Hurt Me — Goggins", "why": "Peak charge is for effort, not decisions: bank the hard run or hard week that tapping can't reach."}, {"cond": "aloofCharged", "source": "Attached — Levine & Heller", "why": "Your silence doesn't protect the wave — it starves the field with Marie. Informing is biology, not chore."}] },
+    "intuition": { picks: [{"source": "Letters to a Young Poet — Rilke", "why": "Run the must-I test on each offer: does it arrange around your writing, or quietly replace it?"}, {"source": "Feminist Thought — bell hooks · Audre Lorde", "why": "Lorde and hooks name your wave as knowledge, not mood — armor when the job hunt pushes you to override it."}, {"source": "The Inner Game of Tennis — Gallwey", "why": "Your not-enough second-guessing is Self 1 jamming your Ni — this is the drill for quieting it."}], adaptive: [{"cond": "lowWave", "source": "Can't Hurt Me — Goggins", "why": "Trough rule: what only screams at your wave's bottom is negotiation; what survives the settle is signal."}, {"cond": "aloofCharged", "source": "Attached — Levine & Heller", "why": "When Aloof fires, your read on Marie gets less accurate, not more — this names that distortion exactly."}, {"cond": "poorMeCharged", "source": "Nonviolent Communication — Rosenberg", "why": "Before giving from empty again: what am I feeling, what do I need — name the need instead of carrying it."}] },
+    "intention": { picks: [{"source": "Deep Work — Newport", "why": "Your $1,960→$4,000 climb becomes daily practice: name one income or debt output, inside fixed hours."}, {"source": "When the Body Says No — Maté", "why": "Your body obeys the hidden intention, not the declared one — ask what 'not enough' is really driving."}, {"source": "Attached — Levine & Heller", "why": "Names your Aloof move in real time: intend to tell Marie when you withdraw, and to repair fast."}], adaptive: [{"cond": "lowWave", "source": "Letters to a Young Poet — Rilke", "why": "Trough days lie about your pace. Applications, debt, Marie — trees in spring: tend them, stop counting days."}, {"cond": "aloofCharged", "source": "Of Water and the Spirit — Somé", "why": "When your silence turns strategic, speak the intention aloud — a stated working closes the door Aloof opens."}, {"cond": "poorMeCharged", "source": "When Things Fall Apart — Chödrön", "why": "Tonglen reverses giving-from-depletion: breathe in the need you deny, breathe out service that refills you."}] },
+    "choice": { picks: [{"source": "Tao Te Ching — Lao Tzu", "why": "Your season at true scale: today's application, page, transfer, weather report ARE the thousand-mile choice."}, {"source": "When Things Fall Apart — Chödrön", "why": "The Aloof fires trigger-to-retreat in a second. The pause stretches that gap so you can stay and inform."}, {"source": "Nonviolent Communication — Rosenberg", "why": "Rewrite the have-to list — job hunt, caretaker's ledger — as chosen, and the grind stops breeding resentment."}], adaptive: [{"cond": "lowWave", "source": "Man's Search for Meaning — Frankl", "why": "Trough days strip options; Frankl shows the one choice no wave can take — who you are while it passes."}, {"cond": "aloofCharged", "source": "Feminist Thought — bell hooks · Audre Lorde", "why": "When withdrawal feels like who you are, hooks removes the alibi: it is trained, and refusable, today."}, {"cond": "poorMeCharged", "source": "When the Body Says No — Maté", "why": "Giving from depletion isn't generosity, it's an old adaptation — and your EFT works where it actually lives."}] },
+    "addiction": { picks: [{"source": "Black Radical Thought — Fanon · Ngũgĩ · Diop · Baldwin", "why": "Names your job-hunt hazard: craving Canadian validation to prove you're enough. Build your own table."}, {"source": "Letters to a Young Poet — Rilke", "why": "Catches the Aloof's finest tool: analysis as escape. When Marie is raw on a call, presence before commentary."}, {"source": "Tao Te Ching — Lao Tzu", "why": "Guards the money keystone: a written 'enough' line lets income growth close the debt, not move the goalposts."}], adaptive: [{"cond": "lowWave", "source": "Nonviolent Communication — Rosenberg", "why": "On trough days the inner verdict fires first; translate it to a need before the hand reaches for the phone."}, {"cond": "aloofCharged", "source": "Attached — Levine & Heller", "why": "When silence-as-strategy flares: autonomy turned compulsive, distance kept when no threat exists."}, {"cond": "poorMeCharged", "source": "When Things Fall Apart — Chödrön", "why": "Names the Inverted Poor Me's engine: over-giving to dodge having needs. Sit with them; they won't destroy you."}] },
+    "relationships": { picks: [{"source": "Black Radical Thought — Fanon · Ngũgĩ · Diop · Baldwin", "why": "Names your Aloof mask at its roots — colonization, masculinity, caretaking — and why Marie can't love a mask."}, {"source": "When the Body Says No — Maté", "why": "Suppressing needs and wave-troughs to look stable for Marie costs your body — informing her is medicine."}, {"source": "Letters to a Young Poet — Rilke", "why": "Written to a young poet — you. The ocean as apprenticeship: two solitudes that protect, border, and greet."}], adaptive: [{"cond": "lowWave", "source": "Nonviolent Communication — Rosenberg", "why": "On trough days: four sentences that carry the low to Marie without silence, blame, or ammunition."}, {"cond": "aloofCharged", "source": "The Inner Game of Tennis — Gallwey", "why": "When Aloof flares: it's Self 1 managing your image — quiet it, let Marie meet the unmanaged you."}, {"cond": "poorMeCharged", "source": "Bhagavad Gita", "why": "When Poor Me flares: your caretaking is attachment — giving to be needed. Bhakti removes the transaction."}] },
+    "power": { picks: [{"source": "Can't Hurt Me — Goggins", "why": "Your jar is full — languages, ocean, PR, Bakwa. Write the inventory; read it when 'not enough' speaks."}, {"source": "Deep Work — Newport", "why": "Career capital, not hustle, closes the $1,960→$4,000 gap and pays the debt. Deep hours on craft compound."}, {"source": "Attached — Levine & Heller", "why": "Let Marie see your actual weather: being held multiplies power — you stop defending against being seen."}], adaptive: [{"cond": "lowWave", "source": "When Things Fall Apart — Chödrön", "why": "Trough days shatter earned confidence; hers survives them. Your trials are curriculum, not verdicts."}, {"cond": "highWave", "source": "Bhagavad Gita", "why": "Peak euphoria isn't clarity. Equanimity in pleasure too — decide from the completed wave, not the high."}, {"cond": "aloofCharged", "source": "Nonviolent Communication — Rosenberg", "why": "Names your silence: a boundary held cleanly ends; coldness that teaches a lesson is punishment, not power."}] },
+    "trust": { picks: [{"source": "Can't Hurt Me — Goggins", "why": "Your self-trust is a filing cabinet: one kept promise a day funds the debt plan and answers 'not enough'."}, {"source": "Feminist Thought — bell hooks · Audre Lorde", "why": "Names both your dramas: the composed mask you send Marie and the hidden ledger — and the truth-telling cure."}, {"source": "Black Radical Thought — Fanon · Ngũgĩ · Diop · Baldwin", "why": "Fanon and Ngũgĩ trusted through years of no visible fruit — elders for your rebuild's silent first year."}], adaptive: [{"cond": "lowWave", "source": "When Things Fall Apart — Chödrön", "why": "On a trough day: the wave moves, awareness doesn't — trust the ground under you, not the forecast."}, {"cond": "aloofCharged", "source": "Attached — Levine & Heller", "why": "When Aloof flares: Marie's reach needs a response, not an explanation — each withdrawal debits the account."}, {"cond": "poorMeCharged", "source": "Nonviolent Communication — Rosenberg", "why": "When Poor Me flares: she loses trust when needs surface late, not when you have them. Table them now."}] },
+    "illusion": { picks: [{"source": "Feminist Thought — bell hooks · Audre Lorde", "why": "Names both your dramas: Aloof armor isn't strength, and the silence swallowing your needs isn't safety."}, {"source": "Deep Work — Newport", "why": "Money pressure will tempt hustle-busyness; depth, not saying yes to everything, gets you to the $4k floor."}, {"source": "Black Radical Thought — Fanon · Ngũgĩ · Diop · Baldwin", "why": "The Canadian market's verdict on your worth is a spell, not a fact — your double sight is the advantage."}], adaptive: [{"cond": "lowWave", "source": "When Things Fall Apart — Chödrön", "why": "On trough days the failures feel like proof of who you are; they're events a past pattern lived, not you."}, {"cond": "aloofCharged", "source": "The Inner Game of Tennis — Gallwey", "why": "When the Aloof flares, watch the impulse without judging — the story only runs while you believe it."}, {"cond": "poorMeCharged", "source": "Attached — Levine & Heller", "why": "Marie can't read your silent weight across an ocean — stating the need is the romance, not its failure."}] },
+  };
+
+  // what state is Beet in right now? (drives the adaptive pick)
+  function adaptiveCond() {
+    var rc = recentCharged();
+    if (rc && /aloof/i.test(rc.label || '')) return 'aloofCharged';
+    if (rc && /poor\s*me/i.test(rc.label || '')) return 'poorMeCharged';
+    var t = waveToday();
+    if (t && t.v <= 2) return 'lowWave';
+    if (t && t.v >= 5) return 'highWave';
+    return null;
+  }
+  var COND_LABEL = { lowWave: 'for the trough', highWave: 'for the peak', aloofCharged: 'for the aloof pattern', poorMeCharged: 'for the giving-from-empty pattern' };
+  function startHerePicks(id) {
+    var cur = CURATED[id];
+    if (!cur || !cur.picks || cur.picks.length < 3) return null;
+    var picks = cur.picks.slice(0, 3).map(function (p) { return { source: p.source, why: p.why }; });
+    var cond = adaptiveCond();
+    if (cond && cur.adaptive) {
+      for (var i = 0; i < cur.adaptive.length; i++) {
+        var a = cur.adaptive[i];
+        if (a.cond !== cond) continue;
+        var dup = -1;
+        picks.forEach(function (p, k) { if (p.source === a.source) dup = k; });
+        if (dup >= 0) { picks[dup].forToday = cond; picks[dup].why = a.why; }
+        else picks[2] = { source: a.source, why: a.why, forToday: cond };
+        break;
+      }
+    }
+    return picks;
+  }
+  function decorateStartHere(id) {
+    var picks = startHerePicks(id);
+    var c = DATA.find(function (x) { return x.id === id; });
+    var first = document.getElementById('cr-' + id + '-0');
+    if (!picks || !c || !first || document.querySelector('.starthere')) return;
+    var idxBySource = {};
+    c.crossReferences.forEach(function (r, i) { idxBySource[r.source] = i; });
+
+    var rows = '';
+    picks.forEach(function (p, k) {
+      var i = idxBySource[p.source];
+      if (i === undefined) return;
+      var col = typeof gsc === 'function' ? gsc(p.source) : '#C4A265';
+      rows += '<div class="sh-pick glass sh-p' + k + '" data-cr="' + i + '" role="button" tabindex="0">' +
+        '<span class="sh-mark" style="color:' + col + '">' + drawEnsoSVG('sh-' + id + '-' + i, { w: 4 }) + '</span>' +
+        '<div class="sh-body"><div class="sh-src" style="color:' + col + '">' + esc(p.source) +
+          (p.forToday ? '<span class="sh-today">' + (COND_LABEL[p.forToday] || 'for today') + '</span>' : '') + '</div>' +
+        '<div class="sh-why">' + esc(p.why) + '</div></div></div>';
+    });
+    if (!rows) return;
+
+    var box = document.createElement('div');
+    box.className = 'starthere';
+    box.innerHTML =
+      '<div class="sh-title">' + drawEnsoSVG('sh-t-' + id, { w: 6, gap: 1.1 }) + ' Start here</div>' +
+      '<div class="sh-sub">Three of the twenty-one, chosen for where you are. The rest will keep.</div>' + rows;
+    first.parentNode.insertBefore(box, first);
+
+    // mark the chosen cards down in the full list too
+    picks.forEach(function (p) {
+      var i = idxBySource[p.source];
+      if (i === undefined) return;
+      var card = document.getElementById('cr-' + id + '-' + i);
+      if (!card || card.classList.contains('sh-marked')) return;
+      card.classList.add('sh-marked');
+      var srcEl = card.querySelector('.crossref-source');
+      if (srcEl) {
+        var mk = document.createElement('span');
+        mk.className = 'sh-cardmark';
+        mk.innerHTML = drawEnsoSVG('shc-' + id + '-' + i, { w: 5, style: 'width:14px;height:14px' });
+        srcEl.insertAdjacentElement('afterend', mk);
+      }
+      var body = card.querySelector('.crossref-body');
+      if (body) {
+        var why = document.createElement('div');
+        why.className = 'sh-cardwhy';
+        why.textContent = p.why;
+        card.insertBefore(why, body);
+      }
+    });
+
+    box.querySelectorAll('.sh-pick').forEach(function (el) {
+      el.addEventListener('keydown', kbToggle);
+      el.onclick = function () {
+        var i = +el.dataset.cr;
+        var card = document.getElementById('cr-' + id + '-' + i);
+        if (!card) return;
+        if (!card.classList.contains('expanded') && typeof tCR === 'function') tCR(id, i, { stopPropagation: function () {} });
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+    });
+  }
+
   /* ---------- liquid glass finish ---------- */
   var GLASS_SEL = '.concept-card,.med-card,.eft-seq-card,.dtree-card,.drama-card,.forge-protocol,.crisis-card,.today-card,.today-tile,.path-card,.crossref-card,.edge-card,.zen-banner,.excerpt-block,.proto-section,.lg-item,.tbtn,.zen-btn,.zen-chip,.zsubnav button,.filter-btn,.zen-begin,.back-btn';
   function glassify(root) {
@@ -1062,8 +1174,13 @@
   }
   function route() {
     var h = location.hash.replace(/^#\/?/, '');
-    activate(VALID.indexOf(h) !== -1 ? h : 'today');
-    decorateConceptCards(); glassify(); tintCards();
+    var page = VALID.indexOf(h) !== -1 ? h : 'today';
+    activate(page);
+    // scope the decoration scans to the page being shown (subnav is rebuilt per activate)
+    var el = document.getElementById('page-' + page);
+    if (page === 'concepts') decorateConceptCards();
+    glassify(el); tintCards(el);
+    if (subnavEl) glassify(subnavEl);
   }
   function activate(page) {
     var g = groupOf(page);
@@ -1117,8 +1234,8 @@
     return doy % DATA.length;
   }
 
-  function renderToday() {
-    var page = document.getElementById('page-today');
+  var todayCtx = { mi: 0, ci: 0 };
+  function buildTodaySections() {
     var now = new Date();
     var mi = todayMedIndex(), m = MEDS[mi];
     var adapt = adaptiveChapter(), ci = adapt.ci, c = DATA[ci];
@@ -1128,6 +1245,7 @@
     var greet = slot === 'morning' ? 'Good morning, Beet.' : slot === 'day' ? 'Good afternoon, Beet.' : 'Good evening, Beet.';
     var st = weekStats();
     applyWaveTint();
+    todayCtx.mi = mi; todayCtx.ci = ci;
 
     var sec = {};
     sec.head =
@@ -1178,8 +1296,34 @@
     var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'chapter', 'quarter', 'practice', 'ledger']
       : slot === 'evening' ? ['head', 'wave', 'mirror', 'med', 'chapter', 'entry', 'quarter', 'practice', 'ledger']
       : ['head', 'med', 'wave', 'entry', 'chapter', 'quarter', 'mirror', 'practice', 'ledger'];
-    page.innerHTML = pageEnsoHTML('page-today') + order.map(function (k) { return sec[k] || ''; }).join('');
+    return { sec: sec, order: order };
+  }
 
+  function renderToday() {
+    var page = document.getElementById('page-today');
+    var b = buildTodaySections();
+    page.innerHTML = pageEnsoHTML('page-today') + b.order.map(function (k) {
+      return '<div class="tsec" data-tsec="' + k + '">' + (b.sec[k] || '') + '</div>';
+    }).join('');
+    bindToday(page);
+    tintCards(page);
+  }
+  // partial re-render: only the named sections are rebuilt (wave tap, edit, etc.)
+  function refreshToday(keys) {
+    var page = document.getElementById('page-today');
+    if (!page || !page.querySelector('[data-tsec]')) { renderToday(); return; }
+    var b = buildTodaySections();
+    keys.forEach(function (k) {
+      var w = page.querySelector('[data-tsec="' + k + '"]');
+      if (w) w.innerHTML = b.sec[k] || '';
+    });
+    bindToday(page);
+    glassify(page); tintCards(page);
+    if (PREFS.theme === 'light') applyInlineTheme(true, page);
+  }
+
+  function bindToday(page) {
+    var mi = todayCtx.mi, ci = todayCtx.ci;
     function on(id, fn) { var el = page.querySelector('#' + id); if (el) el.onclick = fn; }
     on('tdMed', function () { openReader('med', mi); });
     on('tdMedRead', function (e) { e.stopPropagation(); openReader('med', mi); });
@@ -1191,7 +1335,7 @@
     on('tdLedger', function () { navTo('ledger'); });
     on('tdQMap', function (e) { e.stopPropagation(); navTo('map'); });
     on('tdQ', function () { navTo('map'); });
-    on('tdWaveEdit', function () { waveEditing = true; renderToday(); glassify(page); });
+    on('tdWaveEdit', function () { waveEditing = true; refreshToday(['wave']); });
     on('tdEntryCta', function () { navTo('guide'); });
     on('tdMirrorMore', function () { navTo('mirror'); });
     var mSave = page.querySelector('#tdMirrorSave');
@@ -1200,7 +1344,7 @@
       journalWrite(v); mSave.textContent = 'Saved ✓'; buzz(15);
     };
     page.querySelectorAll('[data-wave]').forEach(function (b) {
-      b.onclick = function () { logWave(+b.dataset.wave, ''); waveEditing = false; renderToday(); glassify(page); buzz(20); };
+      b.onclick = function () { logWave(+b.dataset.wave, ''); waveEditing = false; refreshToday(['wave', 'med', 'chapter']); buzz(20); };
     });
     page.querySelectorAll('[data-entry]').forEach(function (r) {
       r.addEventListener('keydown', kbToggle);
@@ -1234,7 +1378,6 @@
         buzz(12);
       };
     });
-    tintCards(page);
   }
 
   /* ================================================================
@@ -1481,7 +1624,7 @@
   function wrapOpenD() {
     if (typeof window.openD !== 'function') return;
     var orig = window.openD;
-    window.openD = function (id) { orig(id); decorateDetail(id); themeDetailPanel(); glassify(document.getElementById('detailPanel')); tintCards(document.getElementById('detailPanel')); };
+    window.openD = function (id) { orig(id); decorateDetail(id); decorateStartHere(id); themeDetailPanel(); glassify(document.getElementById('detailPanel')); tintCards(document.getElementById('detailPanel')); };
   }
 
   /* ================================================================
@@ -1591,6 +1734,12 @@
             showToast('A new version is ready', 'Reload', function () { location.reload(); });
           }
         });
+      });
+      // kept-open PWAs never re-check otherwise: poll hourly + when returning to the app
+      var check = function () { reg.update().catch(function () {}); };
+      setInterval(check, 3600000);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') check();
       });
     }).catch(function () {});
   }
