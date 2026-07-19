@@ -89,6 +89,16 @@ var WATERS = {
     safety: '<p><strong>Safety architecture.</strong> This system stays deliberately on the near side of the threshold: regulation, alignment, cultivation — not altered states. The deep technologies surveyed — San !kia trance, possession accommodation, ordeal initiation — are communal machines requiring singers, witnesses, and elders. Pursued alone, that depth is not braver, only uncontained. Slow breathing only — no breath retention, no forced or rapid breathing techniques practiced alone. Salt water is for skin, never for drinking. Nothing here treats or replaces care for the body or mind where care is needed.</p>',
     load: '<p><strong>The total load.</strong> Daily: about eight minutes, plus seconds in the field. Weekly: about twenty-five minutes. Monthly or at thresholds: one bath. If the load ever grows past this, something has turned into performance — cut it back.</p>'
   },
+  appendix: [
+    {
+      id: 'afoserules', title: 'A.1 — The Àfọ̀ṣẹ Sentence', motif: 'lightning', color: '#C4A265',
+      body: '<p><strong>Not an affirmation.</strong> An affirmation asserts an identity and hopes repetition makes it true; it cannot be kept or broken, so it compounds nothing. The àfọ̀ṣẹ sentence is a speech-act binding speaker to deed — an oath in miniature, sized to a week. The manifestation mechanism is ẹsẹ̀: the legs.</p><p><strong>Five rules, all mandatory:</strong></p><ol class="wat-steps"><li><strong>Present tense or plain commitment, first person.</strong> “I send,” “I write,” “I say.”</li><li><strong>One clause.</strong> Every “if,” “unless,” “as long as,” “I’ll try” is armor smuggled into the syntax.</li><li><strong>Falsifiable at the next ledger.</strong> Did it come to pass must answer yes or no. Uncheckable sentences are affirmations in borrowed clothes.</li><li><strong>Sized to keep.</strong> The first entries tune the instrument; a kept small word outweighs a grand broken one. The elder’s word is weighty because a thousand small words were kept first.</li><li><strong>Yours to keep alone.</strong> No sentence whose completion depends on another person’s response. “I ask” is keepable; “they hear me” is not yours. The sentence ends where agency ends; the landing belongs to the field.</li></ol><p><strong>Timing:</strong> composed mid-week, from the cool; carried to the rite; spoken there into force. Tracked once at the next Kept Word review.</p>'
+    },
+    {
+      id: 'orikirules', title: 'A.2 — The Oríkì Entry', motif: 'star', color: '#DAA520',
+      body: '<p><strong>Etymology closes the loop:</strong> orí kì — to greet, to praise the head. Oríkì are head-feeding speech; the tradition says a well-recited oríkì makes the orí swell. Speaking an earned name at the morning anchor is therefore the same act as the orí address, by its oldest name.</p><p><strong>Form:</strong> attributive, concrete, deed-anchored — the-one-who constructions, deed-names, place-and-crossing names. Cumulative across a life. Traditionally given by others as often as self-composed; in this manual, whatever the source, nothing enters the file unratified.</p><p><strong>Entry format</strong> (mineral logic — name bound to memory): <em>the name — earned: one line naming the moment.</em></p><p><strong>The ratification test:</strong> speak the candidate once, aloud, alone. If the mouth accepts it without flinching and without inflating, it is earned — enter it. If it flatters, it is not yet yours; leave it outside the file.</p><p><strong>The loop, stated once:</strong> a kept àfọ̀ṣẹ that cost something is next season’s oríkì material. Word → deed → name → fed head → truer word. Run weekly, this loop is the section’s growth engine.</p>'
+    }
+  ],
   practices: [
     {
       id: 'anchor', num: '3.1', title: 'The Morning Anchor — Omi Tútù', fn: 'MAINTAIN', cadence: 'Daily · ~3 min', motif: 'sunrise', color: '#D4A038',
@@ -132,7 +142,7 @@ var WATERS = {
         'Speak into the water what is ready to leave. The sentences may be broken. Grief speaks in fragments; fragments suffice. This is the one place in the week where the case does not need to be airtight. If nothing comes, breathe and let the hands soak; silence in the container still counts.',
         'Close the release: “Water, carry it. I am reconciled to what I have named — or willing to become so.” Pour the water away — drain acceptable, earth better. Rinse hands under running water.',
         'The Cool Water: cool water to the face, then the crown. Address orí as in the Morning Anchor.',
-        'Speak one àfọ̀ṣẹ sentence — the word intended to come to pass. Present tense. First person. No subordinate clauses, no defense built in. One sentence; the discipline is the singularity.',
+        'Speak one àfọ̀ṣẹ sentence — the word intended to come to pass. Present tense. First person. No subordinate clauses, no defense built in. One sentence; the discipline is the singularity. The sentence is composed mid-week, from the cool, and carried to the rite — the rite is where the word is spoken into force, not where it is invented. Composing under the container’s intensity would violate the Deferral Rule in spirit.',
         'Optional libation close: a few drops of fresh water — never the salt — to earth or a living plant: “To those who came before — water on the ground.” Ground in Ontario reaches ground in Cameroon.',
         'Closure: “The water is finished. I remain.” The container is closed. Ritual without closure leaks into the evening.'
       ],
@@ -164,7 +174,9 @@ var WATERS = {
         'Oríkì — praise-names — are how Yoruba tradition speaks identity: not description but accumulated attributive names, earned and recited.',
         'One rule: entries are earned, not aspirational. A name is added only when a lived moment has demonstrated it — the one who stayed in the wave without narrating it; the one who asked plainly; the one who let the sentence stay broken.',
         'The Kept Word ledger is the natural source: a kept word that cost something is oríkì material.',
-        'On difficult mornings, one earned name is spoken aloud during the Morning Anchor.'
+        'On difficult mornings, one earned name is spoken aloud during the Morning Anchor.',
+        'The ratification test: speak the candidate once, aloud, alone. If the mouth accepts it without flinching and without inflating, it is earned — enter it. If it flatters, it is not yet yours; leave it outside the file.',
+        'The loop, stated once: a kept àfọ̀ṣẹ that cost something is next season’s oríkì material. Word → deed → name → fed head → truer word. Run weekly, this loop is the section’s growth engine.'
       ],
       note: 'For a self whose worth was organized around function-to-others, composing one’s own praise — in one’s own mouth, from evidence — is direct counter-training, and it is fully traditional.'
     },

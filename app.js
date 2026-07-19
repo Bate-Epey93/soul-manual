@@ -2452,14 +2452,24 @@ var CURATED = {
             (p.guided === 'reservoir' ? '<button class="tbtn" data-wguided="reservoir">Begin · guided</button>' : '') +
             (p.guided === 'twowaters' ? '<button class="tbtn" data-wguided="twowaters">Open the container · guided</button>' : '') +
           '</div>' +
+          (p.guided === 'twowaters' ? '<div id="twDraftHost"></div>' : '') +
           (p.ledger ? '<div id="kwHost"></div>' : '') +
           (p.oriki ? '<div id="okHost"></div>' : '') +
         '</div></div>';
     });
+    if (WATERS.appendix) {
+      h += '<div class="today-sec">Appendix — Construction Rules</div>';
+      WATERS.appendix.forEach(function (a) {
+        h += '<div class="ess-card wat-card glass" data-wat="' + a.id + '" style="border-left:3px solid ' + a.color + '">' +
+          '<div class="wat-head"><div class="ess-kicker" style="color:' + a.color + '">Appendix</div></div>' +
+          '<div class="ess-title">' + motifSVG(a.motif, 'watapp-' + a.id, { color: a.color }) + ' ' + a.title + '</div>' +
+          '<div class="ess-body">' + a.body + '</div></div>';
+      });
+    }
     page.innerHTML = h;
     page.querySelectorAll('.wat-card').forEach(function (card) {
       card.onclick = function (e) {
-        if (e.target.closest('button,input,textarea,#kwHost,#okHost')) return;
+        if (e.target.closest('button,input,textarea,#kwHost,#okHost,#twDraftHost')) return;
         card.classList.toggle('open');
       };
     });
@@ -2468,9 +2478,31 @@ var CURATED = {
     page.querySelectorAll('[data-wguided]').forEach(function (b) {
       b.onclick = function (e) { e.stopPropagation(); if (b.dataset.wguided === 'reservoir') openReservoir(); else openTwoWaters(); };
     });
-    renderKeptWord(); renderOriki();
+    renderKeptWord(); renderOriki(); renderTwDraft();
     glassify(page); tintCards(page);
     if (PREFS.theme === 'light') applyInlineTheme(true, page);
+  }
+
+  /* ---- mid-week àfọ̀ṣẹ draft (A.1 timing: composed from the cool, carried to the rite) ---- */
+  function renderTwDraft() {
+    var host = document.getElementById('twDraftHost'); if (!host) return;
+    var s = afoseStore();
+    host.innerHTML =
+      '<div class="kw-label">Compose for the rite — mid-week, from the cool. One clause · falsifiable · sized to keep · yours alone <em>(A.1)</em></div>' +
+      '<textarea class="mirror-input kw-inp" id="twDraft" rows="1" placeholder="I …">' + esc(s.draft || '') + '</textarea>' +
+      '<div class="wat-note" id="twArmor" style="display:none">An “if / unless / I’ll try” in the syntax — armor smuggled in? One clause (A.1, rule 2).</div>' +
+      '<div class="today-actions"><button class="tbtn ghost" id="twDraftSave">' + (s.draft ? 'Held — carried to the rite' : 'Hold the sentence') + '</button></div>';
+    var inp = host.querySelector('#twDraft'), warn = host.querySelector('#twArmor'), btn = host.querySelector('#twDraftSave');
+    function check() { warn.style.display = /\b(if|unless|as long as|try to|i.ll try|hopefully|maybe)\b/i.test(inp.value) ? 'block' : 'none'; }
+    inp.oninput = function () { check(); btn.textContent = 'Hold the sentence'; };
+    check();
+    btn.onclick = function () {
+      var s2 = afoseStore();
+      var v = inp.value.trim();
+      if (v) s2.draft = v; else delete s2.draft;
+      saveStore(AFK, s2); buzz(12);
+      btn.textContent = v ? 'Held — carried to the rite' : 'Hold the sentence';
+    };
   }
 
   /* ---- Kept Word ledger (3.5) ---- */
@@ -2520,6 +2552,7 @@ var CURATED = {
         return '<div class="ok-entry"><div class="ok-name">' + motifSVG('star', 'ok-' + n.t, { color: '#DAA520', style: 'width:13px;height:13px;margin-right:6px;vertical-align:-2px' }) + '“' + esc(n.name) + '”</div>' + (n.moment ? '<div class="ok-moment">' + esc(n.moment) + '</div>' : '') + '</div>';
       }).join('') : '<div class="mj-empty">No names yet. The first one is earned, not written.</div>') + '</div>' +
       '<div class="kw-label">Add a name — only when a lived moment has demonstrated it</div>' +
+      '<div class="wat-note">Ratify first: speak it once, aloud, alone. If the mouth accepts it without flinching and without inflating, it is earned. If it flatters, leave it outside the file <em>(A.2)</em>.</div>' +
       '<textarea class="mirror-input kw-inp" id="okName" rows="1" placeholder="the one who…"></textarea>' +
       '<textarea class="mirror-input kw-inp" id="okMoment" rows="1" placeholder="the moment that earned it"></textarea>' +
       '<div class="today-actions"><button class="tbtn" id="okAdd">Enter the name</button></div>';
@@ -2606,7 +2639,7 @@ var CURATED = {
     { t: 'Speak what leaves', phrase: 'The sentences may be broken', sub: 'Grief speaks in fragments; fragments suffice. This is the one place in the week where the case does not need to be airtight.', btn: 'Ready to close the release', color: '#8B6F47' },
     { t: 'Close the release', phrase: '“Water, carry it. I am reconciled to what I have named — or willing to become so.”', sub: 'Pour the water away — drain acceptable, earth better. Rinse hands under running water.', btn: 'Poured', color: '#8B6F47' },
     { t: 'The Cool Water', phrase: 'Cool water to the face, then the crown', sub: 'Address orí, as in the morning: “Orí mi, I greet you.”', btn: 'Continue', color: WATER_BLUE },
-    { t: 'One àfọ̀ṣẹ sentence', input: true, sub: 'The word intended to come to pass. Present tense. First person. No subordinate clauses, no defense built in. One sentence — the discipline is the singularity. It becomes next week’s Kept Word review.', btn: 'Spoken — set it down', color: WATER_BLUE },
+    { t: 'One àfọ̀ṣẹ sentence', input: true, sub: 'Composed mid-week, from the cool — the rite is where the word is spoken into force, not where it is invented. Present tense. First person. One clause. Falsifiable. Sized to keep. Yours to keep alone. It becomes next week’s Kept Word review.', btn: 'Spoken — set it down', color: WATER_BLUE },
     { t: 'Libation — optional', phrase: '“To those who came before — water on the ground.”', sub: 'A few drops of fresh water — never the salt — to earth or a living plant. Ground in Ontario reaches ground in Cameroon.', btn: 'Continue', skip: true, color: WATER_BLUE },
     { t: 'Closure', phrase: '“The water is finished. I remain.”', sub: 'The container is closed. Nothing is decided inside the rite — whatever surfaced rides the wave at least one night. Decisions and initiations issue only from the cool.', btn: 'Finish', end: true, color: WATER_BLUE }
   ];
@@ -2650,9 +2683,13 @@ var CURATED = {
         Z.zChips.style.display = 'flex';
         Z.zChips.innerHTML = '<textarea class="mirror-input tw-input" id="twAfose" rows="2" placeholder="I …"></textarea>';
         afInput = Z.zChips.querySelector('#twAfose');
+        var held = afoseStore().draft;
+        if (held) { afInput.value = held; Z.zHint.textContent = 'the sentence you held mid-week — spoken here into force'; }
         ctlBtn(st.btn, 'zen-btn', function () {
           var v = afInput.value.trim();
-          if (v) { var s = afoseStore(); s.afose.push({ t: Date.now(), text: v }); s.afose = s.afose.slice(-100); saveStore(AFK, s); }
+          var s = afoseStore();
+          if (v) { s.afose.push({ t: Date.now(), text: v }); s.afose = s.afose.slice(-100); }
+          delete s.draft; saveStore(AFK, s);
           go(i + 1);
         });
       } else {
