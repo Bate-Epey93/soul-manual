@@ -650,3 +650,78 @@ body.light .crossref-card.sh-marked{background:rgba(138,107,52,.06)!important}
 .zen-scale button::after{content:'';position:absolute;inset:-6px;border-radius:50%}
 .zgear::after{content:'';position:absolute;inset:-5px;border-radius:50%}
 .zen-iconbtn::after{content:'';position:absolute;inset:-4px;border-radius:50%}
+
+/* ---------------------------------------------------------------- */
+/* v15 — RETURN TO ESSENCE + THE WATERS                             */
+/* ---------------------------------------------------------------- */
+.ess-card{border-radius:16px;padding:20px;margin-bottom:14px;background:rgba(255,255,255,.022);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ess-kicker{font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:7px}
+.ess-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:#E8DCC8;line-height:1.3}
+.ess-title .enso{width:20px;height:20px;vertical-align:-3px}
+.ess-body{max-height:0;overflow:hidden;transition:max-height .5s ease}
+.ess-card.open .ess-body{max-height:6000px}
+.ess-text{font-size:14.5px;line-height:1.85;color:rgba(255,255,255,.72);margin-top:12px}
+.ess-text p{margin-bottom:12px}
+.ess-oplink{font-family:monospace;font-size:10px;letter-spacing:.08em;color:rgba(126,158,142,.85)!important}
+.ess-part{margin:12px 0;padding:13px 15px;border-radius:12px;background:rgba(255,255,255,.02)}
+.ess-part-head{font-size:14px;margin-bottom:5px}
+.ess-part-head .enso{width:15px;height:15px;vertical-align:-2px;margin-right:4px}
+.ess-part-text{font-size:13.5px;line-height:1.75;color:rgba(255,255,255,.66)}
+.ess-trad{margin:10px 0;padding:12px 15px;border-radius:12px;background:rgba(255,255,255,.02)}
+.ess-trad-name{font-family:'Cormorant Garamond',serif;font-size:16px;color:#E8DCC8;margin-bottom:6px}
+.ess-trad-row{font-size:12px;line-height:1.6;color:rgba(255,255,255,.6)}
+.ess-trad-row span{font-family:monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(196,162,101,.6);display:inline-block;width:76px}
+body.light .ess-title,body.light .ess-trad-name{color:#33291A}
+body.light .ess-text{color:rgba(45,35,20,.8)}
+body.light .ess-part-text,body.light .ess-trad-row{color:rgba(45,35,20,.72)}
+body.light .ess-part,body.light .ess-trad{background:rgba(90,70,40,.05)}
+
+/* waters */
+.wprin{border-radius:16px;padding:18px 20px;margin-bottom:18px;background:rgba(196,162,101,.05)}
+.wprin-body{max-height:0;overflow:hidden;transition:max-height .5s ease;font-size:13.5px;line-height:1.8;color:rgba(255,255,255,.7)}
+.wprin.open .wprin-body{max-height:4000px;margin-top:10px}
+.wprin-body p{margin-bottom:12px}
+body.light .wprin-body{color:rgba(45,35,20,.78)}
+.wat-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.wfn{font-family:monospace;font-size:8px;letter-spacing:.16em;padding:3px 9px;border-radius:9px;flex-shrink:0}
+.wfn.repair{background:rgba(184,165,217,.14);color:#B8A5D9}
+.wfn.maintain{background:rgba(123,160,91,.14);color:#7BA05B}
+.wfn.grow{background:rgba(218,165,32,.14);color:#DAA520}
+body.light .wfn.repair{background:rgba(110,80,160,.12);color:#5E4A85}
+body.light .wfn.maintain{background:rgba(80,120,50,.12);color:#4A6B2E}
+body.light .wfn.grow{background:rgba(160,120,20,.12);color:#7A5C10}
+.wat-steps{margin:12px 0 4px;padding-left:20px}
+.wat-steps li{font-size:13.5px;line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:9px}
+body.light .wat-steps li{color:rgba(45,35,20,.78)}
+.wat-note{font-size:12.5px;line-height:1.7;font-style:italic;color:rgba(196,162,101,.75);margin:10px 0 4px}
+body.light .wat-note{color:#8A6B34}
+
+/* kept word + oríkì */
+.kw-label{font-family:monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);margin:12px 0 6px}
+.kw-label em{color:rgba(196,162,101,.7);text-transform:none;letter-spacing:0;font-size:10px}
+body.light .kw-label{color:rgba(60,45,25,.55)}
+.kw-inp{min-height:40px}
+.kw-entry{padding:11px 14px;border-radius:11px;background:rgba(255,255,255,.02);margin-bottom:8px}
+.kw-line{font-size:13px;line-height:1.6;color:rgba(255,255,255,.72);margin-top:3px}
+.kw-line span{font-family:monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#7BA05B;display:inline-block;width:52px}
+.kw-line.un span{color:#B85C38}
+.kw-line.word span{color:#C4A265}
+body.light .kw-line{color:rgba(45,35,20,.78)}
+.kw-list{margin-top:14px}
+.ok-entry{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.ok-name{font-family:'Cormorant Garamond',serif;font-size:17px;color:#E8DCC8}
+.ok-moment{font-size:12px;color:rgba(255,255,255,.45);margin-top:3px;font-style:italic}
+body.light .ok-name{color:#33291A}
+body.light .ok-moment{color:rgba(60,45,25,.6)}
+
+/* two waters overlay input */
+.tw-input{width:min(86vw,420px);font-size:16px}
+
+/* today return card + oríkì line */
+.ess-prac-line{font-size:12.5px;line-height:1.65;color:rgba(255,255,255,.55);margin-top:8px}
+.ess-prac-line strong{color:#7E9E8E;font-weight:600}
+body.light .ess-prac-line{color:rgba(45,35,20,.68)}
+body.light .ess-prac-line strong{color:#4A6B5A}
+.today-oriki{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:rgba(218,165,32,.75);margin:-16px 0 22px}
+body.light .today-oriki{color:#8A6B34}
+.sh-ess .sh-src{font-size:12px}

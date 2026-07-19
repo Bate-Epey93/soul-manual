@@ -530,12 +530,25 @@ var CURATED = {
     });
     if (!rows) return;
 
+    var essRow = essenceRowFor(id);
+    if (essRow) {
+      rows += '<div class="sh-pick glass sh-ess" role="button" tabindex="0">' +
+        '<span class="sh-mark" style="color:#5A7B8C">' + drawEnsoSVG('sh-ess-' + id, { w: 4, gap: 1.4 }) + '</span>' +
+        '<div class="sh-body"><div class="sh-src" style="color:#7E9E8E">From Return to Essence · ' + esc(essRow.label) + '</div>' +
+        '<div class="sh-why">' + esc(essRow.why) + '</div></div></div>';
+    }
+
     var box = document.createElement('div');
     box.className = 'starthere';
     box.innerHTML =
       '<div class="sh-title">' + drawEnsoSVG('sh-t-' + id, { w: 6, gap: 1.1 }) + ' Start here</div>' +
       '<div class="sh-sub">Three of the twenty-one, chosen for where you are. The rest will keep.</div>' + rows;
     first.parentNode.insertBefore(box, first);
+    var essEl = box.querySelector('.sh-ess');
+    if (essEl && essRow) {
+      essEl.addEventListener('keydown', kbToggle);
+      essEl.onclick = function () { essRow.open(); };
+    }
 
     // mark the chosen cards down in the full list too
     picks.forEach(function (p) {
@@ -560,7 +573,7 @@ var CURATED = {
       }
     });
 
-    box.querySelectorAll('.sh-pick').forEach(function (el) {
+    box.querySelectorAll('.sh-pick:not(.sh-ess)').forEach(function (el) {
       el.addEventListener('keydown', kbToggle);
       el.onclick = function () {
         var i = +el.dataset.cr;
@@ -606,7 +619,8 @@ var CURATED = {
     'page-forge': 'flame', 'page-edge': 'wave', 'page-dramas': 'fog',
     'page-arch': 'torii', 'page-mirror': 'eye', 'page-crisis': 'warning',
     'page-trees': 'fork', 'page-eft': 'target', 'page-guide': 'road',
-    'page-meditations': 'lotus', 'page-ledger': 'chart'
+    'page-meditations': 'lotus', 'page-ledger': 'chart',
+    'page-essence': 'yinyang', 'page-waters': 'drop'
   };
   function pageEnsoHTML(pageId) {
     return '<div class="page-enso">' +
@@ -1147,6 +1161,22 @@ var CURATED = {
       if (m.carry) h += '<div class="reader-carry">“' + m.carry + '”</div>';
       h += '<div class="reader-fin"></div>';
       h += '<div class="reader-actions"><button class="tbtn" id="rAct1"><span class="zb-orb" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265)"></span> Begin solar plexus breathing</button></div>';
+    } else if (kind === 'essence') {
+      var s = ESSENCE.sections[i];
+      rEls.rKicker.textContent = ('Return to Essence · ' + s.kicker).toUpperCase();
+      h += '<h1 class="reader-title">' + motifSVG(s.motif, 'ess-' + s.id, { color: s.color, style: 'width:26px;height:26px;margin-right:8px;vertical-align:-3px' }) + s.title + '</h1>';
+      h += '<div class="reader-text">' + s.body + '</div>';
+      if (s.parts) s.parts.forEach(function (p) {
+        h += '<div class="reader-block"><div class="reader-block-label" style="color:' + s.color + '">' + motifSVG(p.motif, 'essp-' + p.name, { style: 'width:14px;height:14px;margin-right:5px;vertical-align:-2px' }) + p.name + ' — ' + p.gloss + '</div>' + p.text + '</div>';
+      });
+      if (s.body2) h += '<div class="reader-text">' + s.body2 + '</div>';
+      if (s.traditions) s.traditions.forEach(function (t) {
+        h += '<div class="reader-block"><div class="reader-block-label">' + t.name + ' · ' + t.force + '</div>Seat: ' + t.seat + ' · Return: ' + t.ret + ' · Residence: ' + t.res + ' · Growth: ' + t.grow + '</div>';
+      });
+      h += '<div class="reader-fin"></div>';
+      if (['return', 'residence', 'conduction'].indexOf(s.id) !== -1) {
+        h += '<div class="reader-actions"><button class="tbtn ghost" id="rAct1">Open the practicum &rarr;</button></div>';
+      }
     } else {
       var c = DATA[i];
       rEls.rKicker.textContent = ('Chapter ' + c.number + ' · ' + c.section).toUpperCase();
@@ -1165,6 +1195,8 @@ var CURATED = {
     var act = rEls.rBody.querySelector('#rAct1');
     if (act) act.onclick = kind === 'med'
       ? function () { layerHandoff(closeReader, function () { openMedBreath(i); }); }
+      : kind === 'essence'
+      ? function () { closeReader(false); navTo('waters'); }
       : function () { closeReader(false); navTo('concepts'); openD(DATA[i].id); themeDetailPanel(); };
     rEls.rScroll.scrollTop = 0; rEls.rProg.style.width = '0';
     reader.classList.add('open');
@@ -1182,12 +1214,12 @@ var CURATED = {
      ================================================================ */
   var GROUPS = [
     { id: 'today', label: 'Today', motif: 'sun', pages: ['today'] },
-    { id: 'learn', label: 'Learn', motif: null, enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'arch', 'mirror', 'dramas', 'guide'] },
-    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'eft', 'forge', 'edge', 'ledger'] },
+    { id: 'learn', label: 'Learn', motif: null, enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'essence', 'arch', 'mirror', 'dramas', 'guide'] },
+    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'eft', 'forge', 'edge', 'ledger'] },
     { id: 'mapg', label: 'Map', motif: 'road', pages: ['map', 'trees'] },
     { id: 'crisisg', label: 'Crisis', motif: 'warning', pages: ['crisis'] }
   ];
-  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
+  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
   var VALID = Object.keys(PAGE_LABELS);
   var groupChoice = {}; // last-visited page per group
   var navEl = null, subnavEl = null;
@@ -1246,6 +1278,8 @@ var CURATED = {
     if (page === 'today') renderToday();
     if (page === 'ledger') renderLedger();
     if (page === 'map') decorateMap();
+    if (page === 'essence') renderEssence();
+    if (page === 'waters') renderWaters();
     if (page === 'guide') decorateEntry();
     if (page === 'eft') refreshEftStats();
     if (page === 'mirror') decorateMirror();
@@ -1261,7 +1295,7 @@ var CURATED = {
 
   function createPages() {
     var anchor = document.getElementById('page-concepts');
-    ['today', 'ledger'].forEach(function (id) {
+    ['today', 'ledger', 'essence', 'waters'].forEach(function (id) {
       var d = document.createElement('div');
       d.className = 'page'; d.id = 'page-' + id;
       anchor.parentNode.insertBefore(d, anchor);
@@ -1296,7 +1330,14 @@ var CURATED = {
     sec.head =
       '<div class="today-wavewash"></div>' +
       '<div class="today-date">' + DAYS[now.getDay()].toUpperCase() + ' · ' + MONTHS[now.getMonth()].toUpperCase() + ' ' + now.getDate() + '</div>' +
-      '<div class="today-greet">' + greet + '</div>';
+      '<div class="today-greet">' + greet + '</div>' +
+      (function () {
+        if (slot !== 'morning') return '';
+        var names = orikiAll();
+        if (!names.length) return '';
+        var n = names[Math.floor(Date.now() / 864e5) % names.length];
+        return '<div class="today-oriki">“' + esc(n.name) + '” — spoken aloud, it counts.</div>';
+      })();
 
     sec.wave = waveCardHTML(slot);
 
@@ -1316,6 +1357,19 @@ var CURATED = {
     sec.entry = entryTodayHTML();
     sec.mirror = mirrorCardHTML();
     sec.quarter = quarterCardHTML();
+
+    var er = essenceReadOfDay(), ws = watersSuggestion(slot);
+    if (er && ws) {
+      todayCtx.essRead = er.i; todayCtx.essPrac = ws;
+      sec.essence =
+        '<div class="today-sec">Return to Essence</div>' +
+        '<div class="today-card" id="tdEss">' +
+          '<div class="tc-kicker" style="color:' + er.s.color + '">' + motifSVG(er.s.motif, 'ess-' + er.s.id) + ' ' + er.s.kicker + '</div>' +
+          '<div class="tc-title" style="font-size:19px">' + er.s.title + '</div>' +
+          '<div class="ess-prac-line">' + motifSVG('drop', 'td-ws', { color: '#5A7B8C', style: 'width:13px;height:13px;vertical-align:-2px;margin-right:5px' }) + '<strong>' + ws.label + '</strong> — ' + ws.sub + '</div>' +
+          '<div class="today-actions"><button class="tbtn" id="tdEssRead">Read</button><button class="tbtn ghost" id="tdEssPrac">' + (ws.guided ? 'Begin' : 'The practice') + '</button></div>' +
+        '</div>';
+    }
 
     sec.chapter =
       '<div class="today-sec">' + (adapt.reason ? 'For You, Today' : 'Suggested Chapter') + '</div>' +
@@ -1338,9 +1392,9 @@ var CURATED = {
       : 'Your ledger is empty. One breath begins it. &rarr;';
     sec.ledger = '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
 
-    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'chapter', 'quarter', 'practice', 'ledger']
-      : slot === 'evening' ? ['head', 'wave', 'mirror', 'med', 'chapter', 'entry', 'quarter', 'practice', 'ledger']
-      : ['head', 'med', 'wave', 'entry', 'chapter', 'quarter', 'mirror', 'practice', 'ledger'];
+    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'essence', 'chapter', 'quarter', 'practice', 'ledger']
+      : slot === 'evening' ? ['head', 'wave', 'mirror', 'essence', 'med', 'chapter', 'entry', 'quarter', 'practice', 'ledger']
+      : ['head', 'med', 'wave', 'entry', 'essence', 'chapter', 'quarter', 'mirror', 'practice', 'ledger'];
     return { sec: sec, order: order };
   }
 
@@ -1382,6 +1436,15 @@ var CURATED = {
     on('tdQ', function () { navTo('map'); });
     on('tdWaveEdit', function () { waveEditing = true; refreshToday(['wave']); });
     on('tdEntryCta', function () { navTo('guide'); });
+    on('tdEss', function () { if (todayCtx.essRead != null) openReader('essence', todayCtx.essRead); });
+    on('tdEssRead', function (e) { e.stopPropagation(); if (todayCtx.essRead != null) openReader('essence', todayCtx.essRead); });
+    on('tdEssPrac', function (e) {
+      e.stopPropagation();
+      var ws = todayCtx.essPrac; if (!ws) return;
+      if (ws.guided === 'twowaters') openTwoWaters();
+      else if (ws.guided === 'reservoir') openReservoir();
+      else { navTo('waters'); setTimeout(function () { var el = document.querySelector('[data-wat="' + ws.id + '"]'); if (el) { el.classList.add('open'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 350); }
+    });
     on('tdMirrorMore', function () { navTo('mirror'); });
     var mSave = page.querySelector('#tdMirrorSave');
     if (mSave) mSave.onclick = function () {
@@ -2309,6 +2372,346 @@ var CURATED = {
       } catch (e) { alert('That file could not be read as a Soul Manual backup.'); }
     };
     rd.readAsText(file);
+  }
+
+  /* ================================================================
+     RETURN TO ESSENCE + THE WATERS  (The Grammar of Return)
+     Honors the Anti-Performance Clause (3.9): nothing here logs to the
+     practice ledger, appears in the heatmap, or counts a streak.
+     ================================================================ */
+  var KWK = 'soulzen-keptword', OKK = 'soulzen-oriki', AFK = 'soulzen-waters';
+  function kwAll() { try { return JSON.parse(localStorage.getItem(KWK)) || []; } catch (e) { return []; } }
+  function orikiAll() { try { return JSON.parse(localStorage.getItem(OKK)) || []; } catch (e) { return []; } }
+  function afoseStore() { var s = store(AFK); s.afose = s.afose || []; return s; }
+  function latestAfose() { var a = afoseStore().afose; return a.length ? a[a.length - 1] : null; }
+
+  function fnChip(fn) {
+    if (!fn) return '';
+    var cls = fn === 'REPAIR' ? 'repair' : fn === 'GROW' ? 'grow' : 'maintain';
+    return '<span class="wfn ' + cls + '">' + fn + '</span>';
+  }
+
+  function renderEssence() {
+    var page = document.getElementById('page-essence');
+    if (!page || page.dataset.done || typeof ESSENCE === 'undefined') return;
+    page.dataset.done = '1';
+    var h = pageEnsoHTML('page-essence') +
+      '<div style="margin-bottom:20px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">' + ESSENCE.title + '</h2>' +
+      '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">' + ESSENCE.sub + '</p></div>';
+    ESSENCE.sections.forEach(function (s, i) {
+      h += '<div class="ess-card glass" data-ess="' + i + '" style="border-left:3px solid ' + s.color + '">' +
+        '<div class="ess-kicker" style="color:' + s.color + '">' + s.kicker + '</div>' +
+        '<div class="ess-title">' + motifSVG(s.motif, 'ess-' + s.id, { color: s.color }) + ' ' + s.title + '</div>' +
+        '<div class="ess-body" id="essb-' + i + '">' +
+          '<div class="ess-text">' + s.body + '</div>' +
+          (s.parts ? s.parts.map(function (p) {
+            return '<div class="ess-part"><div class="ess-part-head" style="color:' + s.color + '">' + motifSVG(p.motif, 'essp-' + p.name) + ' <strong>' + p.name + '</strong> — ' + p.gloss + '</div><div class="ess-part-text">' + p.text + '</div></div>';
+          }).join('') : '') +
+          (s.body2 ? '<div class="ess-text">' + s.body2 + '</div>' : '') +
+          (s.traditions ? s.traditions.map(function (t) {
+            return '<div class="ess-trad"><div class="ess-trad-name">' + t.name + ' · <em>' + t.force + '</em></div><div class="ess-trad-row"><span>Seat</span>' + t.seat + '</div><div class="ess-trad-row"><span>Return</span>' + t.ret + '</div><div class="ess-trad-row"><span>Residence</span>' + t.res + '</div><div class="ess-trad-row"><span>Growth</span>' + t.grow + '</div></div>';
+          }).join('') : '') +
+          '<div class="today-actions"><button class="tbtn" data-essread="' + i + '">Read</button>' +
+          (['return', 'residence', 'conduction'].indexOf(s.id) !== -1 ? '<button class="tbtn ghost" data-esswaters="1">The practicum &rarr;</button>' : '') +
+          '</div>' +
+        '</div></div>';
+    });
+    page.innerHTML = h;
+    page.querySelectorAll('.ess-card').forEach(function (card) {
+      card.onclick = function (e) {
+        if (e.target.closest('button')) return;
+        card.classList.toggle('open');
+      };
+    });
+    page.querySelectorAll('[data-essread]').forEach(function (b) {
+      b.onclick = function (e) { e.stopPropagation(); openReader('essence', +b.dataset.essread); };
+    });
+    page.querySelectorAll('[data-esswaters]').forEach(function (b) {
+      b.onclick = function (e) { e.stopPropagation(); navTo('waters'); };
+    });
+    if (PREFS.theme === 'light') applyInlineTheme(true, page);
+  }
+
+  function renderWaters() {
+    var page = document.getElementById('page-waters');
+    if (!page || typeof WATERS === 'undefined') return;
+    var h = pageEnsoHTML('page-waters') +
+      '<div style="margin-bottom:18px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">' + WATERS.title + '</h2>' +
+      '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">' + WATERS.sub + '</p></div>';
+    h += '<div class="wprin glass"><div class="ess-kicker" style="color:#C4A265">Principles before procedure</div>' +
+      '<div class="wprin-body">' + WATERS.principles.growth + WATERS.principles.polarity + WATERS.principles.safety + WATERS.principles.load + '</div>' +
+      '<button class="eft-read-link" id="wPrinMore">read the principles ▾</button></div>';
+    WATERS.practices.forEach(function (p, i) {
+      h += '<div class="ess-card wat-card glass" data-wat="' + p.id + '" style="border-left:3px solid ' + p.color + '">' +
+        '<div class="wat-head"><div class="ess-kicker" style="color:' + p.color + '">' + p.num + (p.cadence ? ' · ' + p.cadence : '') + '</div>' + fnChip(p.fn) + '</div>' +
+        '<div class="ess-title">' + motifSVG(p.motif, 'wat-' + p.id, { color: p.color }) + ' ' + p.title + '</div>' +
+        '<div class="ess-body">' +
+          '<ol class="wat-steps">' + p.steps.map(function (st) { return '<li>' + st + '</li>'; }).join('') + '</ol>' +
+          (p.note ? '<div class="wat-note">' + p.note + '</div>' : '') +
+          '<div class="today-actions">' +
+            (p.guided === 'reservoir' ? '<button class="tbtn" data-wguided="reservoir">Begin · guided</button>' : '') +
+            (p.guided === 'twowaters' ? '<button class="tbtn" data-wguided="twowaters">Open the container · guided</button>' : '') +
+          '</div>' +
+          (p.ledger ? '<div id="kwHost"></div>' : '') +
+          (p.oriki ? '<div id="okHost"></div>' : '') +
+        '</div></div>';
+    });
+    page.innerHTML = h;
+    page.querySelectorAll('.wat-card').forEach(function (card) {
+      card.onclick = function (e) {
+        if (e.target.closest('button,input,textarea,#kwHost,#okHost')) return;
+        card.classList.toggle('open');
+      };
+    });
+    var pm = page.querySelector('#wPrinMore');
+    pm.onclick = function () { var w = page.querySelector('.wprin'); w.classList.toggle('open'); pm.textContent = w.classList.contains('open') ? 'fold the principles ▴' : 'read the principles ▾'; };
+    page.querySelectorAll('[data-wguided]').forEach(function (b) {
+      b.onclick = function (e) { e.stopPropagation(); if (b.dataset.wguided === 'reservoir') openReservoir(); else openTwoWaters(); };
+    });
+    renderKeptWord(); renderOriki();
+    glassify(page); tintCards(page);
+    if (PREFS.theme === 'light') applyInlineTheme(true, page);
+  }
+
+  /* ---- Kept Word ledger (3.5) ---- */
+  function renderKeptWord() {
+    var host = document.getElementById('kwHost'); if (!host) return;
+    var la = latestAfose();
+    var entries = kwAll();
+    var lastEntry = entries[entries.length - 1];
+    var prefill = la && (!lastEntry || la.t > lastEntry.t) ? la.text : '';
+    var kept = 0, unkept = 0;
+    entries.forEach(function (e) { if (e.kept) kept++; if (e.unkept) unkept++; });
+    var h = '<div class="kw-form">' +
+      '<div class="kw-label">Kept — one word spoken this week that came to pass' + (lastEntry && lastEntry.word ? ' <em>(last week’s word: “' + esc(lastEntry.word) + '”)</em>' : '') + '</div>' +
+      '<textarea class="mirror-input kw-inp" id="kwKept" rows="1"></textarea>' +
+      '<div class="kw-label">Unkept — recorded, not prosecuted</div>' +
+      '<textarea class="mirror-input kw-inp" id="kwUnkept" rows="1"></textarea>' +
+      '<div class="kw-label">This week’s word — one àfọ̀ṣẹ sentence, sized to be completable</div>' +
+      '<textarea class="mirror-input kw-inp" id="kwWord" rows="1">' + esc(prefill) + '</textarea>' +
+      '<div class="today-actions"><button class="tbtn" id="kwSave">Enter the week</button>' +
+      (entries.length ? '<button class="tbtn ghost" id="kwRead">Read the ledger</button>' : '') + '</div>' +
+      '<div class="kw-list" id="kwList" style="display:none">' +
+        '<div class="wat-note">' + kept + ' kept · ' + unkept + ' unkept across ' + entries.length + ' week' + (entries.length === 1 ? '' : 's') + ' — read quarterly, at most.</div>' +
+        entries.slice(-12).reverse().map(function (e) {
+          return '<div class="kw-entry"><div class="mj-date">' + dayLabel(e.t) + '</div>' +
+            (e.kept ? '<div class="kw-line"><span>kept</span>' + esc(e.kept) + '</div>' : '') +
+            (e.unkept ? '<div class="kw-line un"><span>unkept</span>' + esc(e.unkept) + '</div>' : '') +
+            (e.word ? '<div class="kw-line word"><span>word</span>' + esc(e.word) + '</div>' : '') + '</div>';
+        }).join('') + '</div>';
+    host.innerHTML = h;
+    host.querySelector('#kwSave').onclick = function () {
+      var k = host.querySelector('#kwKept').value.trim(), u = host.querySelector('#kwUnkept').value.trim(), w = host.querySelector('#kwWord').value.trim();
+      if (!k && !u && !w) return;
+      var a = kwAll(); a.push({ t: Date.now(), kept: k, unkept: u, word: w }); saveStore(KWK, a.slice(-200));
+      buzz(15); renderKeptWord();
+      if (PREFS.theme === 'light') applyInlineTheme(true, document.getElementById('page-waters'));
+    };
+    var rd = host.querySelector('#kwRead');
+    if (rd) rd.onclick = function () { var l = host.querySelector('#kwList'); l.style.display = l.style.display === 'none' ? 'block' : 'none'; };
+  }
+
+  /* ---- Oríkì file (3.7) ---- */
+  function renderOriki() {
+    var host = document.getElementById('okHost'); if (!host) return;
+    var names = orikiAll();
+    var h = '<div class="ok-list">' +
+      (names.length ? names.slice().reverse().map(function (n) {
+        return '<div class="ok-entry"><div class="ok-name">' + motifSVG('star', 'ok-' + n.t, { color: '#DAA520', style: 'width:13px;height:13px;margin-right:6px;vertical-align:-2px' }) + '“' + esc(n.name) + '”</div>' + (n.moment ? '<div class="ok-moment">' + esc(n.moment) + '</div>' : '') + '</div>';
+      }).join('') : '<div class="mj-empty">No names yet. The first one is earned, not written.</div>') + '</div>' +
+      '<div class="kw-label">Add a name — only when a lived moment has demonstrated it</div>' +
+      '<textarea class="mirror-input kw-inp" id="okName" rows="1" placeholder="the one who…"></textarea>' +
+      '<textarea class="mirror-input kw-inp" id="okMoment" rows="1" placeholder="the moment that earned it"></textarea>' +
+      '<div class="today-actions"><button class="tbtn" id="okAdd">Enter the name</button></div>';
+    host.innerHTML = h;
+    host.querySelector('#okAdd').onclick = function () {
+      var n = host.querySelector('#okName').value.trim(); if (!n) return;
+      var m = host.querySelector('#okMoment').value.trim();
+      var a = orikiAll(); a.push({ t: Date.now(), name: n, moment: m }); saveStore(OKK, a.slice(-100));
+      buzz(15); renderOriki();
+      if (PREFS.theme === 'light') applyInlineTheme(true, document.getElementById('page-waters'));
+    };
+  }
+
+  /* ---- guided Reservoir (3.3) — slow nasal breath, no retention, no logging ---- */
+  var WATER_BLUE = '#5A7B8C';
+  function openReservoir() {
+    openOverlay(WATER_BLUE);
+    Z.zKicker.textContent = 'THE RESERVOIR · Ẹ̀MÍ';
+    Z.zPhrase.textContent = 'The Reservoir';
+    Z.zSub.textContent = 'Attention two fingers below the navel. Slow nasal breath, exhale longer than inhale — no retention, no counting. The return of attention is the practice working.';
+    newSession();
+    var mins = 5;
+    Z.zChips.style.display = 'flex';
+    [5, 10, 15].forEach(function (v) {
+      var c = document.createElement('button');
+      c.className = 'zen-chip' + (v === mins ? ' sel' : '');
+      c.textContent = v + ' min';
+      c.onclick = function () { mins = v; Array.prototype.forEach.call(Z.zChips.children, function (x) { x.classList.remove('sel'); }); c.classList.add('sel'); };
+      Z.zChips.appendChild(c);
+    });
+    Z.zCtls.innerHTML = '';
+    ctlBtn('Begin', 'zen-btn', function () { startReservoir(mins); });
+  }
+  function startReservoir(mins) {
+    newSession(); resetSlots();
+    Z.zKicker.textContent = 'THE RESERVOIR · ' + mins + ' MIN';
+    Z.zRingSvg.style.display = 'block';
+    Z.zRingFill.style.strokeDasharray = RING_C;
+    Z.zRingFill.style.strokeDashoffset = 0;
+    Z.zCount.style.display = 'block';
+    Z.zSub.textContent = 'Two fingers below the navel. Return without commentary.';
+    var total = mins * 60, left = total;
+    Z.zCount.textContent = fmt(left);
+    ac(); chimeStart(); buzz(25);
+    function loop(pi) {
+      if (!S || S.paused) return;
+      var ph = pi === 0 ? ['Inhale', 4000, 1.28] : ['Exhale', 6000, 1];
+      Z.zPhrase.textContent = ph[0];
+      Z.zOrb.style.transition = 'transform ' + ph[1] + 'ms cubic-bezier(.4,0,.4,1)';
+      Z.zOrb.style.transform = 'scale(' + ph[2] + ')';
+      after(ph[1], function () { loop((pi + 1) % 2); });
+    }
+    loop(0);
+    every(1000, function () {
+      if (S && S.paused) return;
+      left--;
+      if (left <= 0) {
+        stopSession(); newSession();
+        chimeEnd(); buzz([40, 80, 40]);
+        Z.zCount.style.display = 'none';
+        Z.zPhrase.textContent = 'The deposit is made.';
+        Z.zSub.textContent = 'Unspectacular and cumulative — a longer fuse, a wider gap between wave and word.';
+        Z.zCtls.innerHTML = ''; ctlBtn('Close', 'zen-btn', function () { closeOverlay(false); });
+        return;
+      }
+      Z.zCount.textContent = fmt(left);
+      Z.zRingFill.style.strokeDashoffset = RING_C * (1 - left / total);
+    });
+    Z.zCtls.innerHTML = '';
+    var pp = ctlBtn('&#10073;&#10073;', 'zen-ctl main', function () {
+      if (!S) return;
+      if (S.paused) { S.paused = false; pp.innerHTML = '&#10073;&#10073;'; Z.zHint.textContent = ''; loop(0); }
+      else { S.paused = true; pp.innerHTML = '&#9654;'; Z.zHint.textContent = 'paused'; S.timers.forEach(clearTimeout); S.timers = []; Z.zOrb.style.transition = 'transform 1.5s ease'; Z.zOrb.style.transform = 'scale(1)'; Z.zPhrase.textContent = 'Paused'; }
+    });
+    ctlBtn('&#10005;', 'zen-ctl', function () { closeOverlay(false); });
+  }
+
+  /* ---- guided Two Waters (3.4) — the framed container; no logging ---- */
+  var TW_STEPS = [
+    { t: 'The Two Waters', sub: 'Two vessels · sea salt · warm water · cool fresh water. Phone in another room.', btn: 'Open the container', color: WATER_BLUE },
+    { t: 'Invocation', phrase: '“I open this water to carry what I name.”', sub: 'Say it aloud. The container is open until the closing line.', btn: 'Continue', color: WATER_BLUE },
+    { t: 'The Salt Water', phrase: 'Name the week’s residue', sub: 'Hold three pinches of salt before dissolving. Name it specifically, aloud — the argument rehearsed on the walk; the guilt absorbed that was not yours; the vigilance held where none was needed. Specificity is the work; generality is the mind negotiating.', btn: 'Named — dissolve the salt', color: '#8B6F47' },
+    { t: 'Hands in the water', timed: 60, sub: 'Both hands fully in the water. Stay at least a full minute. If nothing comes, breathe and let the hands soak — silence in the container still counts.', color: '#8B6F47' },
+    { t: 'Speak what leaves', phrase: 'The sentences may be broken', sub: 'Grief speaks in fragments; fragments suffice. This is the one place in the week where the case does not need to be airtight.', btn: 'Ready to close the release', color: '#8B6F47' },
+    { t: 'Close the release', phrase: '“Water, carry it. I am reconciled to what I have named — or willing to become so.”', sub: 'Pour the water away — drain acceptable, earth better. Rinse hands under running water.', btn: 'Poured', color: '#8B6F47' },
+    { t: 'The Cool Water', phrase: 'Cool water to the face, then the crown', sub: 'Address orí, as in the morning: “Orí mi, I greet you.”', btn: 'Continue', color: WATER_BLUE },
+    { t: 'One àfọ̀ṣẹ sentence', input: true, sub: 'The word intended to come to pass. Present tense. First person. No subordinate clauses, no defense built in. One sentence — the discipline is the singularity. It becomes next week’s Kept Word review.', btn: 'Spoken — set it down', color: WATER_BLUE },
+    { t: 'Libation — optional', phrase: '“To those who came before — water on the ground.”', sub: 'A few drops of fresh water — never the salt — to earth or a living plant. Ground in Ontario reaches ground in Cameroon.', btn: 'Continue', skip: true, color: WATER_BLUE },
+    { t: 'Closure', phrase: '“The water is finished. I remain.”', sub: 'The container is closed. Nothing is decided inside the rite — whatever surfaced rides the wave at least one night. Decisions and initiations issue only from the cool.', btn: 'Finish', end: true, color: WATER_BLUE }
+  ];
+  function openTwoWaters() {
+    openOverlay(WATER_BLUE);
+    newSession();
+    var cur = -1, afInput = null;
+    function go(i) {
+      if (!S) return;
+      S.timers.forEach(clearTimeout); S.timers = []; clearBeats();
+      cur = i;
+      var st = TW_STEPS[i];
+      if (!st) { closeOverlay(false); return; }
+      setVars(st.color);
+      Z.zKicker.textContent = 'THE TWO WATERS · ' + (i + 1) + ' OF ' + TW_STEPS.length;
+      Z.zPoint.textContent = st.t;
+      Z.zPhrase.textContent = st.phrase || (i === 0 ? 'The weekly container' : '');
+      Z.zPhrase.style.fontSize = st.phrase && st.phrase.length > 60 ? 'clamp(17px,4.6vw,22px)' : '';
+      Z.zSub.textContent = st.sub || '';
+      Z.zCount.style.display = 'none';
+      Z.zChips.style.display = 'none'; Z.zChips.innerHTML = '';
+      Z.zCtls.innerHTML = '';
+      Z.zHint.textContent = 'nothing is decided inside the rite';
+      // gentle idle breathing
+      (function idle() {
+        if (!S || cur !== i) return;
+        Z.zOrb.style.transition = 'transform 4s cubic-bezier(.4,0,.4,1)'; Z.zOrb.style.transform = 'scale(1.12)';
+        after(4000, function () { if (!S || cur !== i) return; Z.zOrb.style.transition = 'transform 6s cubic-bezier(.4,0,.4,1)'; Z.zOrb.style.transform = 'scale(1)'; after(6000, idle); });
+      })();
+      if (st.timed) {
+        var left = st.timed;
+        Z.zCount.style.display = 'block'; Z.zCount.textContent = fmt(left);
+        every(1000, function () {
+          if (!S || S.paused) return;
+          left--;
+          Z.zCount.textContent = fmt(Math.max(0, left));
+          if (left <= 0) { bell(0, 523.25, 0.09, 2); buzz(30); go(i + 1); }
+        });
+        ctlBtn('Stay longer', 'zen-btn ghost', function () { left += 60; });
+      } else if (st.input) {
+        Z.zChips.style.display = 'flex';
+        Z.zChips.innerHTML = '<textarea class="mirror-input tw-input" id="twAfose" rows="2" placeholder="I …"></textarea>';
+        afInput = Z.zChips.querySelector('#twAfose');
+        ctlBtn(st.btn, 'zen-btn', function () {
+          var v = afInput.value.trim();
+          if (v) { var s = afoseStore(); s.afose.push({ t: Date.now(), text: v }); s.afose = s.afose.slice(-100); saveStore(AFK, s); }
+          go(i + 1);
+        });
+      } else {
+        if (st.skip) ctlBtn('Skip', 'zen-btn ghost', function () { go(i + 1); });
+        ctlBtn(st.btn, 'zen-btn', function () {
+          if (st.end) { chimeEnd(); buzz([40, 80, 40]); closeOverlay(false); renderKeptWord(); }
+          else { buzz(12); go(i + 1); }
+        });
+      }
+      if (i === 0) { ac(); chimeStart(); }
+    }
+    go(0);
+  }
+
+  /* ---- Start-here fourth row: chapter → essence/practice ---- */
+  var ESSENCE_FOR_CHAPTER = {
+    evolution:     { sec: 'thesis',      why: 'The departure-not-loss thesis is the multisensory shift said in one move: the essence never left — you did.' },
+    karma:         { sec: 'conduction',  why: 'Ayni and ẹbọ: every act as offering or extraction. Karma as bookkeeping, not moralism.' },
+    reverence:     { prac: 'inputs',     why: 'The traditions put sleep, food, light and walking inside the spiritual economy — reverence as intake.' },
+    heart:         { sec: 'anatomy',     why: 'Ọkàn — the heart as primary sensing instrument, and why it aims outward at the cost of registering inward.' },
+    light:         { sec: 'anatomy',     why: 'Ẹ̀mí — the breath as the divine share, the only part of you that exists strictly now.' },
+    intuition:     { sec: 'anatomy',     why: 'Orí inú — the inner head that chose its destiny; intuition as the slow remembering of that choice.' },
+    intention:     { sec: 'conduction',  why: 'orí → ìwà → àṣẹ: alignment, character, then the word — the clean sequence intention runs on.' },
+    choice:        { sec: 'anatomy',     why: 'Ẹsẹ̀ — the legs. A well-chosen head with unused legs: accurate self-knowledge, no lived change.' },
+    addiction:     { prac: 'twowaters',  why: 'The salt water is the release valve — grief moved instead of processed conceptually.' },
+    relationships: { sec: 'diagnostic',  why: 'The caretaker, precisely addressed: tending other people’s orí while your own goes unfed is not virtue.' },
+    power:         { prac: 'keptword',   why: 'Àṣẹ compounds by congruence — every kept word deposits authority in the instrument of speech.' },
+    trust:         { sec: 'thesis',      why: 'The contract was chosen before birth and forgotten at the crossing; trust is the slow remembering.' },
+    illusion:      { sec: 'residence',   why: 'The performance of comprehension is the subtlest mask — residence is not naming the feeling too soon.' }
+  };
+  function essenceRowFor(chapterId) {
+    var m = ESSENCE_FOR_CHAPTER[chapterId];
+    if (!m || typeof ESSENCE === 'undefined') return null;
+    if (m.sec) {
+      var idx = ESSENCE.sections.findIndex(function (s) { return s.id === m.sec; });
+      if (idx === -1) return null;
+      return { label: ESSENCE.sections[idx].title, why: m.why, open: function () { openReader('essence', idx); } };
+    }
+    var p = (typeof WATERS !== 'undefined') && WATERS.practices.find(function (x) { return x.id === m.prac; });
+    if (!p) return null;
+    return { label: p.title, why: m.why, open: function () { if (typeof closeD === 'function') closeD(); navTo('waters'); setTimeout(function () { var el = document.querySelector('[data-wat="' + m.prac + '"]'); if (el) { el.classList.add('open'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 350); } };
+  }
+
+  /* ---- Today: the Return card ---- */
+  function essenceReadOfDay() {
+    if (typeof ESSENCE === 'undefined') return null;
+    var now = new Date();
+    var doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 864e5);
+    var i = doy % ESSENCE.sections.length;
+    return { i: i, s: ESSENCE.sections[i] };
+  }
+  function watersSuggestion(slot) {
+    var now = new Date(), t = waveToday();
+    if (now.getDay() === 0 && slot === 'evening') return { id: 'twowaters', label: 'The Two Waters', sub: 'Sunday evening — name the week’s residue, then enter the Kept Word.', guided: 'twowaters' };
+    if (t && t.v <= 2) return { id: 'twowaters', label: 'The Two Waters', sub: 'A low day — let the salt carry what the mind keeps re-arguing.', guided: 'twowaters' };
+    if (now.getDate() <= 3 && slot !== 'morning') return { id: 'immersion', label: 'The Immersion', sub: 'A month has turned — a threshold bath, if one is due.', guided: null };
+    if (slot === 'morning') return { id: 'anchor', label: 'The Morning Anchor', sub: 'Before the phone: three breaths, the first word to orí.', guided: null };
+    if (slot === 'day') return { id: 'inplace', label: 'The Return-in-Place', sub: 'Two long exhales, feet, one line: “Orí, I’m here.” Thirty invisible seconds.', guided: null };
+    return { id: 'reservoir', label: 'The Reservoir', sub: 'Five minutes of attention parked in the breath — the daily deposit.', guided: 'reservoir' };
   }
 
   /* ================================================================

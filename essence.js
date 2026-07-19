@@ -1,0 +1,193 @@
+/* ===== Return to Essence — The Grammar of Return =====
+   Content module: ESSENCE (Learn) + WATERS (Practice).
+   Source text: "The Grammar of Return — Cross-Cultural Cartographies of Essence,
+   and the Practice of the Two Waters." Structured, not rewritten. */
+
+var ESSENCE = {
+  title: 'Return to Essence',
+  sub: 'The Grammar of Return — what vital force is, how it is departed from, how it is re-entered, and how it is maintained and grown once restored. Where the Architecture maps the vehicle, this maps the fuel.',
+  sections: [
+    {
+      id: 'thesis', kicker: 'Preface', title: 'The Thesis of Return', motif: 'yinyang', color: '#C4A265',
+      body: '<p>Every tradition surveyed here refuses the modern premise that essence can be <em>lost</em>. What gets called disconnection is, in every one of these grammars, a <strong>departure</strong> — consciousness migrating to a defended position: into analysis, into the other person’s weather, into the case being built, into one more loop of comprehension before the threshold. The essence does not go anywhere. You do.</p><p>This changes the operative question. Not <em>“how do I find myself?”</em> — a seeking that can itself become the newest hiding place — but <em>“by which door did I leave, and what walks me back?”</em> And then a second question: <em>“once back, what feeds the force so that it compounds instead of merely surviving until the next repair?”</em></p><p>The manual’s founding premise (Zukav) is that authentic power is the alignment of personality with soul. The Yoruba grammar states the same law with more precision: congruence between the outer person and <strong>orí inú</strong>, the inner head that chose its destiny before birth. The Dagara grammar states it communally: a person is well when living from their own element, witnessed by others. Three vocabularies, one referent.</p>'
+    },
+    {
+      id: 'anatomy', kicker: 'Part One · Yoruba Personhood', title: 'The Anatomy of the Self', motif: 'torii', color: '#D4A038',
+      body: '<p>The generic gloss “àṣẹ = life force” flattens a precise anatomy of the self. Seven components, each with an address — and each a door that can be departed from.</p>',
+      parts: [
+        { name: 'Ara', gloss: 'the body', motif: 'house', text: 'Not a container for the self but its visible portion; the site where every other component either registers or is overridden.' },
+        { name: 'Ẹ̀mí', gloss: 'the breath', motif: 'fog', text: 'The vital principle breathed by Olódùmarè into the body. Ẹ̀mí is the only component of the person that exists exclusively in the present tense. It cannot be rehearsed, projected, or argued. This is why attention on the breath is not a relaxation trick — it is attention placed on the divine share of the person, the one part that cannot be conscripted into defense.' },
+        { name: 'Ọkàn', gloss: 'the heart', motif: 'heart', text: 'Seat of emotion and intention. In a person whose emotional system is the structural engine — three defined channels running through the Solar Plexus — ọkàn is the primary sensing instrument. Which is precisely why it is the faculty most often deployed outward, toward the other’s state, at the cost of registration inward.' },
+        { name: 'Orí · Orí inú', gloss: 'the head, and the inner head', motif: 'target', text: 'Before birth, Ifá teaches, each person kneels at the storehouse of Àjàlá, the potter of heads, and chooses an orí — a destiny, a portion. The choice is forgotten at the crossing; life is the slow remembering. Orí is a person’s most intimate divinity. An Ifá verse states it without diplomacy: Orí là bá bọ, à bá f’òrìṣà sílẹ̀ — “It is orí we ought to venerate; we could let the orisha be.” No external power can bless what a person’s own orí has not sanctioned.' },
+        { name: 'Ìpọ̀nrí', gloss: 'the counterpart in ọ̀run', motif: 'spiral', text: 'The fuller pattern of which the incarnated orí is a partial expression. Operationally it matters for one reason: it is why congruence work never terminates. There is always more of the pattern to bring across — a lifetime discipline, not a project with a completion date.' },
+        { name: 'Ẹsẹ̀', gloss: 'the legs', motif: 'road', text: 'Abimbola’s scholarship insists on this often-omitted component: destiny chosen by orí is not self-executing. Ẹsẹ̀ is the principle of effort, movement, actualization. A well-chosen head with unused legs produces a life of accurate self-knowledge and no lived change — a description worth sitting with, given that the gap between recognition and integration is this manual’s reason for existing.' },
+        { name: 'Àṣẹ', gloss: 'authorization', motif: 'lightning', text: 'Àṣẹ moves through this whole architecture as authorization — the force by which word and act come to pass. Two properties govern everything in the practicum. First: it is supplied at birth and it increases and decreases across a life. It is a current, not a possession. Second: its clean flow depends on ìwà pẹ̀lẹ́ — gentle character, the congruence of conduct with orí. Without ìwà, àṣẹ misfires regardless of talent, eloquence, or discipline.' }
+      ]
+    },
+    {
+      id: 'diagnostic', kicker: 'Part One · Addresses', title: 'The Diagnostic', motif: 'eye', color: '#6B5B8A',
+      body: '<p>Held against this anatomy, the patterns already named elsewhere in the manual acquire precise addresses.</p>',
+      parts: [
+        { name: 'The case-builder', gloss: 'speech severed from orí', motif: 'sword', text: 'The airtight argument is àṣẹ-shaped — structured, potent, consequential — but issued from the fortified position rather than the inner head. Word without authorization: it lands as force and leaves the speaker unfed. The gift for the decisive word is real; the tradition’s only question is from where is it spoken.' },
+        { name: 'The escape hatch', gloss: 'attention leaving ẹ̀mí for concept', motif: 'door', text: 'Since breath is the person’s only strictly present-tense component, “one more loop of comprehension before crossing the threshold” is, anatomically, a departure from ẹ̀mí. The threshold is not conceptual. It is respiratory.' },
+        { name: 'The caretaker', gloss: 'tending other people’s orí while one’s own goes unfed', motif: 'bond', text: 'The tradition is unsentimental: this does not read as virtue. An unfed orí produces misaligned àṣẹ no matter how impeccable the outward conduct — the sanctuary-giver standing outside the sanctuary is not, in this grammar, generous. He is unauthorized.' }
+      ]
+    },
+    {
+      id: 'wheel', kicker: 'Part One · The Dagara Frame', title: 'The Wheel and Your Place on It', motif: 'sprout', color: '#7BA05B',
+      body: '<p>The Dagara cosmology, as carried westward by Malidoma Somé, organizes the person and the village by five elements. A person’s primary element follows the last digit of the birth year: 0/5 earth · 1/6 water · 2/7 fire · 3/8 nature · 4/9 mineral.</p>',
+      parts: [
+        { name: 'Fire', gloss: 'the ancestors, dreams, vision', motif: 'flame', text: 'The element of the ancestors — dream, vision, the burning through to what is coming.' },
+        { name: 'Water', gloss: 'grief, reconciliation, cleansing, peace', motif: 'drop', text: 'The element that makes feeling flow rather than calcify. Grief’s own medium.' },
+        { name: 'Earth', gloss: 'home, identity, belonging, abundance', motif: 'house', text: 'Home, identity, belonging, hospitality — the ground that receives.' },
+        { name: 'Mineral', gloss: 'memory, storytelling, communication', motif: 'diamond', text: 'Stones and bones; the element that remembers what the person was sent to say.' },
+        { name: 'Nature', gloss: 'change, magic, cycles, the wild', motif: 'sprout', text: 'Transformation, mutation, cycles, death and rebirth, magic, the wild.' }
+      ],
+      body2: '<p><strong>Placement, entered: born 1993 → Nature.</strong> In the Dagara wheel, nature sits in the east, its color green, and it governs the principle of change itself. Its assignment is specific: nature asks its people to open to transformation in order to realize the true and authentic self — and its medicine runs both directions. Nature people are constitutionally allergic to masks, in themselves and others, and their gift to the village is helping what is false fall away so what is true can stand. Read against the manual: the Year of Integration is not a project this person chose so much as the jurisdiction he was born into. The dismantling of the performed self is not remedial work for a nature person. It is the vocation.</p><p><strong>Nature stands in the east directly opposite mineral in the west.</strong> Your own element faces, across the wheel, the element of memory and the spoken word. Opposite elements feed and complete each other — so the salt work in the practicum is cross-axis work: the nature person reaches his own transformation <em>through</em> mineral, through what the bones remember asking to be said. The Buea dream — the explosion, the survival behind the wall, the forgotten repeated word — reads with one more turn of precision: a mineral summons arriving to a nature person, the opposite pole calling across the wheel. Transformation (your element) waits on the recovered word (its counterpart). Interpretation, not verdict — but the geometry is no longer generic.</p><p>The two materials available — <strong>water and sea salt</strong> — are exactly two elements: water, and mineral crystallized out of water. And those two govern the two domains this manual keeps circling: grief processed conceptually instead of moved (water work), and the word internalized instead of spoken (mineral work). The practice works those two doors; nature — the constitution — is what walks through them.</p>'
+    },
+    {
+      id: 'return', kicker: 'Part Two · Movement I', title: 'Return — Re-entry', motif: 'wave', color: '#5A7B8C',
+      body: '<p>The unanimous finding: <strong>the body is the door; the mind arrives last.</strong> Every return technology begins in soma — rhythm, breath, water, heat, salt, movement — and treats insight as a downstream effect. The San dance awakens n/om through repetitive movement and communal song until self-monitoring dissolves. The ngoma complex returns the afflicted through drum, song, and network. Misogi returns through cold water; the temazcal and inipi through heat and darkness; pranayama and qigong through breath. The Yoruba system is the most generous to the intellect — Ifá is genuinely hermeneutic — but even Ifá terminates in ẹbọ: an act, a material transaction. <strong>The insight is priced in offering.</strong></p><p class="ess-oplink">Operational forms: Return-in-Place (field) · The Two Waters (weekly) · The Immersion (thresholds).</p>'
+    },
+    {
+      id: 'residence', kicker: 'Part Two · Movement II', title: 'Residence — Staying', motif: 'house', color: '#8B6F47',
+      body: '<p>Returning is an event; remaining is a climate.</p><p><strong>Ìtutù — the discipline of the cool.</strong> Yoruba civilization elevated composure to a metaphysical value: the cool head, the unhurried word, water offered first in every rite because coolness is the condition under which àṣẹ flows clean. For a Solar Plexus being this translates exactly: <strong>the wave is weather; coolness is climate.</strong> Residence does not mean flattening the wave — the wave is the sensing instrument. It means not building architecture during storms.</p><p><strong>Cultivation as hygiene, not event.</strong> Qigong’s central insight: qi follows yi — force follows attention — so residence is the daily discipline of where attention habitually pools. The Dagara insist ritual is a regular meal, not emergency medicine. In both systems, the practitioner who only shows up when depleted has misunderstood the technology.</p><p><strong>The refusal of premature conversion.</strong> For this manual’s author, residence has one primary discipline: not converting the felt into the conceptual before the felt has finished. The subtlest performance available to a brilliant mind is the performance of comprehension. Residence is measured in the seconds between a feeling arising and the mind reaching for its name.</p><p class="ess-oplink">Operational forms: The Morning Anchor (daily) · Return-in-Place (field) · The Inputs (daily life).</p>'
+    },
+    {
+      id: 'conduction', kicker: 'Part Two · Movement III', title: 'Conduction — Into Action and Speech', motif: 'lightning', color: '#DAA520',
+      body: '<p>Essence unexpressed curdles; this is the Manifestor’s specific law. The Yoruba conduction sequence is the cleanest available:</p><p><strong>orí → ìwà → àṣẹ.</strong> Alignment first: is this mine to do — does the inner head sanction it? Character second: can it be done without the fortified position? Utterance or act third — and only third. Speech that runs this sequence carries àṣẹ; speech that skips to step three is armor, however elegant.</p><p><strong>The Emotional Authority protocol.</strong> Clarity is not available in the moment; the wave must complete. Therefore: the impulse is information, not instruction. Initiations — messages, decisions, namings — are issued once cool, from the far side of the wave. This is not hesitation; it is ìtutù applied to the Manifestor engine.</p><p><strong>Nishkama karma.</strong> The Gita’s conduction discipline — action without attachment to fruits — solves a specific problem for the caretaker pattern: acting fully without monitoring the other person’s reception in real time. The word is offered; its landing belongs to the field.</p><p><strong>Every act as offering or extraction.</strong> The Andean ayni test, applied daily: does this feed the exchange or draw it down? Not moralism; bookkeeping.</p><p class="ess-oplink">Operational forms: The Kept Word (weekly) · The Oríkì Project (ongoing).</p>'
+    },
+    {
+      id: 'correspondences', kicker: 'Part Four', title: 'Ten Traditions, One Grammar', motif: null, color: '#C4A265',
+      body: '<p>Reference schema. Resemblance is real; identity is not — see the Coda.</p>',
+      traditions: [
+        { name: 'Yoruba', force: 'Àṣẹ', seat: 'Orí inú', ret: 'Ifá, ẹbọ, omi tútù', res: 'Ìwà pẹ̀lẹ́, ìtutù', grow: 'The kept word; orí fed regularly' },
+        { name: 'Dagara', force: 'Vital flow via five elements', seat: 'One’s birth element', ret: 'Framed ritual; water for grief', res: 'Ritual as regular meal', grow: 'Purpose enacted for others' },
+        { name: 'San (Ju/’hoansi)', force: 'N/om', seat: 'Belly and spine (“boiling”)', ret: 'Communal dance into !kia', res: 'Lifelong return to the dance', grow: 'Healing others; n/om shared grows' },
+        { name: 'Bantu / ngoma', force: 'Ntu, force of being', seat: 'The person-in-network', ret: 'Drum, song, cult of affliction', res: 'Membership, ongoing rhythm', grow: 'The healed become healers' },
+        { name: 'Kemet', force: 'Ka', seat: 'The vital double', ret: 'Offering, libation', res: 'The fed ka; ma’at', grow: 'Righteous action sustained' },
+        { name: 'China', force: 'Qi', seat: 'Dantian; meridians', ret: 'Qigong, breath', res: 'Daily cultivation; wu wei', grow: 'Accumulation in the reservoir' },
+        { name: 'India', force: 'Prana', seat: 'Nadis; the subtle body', ret: 'Pranayama', res: 'Sattvic regulation', grow: 'Intake refined: breath, food, rest' },
+        { name: 'Andes', force: 'Kawsay / sami', seat: 'The reciprocal body', ret: 'Despacho, offering', res: 'Ayni — the kept exchange', grow: 'Circulation: giving that returns' },
+        { name: 'Japan', force: 'Ki', seat: 'Hara', ret: 'Misogi; water, forest', res: 'Practice as ordinary life', grow: 'Hara developed through repetition' },
+        { name: 'Sufism', force: 'Rūḥ / the breath', seat: 'Qalb, the heart', ret: 'Dhikr', res: 'Murāqaba — watchfulness', grow: 'Remembrance repeated until constant' }
+      ]
+    },
+    {
+      id: 'coda', kicker: 'Coda', title: 'What This Section Refuses', motif: 'fog', color: '#B8A5D9',
+      body: '<p>Three refusals keep the section honest.</p><p><strong>It refuses flattening.</strong> Àṣẹ is not qi is not n/om is not prana. Qi flows through a medical cosmology; àṣẹ is authorized through a moral one; n/om boils in a communal one. The family resemblance is real and instructive; the identity claim is lazy syncretism, and the manual does not make it.</p><p><strong>It refuses extraction.</strong> The communal technologies stay communal. This section borrows grammars, not ceremonies; where a practice belongs to initiation and lineage, the manual says so and points toward lineage rather than around it. Ìbọrí proper, Ifá consultation, and Dagara divination belong to initiated hands. The Greater Toronto Area holds living diaspora communities in these traditions; if the composed practice starts feeling like a doorway rather than a room, that is the signal to seek lineage, not to improvise deeper.</p><p><strong>It refuses performance.</strong> The return is not a project with a progress bar, and the growth is not a metric with a dashboard. The section ends where the water does — poured out, finished, and the one who poured it still standing there: not improved, just present, with a word to keep by Friday. <em>Encore là.</em></p>'
+    }
+  ]
+};
+
+var WATERS = {
+  title: 'The Waters',
+  sub: 'The practicum of the Grammar of Return — a solo, incremental system composed from the Yoruba and Dagara grammars, using sea salt, water, breath, and speech. Every practice does one of three jobs: REPAIR clears what blocks the current; MAINTAIN keeps the channel open; GROW compounds the force itself.',
+  principles: {
+    growth: '<p><strong>How force grows — the traditional mechanics, stated plainly.</strong> None of it is mysterious; all of it is behavioral. <strong>1 · Intake:</strong> breath, food, rest, and light are literal sources — growth begins with receiving properly. <strong>2 · The kept word:</strong> àṣẹ is demonstrated and compounded when the spoken word comes to pass. Every kept word deposits authority in the instrument of speech; every casual unkept one withdraws from it — the single most practical growth lever available to a person whose gift and armor are both made of language. <strong>3 · Authorized use:</strong> force grows through conduction, not storage — an initiated act carried to completion feeds the current that produced it. <strong>4 · Reciprocity kept:</strong> offering is not expenditure; it is circulation. <strong>5 · Character held:</strong> ìwà pẹ̀lẹ́ is not the reward of the practice; it is the practice’s compounding rate. Coolness kept in one hard moment makes the next one cheaper.</p>',
+    polarity: '<p><strong>The governing polarity of the waters.</strong> Salt water releases — across the diaspora, salt water is the stripping bath; in Dagara terms it unites grief (water) with memory (mineral). Cool fresh water restores — omi tútù, the universal first offering, the medium of ìtutù. One water for what leaves; one for what remains. <em>Protocol note: salt water is never offered to the ancestors — fresh water only for libation. Salt clears; it does not invite.</em></p><p>One resonance, then no more poetry: the sea salt in a Mississauga kitchen is crystallized ocean — the same ocean that was crossed to get here. Use that once, at the first practice, and then let the salt be salt.</p>',
+    safety: '<p><strong>Safety architecture.</strong> This system stays deliberately on the near side of the threshold: regulation, alignment, cultivation — not altered states. The deep technologies surveyed — San !kia trance, possession accommodation, ordeal initiation — are communal machines requiring singers, witnesses, and elders. Pursued alone, that depth is not braver, only uncontained. Slow breathing only — no breath retention, no forced or rapid breathing techniques practiced alone. Salt water is for skin, never for drinking. Nothing here treats or replaces care for the body or mind where care is needed.</p>',
+    load: '<p><strong>The total load.</strong> Daily: about eight minutes, plus seconds in the field. Weekly: about twenty-five minutes. Monthly or at thresholds: one bath. If the load ever grows past this, something has turned into performance — cut it back.</p>'
+  },
+  practices: [
+    {
+      id: 'anchor', num: '3.1', title: 'The Morning Anchor — Omi Tútù', fn: 'MAINTAIN', cadence: 'Daily · ~3 min', motif: 'sunrise', color: '#D4A038',
+      steps: [
+        'Upon waking — before the phone, before speech to anyone: pour cool water into a glass or bowl kept only for this.',
+        'Sit or stand. Right hand flat on the crown.',
+        'Three breaths, attention fully on the breath — attention on ẹ̀mí, the only component that exists strictly now.',
+        'Address orí aloud, low voice sufficient: “Orí mi, I greet you. The first word today is yours. Walk ahead of me.” The short Yoruba petition, if wanted: Orí mi, gbè mí — my head, carry me.',
+        'Touch a little water to the forehead, or drink it. Done.'
+      ],
+      note: 'Re-orders the day’s first utterance from stimulus → word to orí → word. For a speech instrument trained toward defense, this is structural, not devotional. On the hardest mornings, the three breaths alone count.'
+    },
+    {
+      id: 'inplace', num: '3.2', title: 'The Return-in-Place', fn: 'MAINTAIN', cadence: 'In the field · ~30 sec', motif: 'mountain', color: '#8B6F47',
+      steps: [
+        'The moment of noticing — mid-conversation, mid-draft, mid-scroll: the case assembling itself, attention fully in the other’s weather, the loop of comprehension starting another lap.',
+        'Exhale longer than the inhale, twice — through the nose, unhurried. The long exhale is the body’s own down-regulation switch. No one watching can see it.',
+        'Feet. Press both feet into the floor for one breath — belonging is re-established downward, not argued.',
+        'One internal line: “Orí, I’m here.” Nothing more.',
+        'Then speak or act — from wherever you actually are, including “I need a moment.”'
+      ],
+      note: 'Converts the noticing metric into an act. The practice most likely to change ordinary life, because it deploys exactly where the departure happens — in speech, with others, under load. Half a minute; invisible.'
+    },
+    {
+      id: 'reservoir', num: '3.3', title: 'The Reservoir — Ẹ̀mí Cultivation', fn: 'GROW', cadence: 'Daily · 5–15 min', motif: 'spiral', color: '#5A7B8C', guided: 'reservoir',
+      steps: [
+        'Sit upright, hands resting low on the belly. Eyes closed or lowered.',
+        'Breathe through the nose, slow and unforced, letting the exhale run naturally longer than the inhale. No counting required; no retention, ever, alone.',
+        'Keep attention two fingers below the navel — the lower belly, where the breath visibly lands. When attention leaves for concept — it will; this is the escape hatch’s home turf — return it without commentary. The return is the repetition; each one is the practice working, not failing.',
+        'Five minutes for the first month. Add five per month as capacity grows, ceiling at fifteen. The reservoir is built by deposits, not heroics.'
+      ],
+      note: 'Ẹ̀mí attended to directly — qi follows yi; prana is gathered through regulated breath. Fifteen minutes of attention parked in the divine share of the person, daily, is the closest thing to a compound-interest account the traditions offer. Effects are unspectacular and cumulative: a longer fuse, a wider gap between wave and word.'
+    },
+    {
+      id: 'twowaters', num: '3.4', title: 'The Two Waters', fn: 'REPAIR', cadence: 'Weekly · ~20 min', motif: 'drop', color: '#5A7B8C', guided: 'twowaters',
+      steps: [
+        'Materials: two vessels; sea salt; warm water; cool fresh water; phone in another room.',
+        'Opening (invocation): state the purpose aloud, one sentence — “I open this water to carry what I name.” The container is open until the closing line.',
+        'The Salt Water: fill the first vessel with warm water. Hold three pinches of salt before dissolving. Mineral is the element of memory: name, specifically and aloud, the week’s residue. Specificity is the work; generality is the mind negotiating.',
+        'Dissolve the salt while naming. Place both hands fully in the water; leave them there at least a full minute.',
+        'Speak into the water what is ready to leave. The sentences may be broken. Grief speaks in fragments; fragments suffice. This is the one place in the week where the case does not need to be airtight. If nothing comes, breathe and let the hands soak; silence in the container still counts.',
+        'Close the release: “Water, carry it. I am reconciled to what I have named — or willing to become so.” Pour the water away — drain acceptable, earth better. Rinse hands under running water.',
+        'The Cool Water: cool water to the face, then the crown. Address orí as in the Morning Anchor.',
+        'Speak one àfọ̀ṣẹ sentence — the word intended to come to pass. Present tense. First person. No subordinate clauses, no defense built in. One sentence; the discipline is the singularity.',
+        'Optional libation close: a few drops of fresh water — never the salt — to earth or a living plant: “To those who came before — water on the ground.” Ground in Ontario reaches ground in Cameroon.',
+        'Closure: “The water is finished. I remain.” The container is closed. Ritual without closure leaks into the evening.'
+      ],
+      note: 'The Deferral Rule (Emotional Authority clause): nothing is decided inside the rite. Whatever surfaced rides the wave at least one night; decisions and initiations issue only from the cool. The rite clears the water; it does not read it.'
+    },
+    {
+      id: 'keptword', num: '3.5', title: 'The Kept Word', fn: 'GROW', cadence: 'Weekly · ~5 min, after the Two Waters', motif: 'check', color: '#7BA05B', ledger: true,
+      steps: [
+        'Done as a plain entry after the rite has closed; this is review, not ritual. Three lines, no more.',
+        'Kept: one thing spoken this week — to self or another — that came to pass because it was done. Include last week’s àfọ̀ṣẹ sentence: did it happen?',
+        'Unkept: one thing spoken that was not done. No case, no mitigation, no self-sentencing — the ledger records; it does not prosecute. An unkept word is a withdrawal, not a crime; the correction is the next kept one.',
+        'This week’s word: carry the new àfọ̀ṣẹ sentence forward as the week’s single tracked commitment — one initiated act, sized to be completable, traced impulse → wave → cool → done.'
+      ],
+      note: 'This operationalizes the oldest àṣẹ teaching there is — authority of speech is built by congruence, repeated — and it engages ẹsẹ̀, the legs. Fifty-two weeks is a year of compounding the word. It is also, quietly, the practice that grows the capacity to be chosen rather than needed: a person whose word is reliable currency no longer has to purchase belonging with caretaking.'
+    },
+    {
+      id: 'immersion', num: '3.6', title: 'The Immersion', fn: 'REPAIR', cadence: 'Monthly, or at thresholds', motif: 'wave', color: '#B8A5D9',
+      steps: [
+        'For the closings of seasons: an arrival anniversary, the end of a chapter, the eve of something that matters.',
+        'Before: a written entry — mineral work, memory committed to record: what season is closing, what it carried. Written before the water so the mind’s account is held and does not grip during.',
+        'The immersion: a full bath with generous handfuls of sea salt, or a head-to-foot pour of salt water standing in the tub, repeated slowly. No phrases required, no task assigned. The only instruction is subtraction: remain until the impulse to make the experience productive rises, is noticed, and passes at least once. That noticing is the entire yield.',
+        'After: rinse with fresh water. Rest. No analysis for twenty-four hours. The written account already exists; the mind is off duty. The twenty-four-hour analysis fast is not recovery from the practice — it is the practice.'
+      ],
+      note: ''
+    },
+    {
+      id: 'oriki', num: '3.7', title: 'The Oríkì Project', fn: 'GROW', cadence: 'Ongoing', motif: 'star', color: '#DAA520', oriki: true,
+      steps: [
+        'Oríkì — praise-names — are how Yoruba tradition speaks identity: not description but accumulated attributive names, earned and recited.',
+        'One rule: entries are earned, not aspirational. A name is added only when a lived moment has demonstrated it — the one who stayed in the wave without narrating it; the one who asked plainly; the one who let the sentence stay broken.',
+        'The Kept Word ledger is the natural source: a kept word that cost something is oríkì material.',
+        'On difficult mornings, one earned name is spoken aloud during the Morning Anchor.'
+      ],
+      note: 'For a self whose worth was organized around function-to-others, composing one’s own praise — in one’s own mouth, from evidence — is direct counter-training, and it is fully traditional.'
+    },
+    {
+      id: 'inputs', num: '3.8', title: 'The Inputs', fn: 'MAINTAIN', cadence: 'Daily life', motif: 'sprout', color: '#7BA05B',
+      steps: [
+        'The traditions treat sleep, food, light, and movement as literal intake of force, not as wellness adjacent to the real work. Four unremarkable disciplines, without targets or tracking:',
+        'Sleep defended as an offering to the instrument, not a variable to optimize.',
+        'Morning light on the face when the season allows it.',
+        'At least one meal a day eaten as a meal — seated, unaccompanied by a screen. Intake taken while attention is elsewhere is, in every one of these grammars, force half-received.',
+        'Walking — at least some of it off pavement, among living things: a ravine, the lakeshore, any wild edge, in any season. For a nature-element person, contact with the green world is not scenery and not exercise; it is intake, the constitutional fuel line, the one input the wheel says this particular person cannot substitute.',
+        'Once a season, deliberately retire one built form — a draft held past its life, a defended position, a routine that has hardened into performance — and let it die without replacement planned. Nature governs cycles; its people stay vital by composting their own structures before the structures start composting them.'
+      ],
+      note: 'Nothing here is tracked. These are not tasks; they are the floor.'
+    },
+    {
+      id: 'clause', num: '3.9', title: 'The Anti-Performance Clause', fn: '', cadence: '', motif: null, color: '#C4A265',
+      steps: [
+        'This practicum measures nothing. No streaks, no depth-grading, no optimization arc. A missed day is data, not debt.',
+        'The question “how is my practice developing?” is recognized on sight as the escape hatch in devotional clothes.',
+        'The manual permits exactly two observations, both slow: the interval between departure and noticing, and the ratio in the Kept Word ledger across months. Both are read quarterly at most. Nothing else is watched.'
+      ],
+      note: 'This app honors the clause in code: nothing on this page logs to the practice ledger, appears in the heatmap, or counts a streak.'
+    }
+  ]
+};

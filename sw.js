@@ -1,9 +1,10 @@
-const VERSION = 'soul-manual-v14';
+const VERSION = 'soul-manual-v15';
 const PRECACHE = [
   './',
   './index.html',
   './app.css',
   './app.js',
+  './essence.js',
   './manifest.webmanifest',
   './fonts/fonts.css',
   './icons/icon-192.png',
