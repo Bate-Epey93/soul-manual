@@ -757,6 +757,51 @@ var CURATED = {
   }
   function splitSetup(t) { return t.split(/\s+(?=Even though)/); }
 
+  /* two added sequences: groundedness + returning to center (researched EFT grounding
+     scripts; standard point-emotion mapping, written in the manual's voice) */
+  var EXTRA_EFT = [
+    {
+      title: 'For Groundedness',
+      icon: '\ud83e\udea8',
+      color: '#8B6F47',
+      setup: 'Even though I feel scattered across two continents, untethered from ground that knows my name, I deeply and completely accept myself. Even though my mind runs ahead of my body \u2014 to the debt, the winter, the silence after applications \u2014 I deeply and completely accept myself. Even though I have been living from the neck up, I choose to come back into my body now.',
+      rounds: [
+        { point: 'TH', phrase: 'This scattered, ungrounded energy' },
+        { point: 'EB', phrase: 'This mind that lives three months ahead of my feet' },
+        { point: 'SE', phrase: 'This body I abandon when the pressure rises' },
+        { point: 'UE', phrase: 'This fear that if I slow down, everything falls' },
+        { point: 'UN', phrase: 'The ground under me did not disappear when I crossed the ocean' },
+        { point: 'CH', phrase: 'My body is the one home that made the crossing with me' },
+        { point: 'CB', phrase: 'I feel my feet. I feel the floor. The earth holds weight heavier than mine' },
+        { point: 'UA', phrase: 'I am here. Not in January, not in Douala, not in the inbox. Here' }
+      ],
+      closing: 'Close with: \u2018The ground holds me the same on every continent. My body is home, and I am in it. I choose to be here.\u2019'
+    },
+    {
+      title: 'For Returning to Center',
+      icon: '\u262f',
+      color: '#C4A265',
+      setup: 'Even though the day has pulled me out of my center \u2014 every ping, every demand, every spiral \u2014 I deeply and completely accept myself. Even though I confuse motion with progress and urgency with importance, I deeply and completely accept myself. Even though I forget there is a stillness in me the wave never touches, I choose to return to it now.',
+      rounds: [
+        { point: 'TH', phrase: 'This pull away from center' },
+        { point: 'EB', phrase: 'This urgency that is not mine' },
+        { point: 'SE', phrase: 'This scattering \u2014 a piece of me in every open tab' },
+        { point: 'UE', phrase: 'This fear that stillness means falling behind' },
+        { point: 'UN', phrase: 'The wave moves on the surface. The seabed does not move' },
+        { point: 'CH', phrase: 'I do not have to finish the wave to touch the still place beneath it' },
+        { point: 'CB', phrase: 'Breath by breath, I return to the solar plexus \u2014 my seat, my center' },
+        { point: 'UA', phrase: 'Still water. The mud settles by itself when I stop stirring' }
+      ],
+      closing: 'Close with: \u2018My center did not move \u2014 I left, and returning takes one breath. Stillness is not something I find. It is something I stop leaving.\u2019'
+    }
+  ];
+  function extendEft() {
+    if (typeof EFT === 'undefined' || EFT._extended) return;
+    EFT._extended = true;
+    EXTRA_EFT.forEach(function (s) { EFT.sequences.push(s); });
+    if (typeof renderEft === 'function') renderEft();
+  }
+
   var BEAT_MS = 620;
 
   function openTap(idx) {
@@ -2279,6 +2324,7 @@ var CURATED = {
 
   function boot() {
     try {
+      extendEft();
       hookEft(); hookMeds(); addFab();
       createPages(); buildNav(); buildSettings(); wrapOpenD(); wrapSetF();
       trimFooter();

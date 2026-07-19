@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "soul-manual",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", ".", "-p", "4180", "-c-1"],
+      "port": 4180,
+      "autoPort": true
+    }
+  ]
+}
