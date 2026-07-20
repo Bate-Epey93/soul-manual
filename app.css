@@ -737,3 +737,17 @@ body.light .mar-text{color:#3a2c18}
 body.light .mar-line{border-bottom-color:rgba(90,70,40,.12)}
 .mar-week.now .mar-text{font-size:19px}
 .mar-intro{margin-bottom:6px}
+
+/* ---------------------------------------------------------------- */
+/* ESSENCE DEEPENING — deeper water + held-against-your-life        */
+/* ---------------------------------------------------------------- */
+.ess-deep{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)}
+body.light .ess-deep{border-top-color:rgba(90,70,40,.14)}
+.ess-foryou{margin-top:14px;padding:14px 16px;border-radius:13px;background:rgba(196,162,101,.06);border-left:3px solid var(--wave-tint,#C4A265)}
+.ess-foryou p{font-size:13.5px;line-height:1.8;color:rgba(255,255,255,.72);margin-bottom:10px}
+.ess-foryou p:last-child{margin-bottom:0}
+body.light .ess-foryou{background:rgba(138,107,52,.08)}
+body.light .ess-foryou p{color:rgba(50,38,20,.82)}
+.ess-foryou-r{border-left:3px solid var(--wave-tint,#C4A265)}
+.ess-sources{font-size:11px;line-height:1.8;color:rgba(255,255,255,.38);margin:14px 0 4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
+body.light .ess-sources{color:rgba(60,45,25,.55);border-top-color:rgba(90,70,40,.12)}

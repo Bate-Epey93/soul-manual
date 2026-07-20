@@ -1173,6 +1173,15 @@ var CURATED = {
       if (s.traditions) s.traditions.forEach(function (t) {
         h += '<div class="reader-block"><div class="reader-block-label">' + t.name + ' · ' + t.force + '</div>Seat: ' + t.seat + ' · Return: ' + t.ret + ' · Residence: ' + t.res + ' · Growth: ' + t.grow + '</div>';
       });
+      if (s.deep) {
+        h += '<div class="reader-fin"></div>';
+        h += '<div class="reader-block-label" style="color:' + s.color + ';margin-bottom:10px">The deeper water</div>';
+        h += '<div class="reader-text">' + s.deep + '</div>';
+      }
+      if (s.forYou) {
+        h += '<div class="reader-block ess-foryou-r"><div class="reader-block-label">Held against your life</div>' + s.forYou + '</div>';
+      }
+      if (s.sources) h += '<div class="ess-sources">' + s.sources + '</div>';
       h += '<div class="reader-fin"></div>';
       if (['return', 'residence', 'conduction'].indexOf(s.id) !== -1) {
         h += '<div class="reader-actions"><button class="tbtn ghost" id="rAct1">Open the practicum &rarr;</button></div>';
@@ -2422,6 +2431,12 @@ var CURATED = {
           (s.traditions ? s.traditions.map(function (t) {
             return '<div class="ess-trad"><div class="ess-trad-name">' + t.name + ' · <em>' + t.force + '</em></div><div class="ess-trad-row"><span>Seat</span>' + t.seat + '</div><div class="ess-trad-row"><span>Return</span>' + t.ret + '</div><div class="ess-trad-row"><span>Residence</span>' + t.res + '</div><div class="ess-trad-row"><span>Growth</span>' + t.grow + '</div></div>';
           }).join('') : '') +
+          (s.sources ? '<div class="ess-sources">' + s.sources + '</div>' : '') +
+          (s.deep ? '<button class="eft-read-link" data-essdeep="' + i + '">the deeper water ▾</button>' +
+            '<div class="ess-deep" id="essd-' + i + '" style="display:none">' +
+              '<div class="ess-text">' + s.deep + '</div>' +
+              (s.forYou ? '<div class="ess-foryou"><div class="ess-kicker" style="color:var(--wave-tint,#C4A265)">Held against your life</div>' + s.forYou + '</div>' : '') +
+            '</div>' : '') +
           '<div class="today-actions"><button class="tbtn" data-essread="' + i + '">Read</button>' +
           (['return', 'residence', 'conduction'].indexOf(s.id) !== -1 ? '<button class="tbtn ghost" data-esswaters="1">The practicum &rarr;</button>' : '') +
           '</div>' +
@@ -2436,6 +2451,16 @@ var CURATED = {
     });
     page.querySelectorAll('[data-essread]').forEach(function (b) {
       b.onclick = function (e) { e.stopPropagation(); openReader('essence', +b.dataset.essread); };
+    });
+    page.querySelectorAll('[data-essdeep]').forEach(function (b) {
+      b.onclick = function (e) {
+        e.stopPropagation();
+        var d = document.getElementById('essd-' + b.dataset.essdeep);
+        var open = d.style.display !== 'none';
+        d.style.display = open ? 'none' : 'block';
+        b.textContent = open ? 'the deeper water ▾' : 'fold the deeper water ▴';
+        if (!open && PREFS.theme === 'light') applyInlineTheme(true, d);
+      };
     });
     page.querySelectorAll('[data-esswaters]').forEach(function (b) {
       b.onclick = function (e) { e.stopPropagation(); navTo('waters'); };
