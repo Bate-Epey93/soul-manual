@@ -725,3 +725,15 @@ body.light .ess-prac-line strong{color:#4A6B5A}
 .today-oriki{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:rgba(218,165,32,.75);margin:-16px 0 22px}
 body.light .today-oriki{color:#8A6B34}
 .sh-ess .sh-src{font-size:12px}
+
+/* ---------------------------------------------------------------- */
+/* FOR MARIE — weekly praise-speech                                 */
+/* ---------------------------------------------------------------- */
+.mar-line{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.mar-line:last-child{border-bottom:none}
+.mar-as{font-family:monospace;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;flex-shrink:0;width:52px;margin-top:5px}
+.mar-text{font-family:'Cormorant Garamond',serif;font-size:17.5px;line-height:1.5;color:#EDE4D3;font-style:italic}
+body.light .mar-text{color:#3a2c18}
+body.light .mar-line{border-bottom-color:rgba(90,70,40,.12)}
+.mar-week.now .mar-text{font-size:19px}
+.mar-intro{margin-bottom:6px}

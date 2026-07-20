@@ -620,7 +620,7 @@ var CURATED = {
     'page-arch': 'torii', 'page-mirror': 'eye', 'page-crisis': 'warning',
     'page-trees': 'fork', 'page-eft': 'target', 'page-guide': 'road',
     'page-meditations': 'lotus', 'page-ledger': 'chart',
-    'page-essence': 'yinyang', 'page-waters': 'drop'
+    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart'
   };
   function pageEnsoHTML(pageId) {
     return '<div class="page-enso">' +
@@ -1215,11 +1215,11 @@ var CURATED = {
   var GROUPS = [
     { id: 'today', label: 'Today', motif: 'sun', pages: ['today'] },
     { id: 'learn', label: 'Learn', motif: null, enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'essence', 'arch', 'mirror', 'dramas', 'guide'] },
-    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'eft', 'forge', 'edge', 'ledger'] },
+    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'marie', 'eft', 'forge', 'edge', 'ledger'] },
     { id: 'mapg', label: 'Map', motif: 'road', pages: ['map', 'trees'] },
     { id: 'crisisg', label: 'Crisis', motif: 'warning', pages: ['crisis'] }
   ];
-  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
+  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
   var VALID = Object.keys(PAGE_LABELS);
   var groupChoice = {}; // last-visited page per group
   var navEl = null, subnavEl = null;
@@ -1280,6 +1280,7 @@ var CURATED = {
     if (page === 'map') decorateMap();
     if (page === 'essence') renderEssence();
     if (page === 'waters') renderWaters();
+    if (page === 'marie') renderMarie();
     if (page === 'guide') decorateEntry();
     if (page === 'eft') refreshEftStats();
     if (page === 'mirror') decorateMirror();
@@ -1295,7 +1296,7 @@ var CURATED = {
 
   function createPages() {
     var anchor = document.getElementById('page-concepts');
-    ['today', 'ledger', 'essence', 'waters'].forEach(function (id) {
+    ['today', 'ledger', 'essence', 'waters', 'marie'].forEach(function (id) {
       var d = document.createElement('div');
       d.className = 'page'; d.id = 'page-' + id;
       anchor.parentNode.insertBefore(d, anchor);
@@ -1371,6 +1372,15 @@ var CURATED = {
         '</div>';
     }
 
+    var mwi = marieWeekIdx(), mw = MARIE.weeks[mwi];
+    var mline = mw.lines[new Date().getDay() % 3];
+    sec.marie =
+      '<div class="today-sec">For Marie · ' + mw.theme + '</div>' +
+      '<div class="today-card glass" id="tdMarie" style="border-left:3px solid #E88BA0">' +
+        '<div class="tc-kicker" style="color:#E88BA0">' + motifSVG('heart', 'td-marie', { color: '#E88BA0' }) + ' as ' + mline.as + ' · speak it on the next call</div>' +
+        '<div class="tc-sub" style="font-style:italic;color:rgba(255,255,255,.68)">“' + mline.text + '”</div>' +
+      '</div>';
+
     sec.chapter =
       '<div class="today-sec">' + (adapt.reason ? 'For You, Today' : 'Suggested Chapter') + '</div>' +
       '<div class="today-card" id="tdCh">' +
@@ -1392,9 +1402,9 @@ var CURATED = {
       : 'Your ledger is empty. One breath begins it. &rarr;';
     sec.ledger = '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
 
-    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'essence', 'chapter', 'quarter', 'practice', 'ledger']
-      : slot === 'evening' ? ['head', 'wave', 'mirror', 'essence', 'med', 'chapter', 'entry', 'quarter', 'practice', 'ledger']
-      : ['head', 'med', 'wave', 'entry', 'essence', 'chapter', 'quarter', 'mirror', 'practice', 'ledger'];
+    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'essence', 'chapter', 'marie', 'quarter', 'practice', 'ledger']
+      : slot === 'evening' ? ['head', 'wave', 'marie', 'mirror', 'essence', 'med', 'chapter', 'entry', 'quarter', 'practice', 'ledger']
+      : ['head', 'med', 'wave', 'entry', 'essence', 'chapter', 'marie', 'quarter', 'mirror', 'practice', 'ledger'];
     return { sec: sec, order: order };
   }
 
@@ -1428,6 +1438,7 @@ var CURATED = {
     on('tdMedRead', function (e) { e.stopPropagation(); openReader('med', mi); });
     on('tdMedBreathe', function (e) { e.stopPropagation(); openMedBreath(mi); });
     on('tdCh', function () { openReader('concept', ci); });
+    on('tdMarie', function () { navTo('marie'); });
     on('tdChRead', function (e) { e.stopPropagation(); openReader('concept', ci); });
     on('tdTimer', openTimer);
     on('tdEft', function () { navTo('eft'); });
@@ -2702,6 +2713,97 @@ var CURATED = {
       if (i === 0) { ac(); chimeStart(); }
     }
     go(0);
+  }
+
+  /* ================================================================
+     FOR MARIE — weekly praise-speech (oríkì for the beloved)
+     ================================================================ */
+  var MARIE = {
+    intro: 'Not affirmations in the self-help sense — praise-speech, in the oríkì grammar: words spoken to feed the beloved’s head. One triad per week — to her as a human, as a woman, as your lover. How to speak them: slowly, her name first, camera on, one at a time. Say the word and let it land — the landing belongs to her, not to your monitoring of it. Spoken beats texted. If your voice cracks, let it. Never all three at once as a performance; one, in the middle of an ordinary call, is the way.',
+    weeks: [
+      { theme: 'Seen', lines: [
+        { as: 'human', text: 'I see how much you carry that you never announce. You don’t have to earn rest around me.' },
+        { as: 'woman', text: 'You are not too much, and you have never been too little. The way you take up space is a gift to watch.' },
+        { as: 'lover', text: 'Choosing you is the easiest thing I do. I’d cross that ocean every time.' } ] },
+      { theme: 'Heard', lines: [
+        { as: 'human', text: 'Your feelings make sense. You never need to build a case for me to take them seriously.' },
+        { as: 'woman', text: 'I love the way your mind works. I’d rather hear you think out loud than most people sing.' },
+        { as: 'lover', text: 'When you say my name, something in me sits down and rests.' } ] },
+      { theme: 'Across the Water', lines: [
+        { as: 'human', text: 'This distance shows me your follow-through. You love with discipline, and I never take it for granted.' },
+        { as: 'woman', text: 'You build life around you wherever you stand. I watch you do it from here, and I’m proud of you.' },
+        { as: 'lover', text: 'Every night, the ocean between us is smaller than what holds us together.' } ] },
+      { theme: 'Safe Harbour', lines: [
+        { as: 'human', text: 'You are safe with me — your bad days, your unfinished thoughts, your silence too.' },
+        { as: 'woman', text: 'You never have to shrink or perform softness here. Come as the whole weather system you are.' },
+        { as: 'lover', text: 'My arms are the one border you will never need papers for.' } ] },
+      { theme: 'Becoming', lines: [
+        { as: 'human', text: 'I see who you are becoming, and I’m not afraid of her. I’m cheering.' },
+        { as: 'woman', text: 'Your ambition doesn’t threaten me. It’s one of the reasons I love you.' },
+        { as: 'lover', text: 'Grow. I’ll keep choosing every version of you.' } ] },
+      { theme: 'Enough', lines: [
+        { as: 'human', text: 'You don’t have to be useful to be loved. Sit. Be. That is enough for me.' },
+        { as: 'woman', text: 'You are beautiful in the unphotographed moments — mid-laugh, mid-thought, half-asleep.' },
+        { as: 'lover', text: 'I miss the ordinary nearness of you. Your head on my shoulder outranks every plan I have.' } ] },
+      { theme: 'Deep Water', lines: [
+        { as: 'human', text: 'Your gentleness is not weakness. It is the deepest water in you.' },
+        { as: 'woman', text: 'You make hard places soft wherever you enter — that is a power, and I have watched you use it.' },
+        { as: 'lover', text: 'Loving you has taught my prayers new words.' } ] },
+      { theme: 'Partners', lines: [
+        { as: 'human', text: 'Your voice counts in every plan I make. Nothing I am building is built without you in the room.' },
+        { as: 'woman', text: 'I don’t want a smaller you beside me. I want all of you, at full height.' },
+        { as: 'lover', text: 'We are not waiting for our life to start. This — even this distance — is us, living it.' } ] },
+      { theme: 'Repair', lines: [
+        { as: 'human', text: 'When we disagree, you are never my opponent. It is you and me versus the problem.' },
+        { as: 'woman', text: 'Your anger is information, not a flaw. I can stand in your weather without leaving.' },
+        { as: 'lover', text: 'There is no version of a hard week that makes me want you less.' } ] },
+      { theme: 'Delight', lines: [
+        { as: 'human', text: 'You make ordinary days feel like somewhere to be, not something to get through.' },
+        { as: 'woman', text: 'Your laugh is my favourite sound on either side of the Atlantic.' },
+        { as: 'lover', text: 'I still get glad — stupidly glad — when your name lights up my phone.' } ] },
+      { theme: 'My Word', lines: [
+        { as: 'human', text: 'You can put weight on my word. What I say to you, I keep.' },
+        { as: 'woman', text: 'The home we are building will fit the woman you actually are — not the one anyone expected you to be.' },
+        { as: 'lover', text: 'One day soon I will say good morning without a screen. Until then, every call is me practicing.' } ] },
+      { theme: 'Blessing', lines: [
+        { as: 'human', text: 'You are enough today. Not when the goals land, not when the distance closes — today.' },
+        { as: 'woman', text: 'You turn distance into devotion and waiting into strength. That is your praise-name this week.' },
+        { as: 'lover', text: 'My head chose its path before I knew it — and the path had you on it. I bless the day it did.' } ] }
+    ]
+  };
+  function marieWeekIdx() { return Math.floor(dayMidnight(Date.now()) / 864e5 / 7) % MARIE.weeks.length; }
+  var MARIE_AS_COLOR = { human: '#C4A265', woman: '#E88BA0', lover: '#B85C38' };
+  function marieLinesHTML(w) {
+    return w.lines.map(function (l) {
+      return '<div class="mar-line"><span class="mar-as" style="color:' + MARIE_AS_COLOR[l.as] + '">' + l.as + '</span><div class="mar-text">“' + l.text + '”</div></div>';
+    }).join('');
+  }
+  function renderMarie() {
+    var page = document.getElementById('page-marie');
+    if (!page) return;
+    var wi = marieWeekIdx(), w = MARIE.weeks[wi];
+    var h = pageEnsoHTML('page-marie') +
+      '<div style="margin-bottom:18px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">For Marie</h2>' +
+      '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">Weekly praise-speech for the woman across the water — oríkì logic, aimed at her head.</p></div>';
+    h += '<div class="today-card glass mar-intro"><div class="ess-kicker" style="color:#E88BA0">How to speak these</div><div class="wat-note" style="margin-top:8px">' + MARIE.intro + '</div></div>';
+    h += '<div class="today-sec">This week · ' + w.theme + '</div>' +
+      '<div class="today-card glass mar-week now" style="border-left:3px solid #E88BA0">' +
+      '<div class="tc-kicker" style="color:#E88BA0">' + motifSVG('heart', 'mar-now', { color: '#E88BA0' }) + ' Week ' + (wi + 1) + ' of ' + MARIE.weeks.length + '</div>' +
+      marieLinesHTML(w) + '</div>';
+    h += '<div class="today-sec">All weeks</div>';
+    MARIE.weeks.forEach(function (wk, i) {
+      if (i === wi) return;
+      h += '<div class="ess-card wat-card glass mar-week" data-mar="' + i + '">' +
+        '<div class="ess-kicker" style="color:rgba(232,139,160,.75)">Week ' + (i + 1) + '</div>' +
+        '<div class="ess-title">' + motifSVG('heart', 'mar-' + i, { color: '#E88BA0' }) + ' ' + wk.theme + '</div>' +
+        '<div class="ess-body">' + marieLinesHTML(wk) + '</div></div>';
+    });
+    page.innerHTML = h;
+    page.querySelectorAll('.wat-card[data-mar]').forEach(function (card) {
+      card.onclick = function () { card.classList.toggle('open'); };
+    });
+    glassify(page); tintCards(page);
+    if (PREFS.theme === 'light') applyInlineTheme(true, page);
   }
 
   /* ---- Start-here fourth row: chapter → essence/practice ---- */
