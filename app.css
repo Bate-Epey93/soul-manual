@@ -652,7 +652,8 @@ body.light .sh-cardwhy{color:rgba(138,107,52,.95)}
 body.light .crossref-card.sh-marked{background:rgba(138,107,52,.06)!important}
 
 /* v13 — tap-target hit extension (visual size unchanged) */
-.zen-scale button,.zgear,.zen-iconbtn{position:relative}
+.zen-scale button,.zen-iconbtn{position:relative}
+.zgear{position:fixed}
 .zen-scale button::after{content:'';position:absolute;inset:-6px;border-radius:50%}
 .zgear::after{content:'';position:absolute;inset:-5px;border-radius:50%}
 .zen-iconbtn::after{content:'';position:absolute;inset:-4px;border-radius:50%}
