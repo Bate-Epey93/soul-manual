@@ -2286,7 +2286,7 @@ var CURATED = {
     var m = s.match(/border-(?:left|top|right|bottom|color)\s*:[^;]*?(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/);
     return m ? m[1] : null;
   }
-  var TINT_SEL = '.map-hz, .map-q, .map-thread, .proto-block, .entry-week, .map-cadence-row, #tdEntry, .forge-card, .masc-card, .orisha-card, .orisha-teaching, .mirror-quote, .crisis-card, .excerpt-block, .eft-seq-card, .forge-protocol, .dtree-card, .drama-card';
+  var TINT_SEL = '.map-hz, .map-q, .map-thread, .proto-block, .entry-week, .map-cadence-row, #tdEntry, .forge-card, .masc-card, .orisha-card, .orisha-teaching, .mirror-quote, .crisis-card, .excerpt-block, .eft-seq-card, .forge-protocol, .dtree-card, .drama-card, .ess-card, .mar-week, #tdMarie';
   function tintCards(root) {
     (root || document).querySelectorAll(TINT_SEL).forEach(function (el) {
       if (el.dataset.tinted) return;
@@ -2295,9 +2295,9 @@ var CURATED = {
       el.classList.add('tinted-card', 'glass');
       var light = PREFS.theme === 'light';
       el.style.setProperty('--tint', rgba(rgb, 1));
-      el.style.setProperty('--tint-bg', rgba(rgb, light ? 0.16 : 0.13));
-      el.style.setProperty('--tint-bg2', rgba(rgb, light ? 0.06 : 0.04));
-      el.style.setProperty('--tint-bd', rgba(rgb, light ? 0.34 : 0.3));
+      el.style.setProperty('--tint-bg', rgba(rgb, light ? 0.26 : 0.22));
+      el.style.setProperty('--tint-bg2', rgba(rgb, light ? 0.10 : 0.08));
+      el.style.setProperty('--tint-bd', rgba(rgb, light ? 0.42 : 0.4));
       el.style.borderLeft = ''; el.style.borderTop = ''; el.style.borderRight = ''; el.style.borderBottom = ''; el.style.borderColor = '';
     });
   }
@@ -2305,9 +2305,9 @@ var CURATED = {
     var light = PREFS.theme === 'light';
     document.querySelectorAll('.tinted-card').forEach(function (el) {
       var rgb = toRGB(el.style.getPropertyValue('--tint')); if (!rgb) return;
-      el.style.setProperty('--tint-bg', rgba(rgb, light ? 0.16 : 0.13));
-      el.style.setProperty('--tint-bg2', rgba(rgb, light ? 0.06 : 0.04));
-      el.style.setProperty('--tint-bd', rgba(rgb, light ? 0.34 : 0.3));
+      el.style.setProperty('--tint-bg', rgba(rgb, light ? 0.26 : 0.22));
+      el.style.setProperty('--tint-bg2', rgba(rgb, light ? 0.10 : 0.08));
+      el.style.setProperty('--tint-bd', rgba(rgb, light ? 0.42 : 0.4));
     });
   }
 
@@ -2818,7 +2818,7 @@ var CURATED = {
     h += '<div class="today-sec">All weeks</div>';
     MARIE.weeks.forEach(function (wk, i) {
       if (i === wi) return;
-      h += '<div class="ess-card wat-card glass mar-week" data-mar="' + i + '">' +
+      h += '<div class="ess-card wat-card glass mar-week" data-mar="' + i + '" style="border-left:3px solid #E88BA0">' +
         '<div class="ess-kicker" style="color:rgba(232,139,160,.75)">Week ' + (i + 1) + '</div>' +
         '<div class="ess-title">' + motifSVG('heart', 'mar-' + i, { color: '#E88BA0' }) + ' ' + wk.theme + '</div>' +
         '<div class="ess-body">' + marieLinesHTML(wk) + '</div></div>';
