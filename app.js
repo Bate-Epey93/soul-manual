@@ -43,6 +43,31 @@
       o.start(t); o.stop(t + dur + 0.1);
     });
   }
+  // a single water droplet into a wooden basin (sōzu / shishi-odoshi feel)
+  function waterDrop() {
+    if (!PREFS.sound) return;
+    var a = ac(); if (!a) return;
+    function plip(delay, f0, f1, vol, dur) {
+      var t = a.currentTime + delay;
+      var o = a.createOscillator(), g = a.createGain(), bp = a.createBiquadFilter();
+      o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.7);
+      bp.type = 'bandpass'; bp.frequency.value = (f0 + f1) / 2; bp.Q.value = 5;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.007); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(bp); bp.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
+    }
+    function tok(delay, vol) {
+      var t = a.currentTime + delay;
+      var o = a.createOscillator(), g = a.createGain(), lp = a.createBiquadFilter();
+      o.type = 'triangle'; o.frequency.setValueAtTime(216, t); o.frequency.exponentialRampToValueAtTime(150, t + 0.06);
+      lp.type = 'lowpass'; lp.frequency.value = 520;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+      o.connect(lp); lp.connect(g); g.connect(a.destination); o.start(t); o.stop(t + 0.17);
+    }
+    tok(0, 0.11);                 // hollow wooden knock of the basin
+    plip(0.005, 1650, 620, 0.26, 0.26); // the drop striking water
+    plip(0.03, 2300, 1380, 0.10, 0.15); // bright surface splash
+    plip(0.20, 900, 430, 0.09, 0.28);   // faint echo droplet in the basin
+  }
   function chimeStart() { bell(0, 523.25, 0.12, 2.4); }
   function chimeEnd() { bell(0, 523.25, 0.12, 2.6); bell(1.3, 659.25, 0.1, 2.6); bell(2.6, 783.99, 0.08, 3.2); }
 
@@ -2895,13 +2920,32 @@ var CURATED = {
     sp.classList.add('done');
     setTimeout(function () { sp.classList.add('gone'); }, 950);
   }
+  function splashRipple(sp, x, y) {
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+    for (var n = 0; n < 3; n++) {
+      var r = document.createElement('span');
+      r.className = 'sp-ripple';
+      r.style.left = x + 'px'; r.style.top = y + 'px';
+      r.style.animationDelay = (n * 0.13) + 's';
+      sp.appendChild(r);
+    }
+  }
   function scheduleSplash() {
     var sp = document.getElementById('splash');
     if (!sp) return;
-    // stay until tapped
-    var go = function () { dismissSplash(); };
-    sp.addEventListener('click', go);
-    sp.addEventListener('touchstart', go, { passive: true });
+    var entered = false;
+    // stay until tapped — ripple + water drop, then transition
+    var go = function (x, y) {
+      if (entered) return; entered = true;
+      try { ac(); waterDrop(); } catch (e) {}
+      if (x == null) { var b = sp.getBoundingClientRect(); x = b.width / 2; y = b.height * 0.42; }
+      splashRipple(sp, x, y);
+      sp.classList.add('rippling');
+      setTimeout(dismissSplash, 620);
+    };
+    sp.addEventListener('click', function (e) { go(e.clientX, e.clientY); });
+    sp.addEventListener('touchstart', function (e) { var t = e.touches && e.touches[0]; go(t ? t.clientX : null, t ? t.clientY : null); }, { passive: true });
     document.addEventListener('keydown', function k(e) { if (sp.classList.contains('gone')) { document.removeEventListener('keydown', k); return; } if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') go(); });
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     setTimeout(function () { sp.classList.add('ready'); }, reduced ? 250 : 2700);

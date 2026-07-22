@@ -720,6 +720,12 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .sp-tap{margin-top:26px;font-family:monospace;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:rgba(196,162,101,.42);opacity:0}
 #splash.ready .sp-tap{animation:spTap 3s ease-in-out infinite}
 @keyframes spTap{0%,100%{opacity:.28}50%{opacity:.72}}
+.sp-ripple{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;border:1.5px solid rgba(196,162,101,.55);box-shadow:0 0 18px rgba(196,162,101,.25),inset 0 0 12px rgba(196,162,101,.18);pointer-events:none;transform:scale(0);opacity:.9;animation:spRipple 1.1s cubic-bezier(.2,.6,.3,1) forwards}
+@keyframes spRipple{0%{transform:scale(0);opacity:.9}70%{opacity:.35}100%{transform:scale(46);opacity:0}}
+#splash .sp-inner{transition:transform .5s cubic-bezier(.36,0,.2,1)}
+#splash.rippling .sp-inner{animation:spBob 1.6s cubic-bezier(.36,0,.2,1)}
+@keyframes spBob{0%{transform:scale(1)}22%{transform:scale(1.05)}45%{transform:scale(.985)}70%{transform:scale(1.012)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){#splash.rippling .sp-inner{animation:none}}
 @keyframes spInk{to{opacity:1;transform:scale(1);filter:blur(0)}}
 @keyframes spUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes spRule{from{width:0}to{width:200px}}
