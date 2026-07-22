@@ -4,8 +4,29 @@
     {
       "name": "soul-manual",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["--yes", "http-server", ".", "-p", "4180", "-c-1"],
+      "runtimeArgs": [
+        "--yes",
+        "http-server",
+        ".",
+        "-p",
+        "4180",
+        "-c-1"
+      ],
       "port": 4180,
+      "autoPort": true
+    },
+    {
+      "name": "minor-key",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "--yes",
+        "http-server",
+        "../minor-key",
+        "-p",
+        "4181",
+        "-c-1"
+      ],
+      "port": 4181,
       "autoPort": true
     }
   ]

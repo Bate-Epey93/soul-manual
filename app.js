@@ -2889,7 +2889,21 @@ var CURATED = {
     ft.innerHTML = parts[parts.length - 1];
   }
 
+  function dismissSplash() {
+    var sp = document.getElementById('splash');
+    if (!sp || sp.classList.contains('done')) return;
+    sp.classList.add('done');
+    setTimeout(function () { sp.classList.add('gone'); }, 950);
+  }
+  function scheduleSplash() {
+    if (!document.getElementById('splash')) return;
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(dismissSplash, reduced ? 700 : 3300);
+    setTimeout(dismissSplash, 6000);
+  }
+
   function boot() {
+    scheduleSplash();
     try {
       extendEft();
       hookEft(); hookMeds(); addFab();
