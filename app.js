@@ -2896,10 +2896,15 @@ var CURATED = {
     setTimeout(function () { sp.classList.add('gone'); }, 950);
   }
   function scheduleSplash() {
-    if (!document.getElementById('splash')) return;
+    var sp = document.getElementById('splash');
+    if (!sp) return;
+    // stay until tapped
+    var go = function () { dismissSplash(); };
+    sp.addEventListener('click', go);
+    sp.addEventListener('touchstart', go, { passive: true });
+    document.addEventListener('keydown', function k(e) { if (sp.classList.contains('gone')) { document.removeEventListener('keydown', k); return; } if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') go(); });
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    setTimeout(dismissSplash, reduced ? 700 : 3300);
-    setTimeout(dismissSplash, 6000);
+    setTimeout(function () { sp.classList.add('ready'); }, reduced ? 250 : 2700);
   }
 
   function boot() {
