@@ -770,3 +770,8 @@ body.light .ess-sources{color:rgba(60,45,25,.55);border-top-color:rgba(90,70,40,
 body.light .amb{opacity:.6}
 /* keep card content above the canvas */
 .today-card>*:not(.amb),.ess-card>*:not(.amb),.wat-card>*:not(.amb),.concept-card>*:not(.amb),.med-card>*:not(.amb),.forge-protocol>*:not(.amb){position:relative;z-index:1}
+
+/* toast: dismissible, never sticky unless the update prompt */
+.ztoast .zt-x{background:none;border:none;color:rgba(255,255,255,.42);font-size:12px;line-height:1;padding:8px;cursor:pointer;flex-shrink:0}
+.ztoast .zt-x:hover{color:rgba(255,255,255,.8)}
+body.light .ztoast .zt-x{color:rgba(60,45,25,.5)}

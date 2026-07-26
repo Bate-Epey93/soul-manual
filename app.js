@@ -1778,17 +1778,26 @@ var CURATED = {
      UPDATE TOAST + SERVICE WORKER
      ================================================================ */
   var toastEl = null;
-  function showToast(msg, btnLabel, fn) {
+  var toastTimer = null;
+  function showToast(msg, btnLabel, fn, sticky) {
     if (!toastEl) {
       toastEl = document.createElement('div');
       toastEl.className = 'ztoast';
       document.body.appendChild(toastEl);
     }
-    toastEl.innerHTML = '<span>' + msg + '</span>' + (btnLabel ? '<button>' + btnLabel + '</button>' : '');
-    if (btnLabel) toastEl.querySelector('button').onclick = fn;
-    requestAnimationFrame(function () { toastEl.classList.add('show'); });
-    if (!btnLabel) setTimeout(function () { toastEl.classList.remove('show'); }, 5000);
+    toastEl.innerHTML = '<span>' + msg + '</span>' +
+      (btnLabel ? '<button class="zt-act">' + btnLabel + '</button>' : '') +
+      '<button class="zt-x" aria-label="Dismiss">&#10005;</button>';
+    if (btnLabel) toastEl.querySelector('.zt-act').onclick = function () { hideToast(); if (fn) fn(); };
+    toastEl.querySelector('.zt-x').onclick = hideToast;
+    // rAF alone never fires while the tab is backgrounded — the toast would sit invisible
+    var reveal = function () { if (toastEl) toastEl.classList.add('show'); };
+    requestAnimationFrame(reveal); setTimeout(reveal, 60);
+    clearTimeout(toastTimer);
+    // a toast with an action used to wait forever for a click that never hid it
+    if (!sticky) toastTimer = setTimeout(hideToast, btnLabel ? 12000 : 5000);
   }
+  function hideToast() { clearTimeout(toastTimer); if (toastEl) toastEl.classList.remove('show'); }
   /* ================================================================
      REMINDERS — gentle daily nudges (best-effort local notifications)
      ================================================================ */
@@ -1878,7 +1887,7 @@ var CURATED = {
         if (!nw) return;
         nw.addEventListener('statechange', function () {
           if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-            showToast('A new version is ready', 'Reload', function () { location.reload(); });
+            showToast('A new version is ready', 'Reload', function () { location.reload(); }, true);
           }
         });
       });
@@ -3176,9 +3185,12 @@ var CURATED = {
       r.querySelectorAll(rule.sel).forEach(function (el, i) {
         if (el.hasAttribute('data-amb') || el.__amb) return;
         // a rendered brush mark inside the card names the topic best
-        var mark = el.querySelector('[data-motif]');
-        var motif = (mark && mark.getAttribute('data-motif')) ||
-          (typeof rule.motif === 'function' ? rule.motif(el, i) : rule.motif);
+        // a rule that computes the motif knows the card's real subject; a generic
+        // string rule yields to whatever brush mark the card is already wearing
+        var mark = el.querySelector('.enso-host[data-motif]');
+        var motif = (typeof rule.motif === 'function' ? rule.motif(el, i) : null) ||
+          (mark && mark.getAttribute('data-motif')) ||
+          (typeof rule.motif === 'string' ? rule.motif : null);
         if (!motif) return;
         var col = (rule.color && rule.color(el)) || el.style.getPropertyValue('--tint') || inlineAccent(el) || '#C4A265';
         el.setAttribute('data-amb', motif);
