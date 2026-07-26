@@ -720,11 +720,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .sp-tap{margin-top:26px;font-family:monospace;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:rgba(196,162,101,.42);opacity:0}
 #splash.ready .sp-tap{animation:spTap 3s ease-in-out infinite}
 @keyframes spTap{0%,100%{opacity:.28}50%{opacity:.72}}
-.sp-ripple{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;border:1.5px solid rgba(196,162,101,.55);box-shadow:0 0 18px rgba(196,162,101,.25),inset 0 0 12px rgba(196,162,101,.18);pointer-events:none;transform:scale(0);opacity:.9;animation:spRipple 1.1s cubic-bezier(.2,.6,.3,1) forwards}
-@keyframes spRipple{0%{transform:scale(0);opacity:.9}70%{opacity:.35}100%{transform:scale(46);opacity:0}}
+.sp-ripple{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;pointer-events:none;will-change:transform,opacity;transform:scale(0);opacity:0;
+  border:1px solid rgba(196,162,101,.22);
+  background:radial-gradient(circle,transparent 58%,rgba(196,162,101,.14) 70%,rgba(196,162,101,.05) 82%,transparent 92%);
+  box-shadow:0 0 26px rgba(196,162,101,.12);
+  filter:blur(1.5px);
+  animation:spRipple 2.6s cubic-bezier(.16,.62,.24,1) forwards}
+@keyframes spRipple{0%{transform:scale(0);opacity:0}12%{opacity:.85}100%{transform:scale(60);opacity:0}}
+.sp-bloom{position:absolute;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;pointer-events:none;transform:scale(0);opacity:.6;filter:blur(9px);background:radial-gradient(circle,rgba(196,162,101,.28),rgba(196,162,101,.08) 55%,transparent 72%);animation:spBloom 1.7s ease-out forwards}
+@keyframes spBloom{0%{transform:scale(0);opacity:.6}100%{transform:scale(16);opacity:0}}
 #splash .sp-inner{transition:transform .5s cubic-bezier(.36,0,.2,1)}
-#splash.rippling .sp-inner{animation:spBob 1.6s cubic-bezier(.36,0,.2,1)}
-@keyframes spBob{0%{transform:scale(1)}22%{transform:scale(1.05)}45%{transform:scale(.985)}70%{transform:scale(1.012)}100%{transform:scale(1)}}
+#splash.rippling .sp-inner{animation:spBob 2.2s cubic-bezier(.28,0,.2,1)}
+@keyframes spBob{0%{transform:scale(1)}18%{transform:scale(1.035)}40%{transform:scale(.99)}62%{transform:scale(1.012)}82%{transform:scale(.997)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){#splash.rippling .sp-inner{animation:none}}
 @keyframes spInk{to{opacity:1;transform:scale(1);filter:blur(0)}}
 @keyframes spUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}

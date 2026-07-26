@@ -55,16 +55,7 @@
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.007); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
       o.connect(bp); bp.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
     }
-    function tok(delay, vol) {
-      var t = a.currentTime + delay;
-      var o = a.createOscillator(), g = a.createGain(), lp = a.createBiquadFilter();
-      o.type = 'triangle'; o.frequency.setValueAtTime(216, t); o.frequency.exponentialRampToValueAtTime(150, t + 0.06);
-      lp.type = 'lowpass'; lp.frequency.value = 520;
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
-      o.connect(lp); lp.connect(g); g.connect(a.destination); o.start(t); o.stop(t + 0.17);
-    }
-    tok(0, 0.11);                 // hollow wooden knock of the basin
-    plip(0.005, 1650, 620, 0.26, 0.26); // the drop striking water
+    plip(0, 1650, 620, 0.26, 0.26);    // the drop striking water
     plip(0.03, 2300, 1380, 0.10, 0.15); // bright surface splash
     plip(0.20, 900, 430, 0.09, 0.28);   // faint echo droplet in the basin
   }
@@ -2923,11 +2914,15 @@ var CURATED = {
   function splashRipple(sp, x, y) {
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) return;
-    for (var n = 0; n < 3; n++) {
+    var bloom = document.createElement('span');
+    bloom.className = 'sp-bloom';
+    bloom.style.left = x + 'px'; bloom.style.top = y + 'px';
+    sp.appendChild(bloom);
+    for (var n = 0; n < 5; n++) {
       var r = document.createElement('span');
       r.className = 'sp-ripple';
       r.style.left = x + 'px'; r.style.top = y + 'px';
-      r.style.animationDelay = (n * 0.13) + 's';
+      r.style.animationDelay = (n * 0.22) + 's';
       sp.appendChild(r);
     }
   }
@@ -2942,7 +2937,7 @@ var CURATED = {
       if (x == null) { var b = sp.getBoundingClientRect(); x = b.width / 2; y = b.height * 0.42; }
       splashRipple(sp, x, y);
       sp.classList.add('rippling');
-      setTimeout(dismissSplash, 620);
+      setTimeout(dismissSplash, 1150);
     };
     sp.addEventListener('click', function (e) { go(e.clientX, e.clientY); });
     sp.addEventListener('touchstart', function (e) { var t = e.touches && e.touches[0]; go(t ? t.clientX : null, t ? t.clientY : null); }, { passive: true });
