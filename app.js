@@ -2933,7 +2933,6 @@ var CURATED = {
     // stay until tapped — ripple + water drop, then transition
     var go = function (x, y) {
       if (entered) return; entered = true;
-      try { ac(); waterDrop(); } catch (e) {}
       if (x == null) { var b = sp.getBoundingClientRect(); x = b.width / 2; y = b.height * 0.42; }
       splashRipple(sp, x, y);
       sp.classList.add('rippling');
