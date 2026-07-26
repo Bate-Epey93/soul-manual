@@ -765,7 +765,7 @@ body.light .ess-sources{color:rgba(60,45,25,.55);border-top-color:rgba(90,70,40,
 .amb{position:absolute;left:0;right:0;top:0;bottom:0;width:100%;height:100%;pointer-events:none;z-index:0;border-radius:inherit;opacity:.85}
 .amb-water{top:auto;height:74px}
 /* wave card reserves a strip under the text for the water to live in */
-.wave-card{padding-bottom:58px!important}
+.wave-card{padding-bottom:60px!important}
 .wave-card .amb-water{height:56px}
 body.light .amb{opacity:.6}
 /* keep card content above the canvas */

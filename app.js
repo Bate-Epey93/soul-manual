@@ -403,7 +403,9 @@
     el.dataset.enso = '1';
     var host = document.createElement('span');
     host.className = 'enso-host';
-    host.innerHTML = motifSVG(motifFor(found), seed);
+    var mName = motifFor(found);
+    if (mName) host.setAttribute('data-motif', mName);
+    host.innerHTML = motifSVG(mName, seed);
     // emoji-only marker next to a colored label: borrow its accent
     if (!el.textContent.trim() && el.nextElementSibling && el.nextElementSibling.style && el.nextElementSibling.style.color) {
       host.style.color = el.nextElementSibling.style.color;
@@ -1278,12 +1280,12 @@ var CURATED = {
     var h = location.hash.replace(/^#\/?/, '');
     var page = VALID.indexOf(h) !== -1 ? h : 'today';
     activate(page);
-    ambientDecorate(document.getElementById('page-' + page));
     // scope the decoration scans to the page being shown (subnav is rebuilt per activate)
     var el = document.getElementById('page-' + page);
     if (page === 'concepts') decorateConceptCards();
     glassify(el); tintCards(el);
     if (subnavEl) glassify(subnavEl);
+    ambientDecorate(el);
   }
   function activate(page) {
     var g = groupOf(page);
@@ -2925,7 +2927,10 @@ var CURATED = {
     ambIO = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         var inst = e.target.__amb;
-        if (inst) inst.vis = e.isIntersecting;
+        if (!inst) return;
+        inst.vis = e.isIntersecting;
+        if (inst.vis) { inst.w = 0; inst.h = 0; ambSize(inst); if (ambReduced) ambDraw(inst, 4.2); }
+        else ambSize(inst);   // release the backing store on the way out
       });
     }, { rootMargin: '80px' });
     return ambIO;
@@ -2946,15 +2951,20 @@ var CURATED = {
     };
     el.__amb = inst; cv.__amb = inst;
     ambList.push(inst);
-    ambSize(inst);
     var io = ambObserver();
-    if (io) { inst.vis = false; io.observe(cv); }
+    if (io) { inst.vis = false; io.observe(cv); }   // sized when it first scrolls into view
+    else ambSize(inst);
     if (ambReduced) { ambDraw(inst, 4.2); return; }
     ambStart();
   }
   function ambSize(inst) {
+    // offscreen cards hold a 1x1 backing store — 100+ canvases must not cost 100 buffers
+    if (!inst.vis) {
+      if (inst.cv.width !== 1) { inst.cv.width = 1; inst.cv.height = 1; inst.w = 0; inst.h = 0; inst.parts = null; }
+      return;
+    }
     var r = inst.cv.getBoundingClientRect();
-    var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     var w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
     if (w === inst.w && h === inst.h) return;
     inst.w = w; inst.h = h;
@@ -3123,30 +3133,61 @@ var CURATED = {
       ambMount(el, el.getAttribute('data-amb'), el.getAttribute('data-amb-color') || el.style.getPropertyValue('--tint') || '#C4A265');
     });
   }
-  /* decorate sections whose markup is built by the original inline script */
+  /* every card family gets motion matched to its own topic */
+  var AMB_RULES = [
+    { sel: '.concept-card', motif: function (el) { var m = (el.getAttribute('onclick') || '').match(/openD\('([^']+)'\)/); var c = m && DATA.find(function (x) { return x.id === m[1]; }); return c ? (CONCEPT_MOTIFS[c.id] || 'spiral') : 'spiral'; },
+      color: function (el) { var m = (el.getAttribute('onclick') || '').match(/openD\('([^']+)'\)/); var c = m && DATA.find(function (x) { return x.id === m[1]; }); return c && c.color; } },
+    { sel: '.med-card', motif: function (el, i) { return (typeof MEDS !== 'undefined' && MEDS[i]) ? (motifFor(MEDS[i].icon) || 'lotus') : 'lotus'; } },
+    { sel: '.forge-protocol', motif: 'flame' },
+    { sel: '.forge-card', motif: 'hammer' },
+    { sel: '.masc-card', motif: 'sword' },
+    { sel: '.crisis-card', motif: 'warning' },
+    { sel: '.dtree-card', motif: 'fork' },
+    { sel: '.drama-card', motif: 'fog' },
+    { sel: '.path-card', motif: 'road' },
+    { sel: '.map-hz', motif: 'mountain' },
+    { sel: '.map-q', motif: 'target' },
+    { sel: '.map-thread', motif: 'bond' },
+    { sel: '.map-cadence-row', motif: 'compass' },
+    { sel: '.mapdebt', motif: 'coin' },
+    { sel: '.mirror-quote', motif: 'eye' },
+    { sel: '.edge-card', motif: 'sprout' },
+    { sel: '.proto-block', motif: 'coin' },
+    { sel: '.entry-week', motif: 'sprout' },
+    { sel: '.orisha-card', motif: 'drop' },
+    { sel: '.wave-chart', motif: 'wave' },
+    { sel: '.today-tile', motif: function (el) { return el.id === 'tdEft' ? 'target' : 'sun'; } },
+    { sel: '.today-card', motif: function (el) { return TODAY_AMB[el.id] ? TODAY_AMB[el.id]() : 'star'; } }
+  ];
+  var TODAY_AMB = {
+    tdWave: function () { return 'wave'; },
+    tdMed: function () { var m = MEDS[todayMedIndex()]; return (m && motifFor(m.icon)) || 'lotus'; },
+    tdCh: function () { var c = DATA[todayCtx.ci]; return (c && CONCEPT_MOTIFS[c.id]) || 'spiral'; },
+    tdEss: function () { var r = typeof essenceReadOfDay === 'function' ? essenceReadOfDay() : null; return (r && r.s && r.s.motif) || 'yinyang'; },
+    tdEntry: function () { return 'sprout'; },
+    tdQ: function () { return 'target'; },
+    tdMirror: function () { return 'eye'; },
+    tdMarie: function () { return 'heart'; },
+    tdHer: function () { return 'heart'; }
+  };
   function ambientDecorate(root) {
     var r = root || document;
-    r.querySelectorAll('.forge-protocol').forEach(function (el) {
-      if (el.hasAttribute('data-amb')) return;
-      el.setAttribute('data-amb', 'flame');
-      el.setAttribute('data-amb-color', inlineAccent(el) || el.style.getPropertyValue('--tint') || '#B85C38');
-    });
-    r.querySelectorAll('.med-card').forEach(function (el, i) {
-      if (el.hasAttribute('data-amb')) return;
-      var m = (typeof MEDS !== 'undefined' && MEDS[i]) ? motifFor(MEDS[i].icon) : null;
-      el.setAttribute('data-amb', m || 'lotus');
-      el.setAttribute('data-amb-color', '#C4A265');
-    });
-    r.querySelectorAll('.concept-card').forEach(function (el) {
-      if (el.hasAttribute('data-amb')) return;
-      var m = (el.getAttribute('onclick') || '').match(/openD\('([^']+)'\)/);
-      var c = m && DATA.find(function (x) { return x.id === m[1]; });
-      if (!c) return;
-      el.setAttribute('data-amb', CONCEPT_MOTIFS[c.id] || 'spiral');
-      el.setAttribute('data-amb-color', c.color);
+    AMB_RULES.forEach(function (rule) {
+      r.querySelectorAll(rule.sel).forEach(function (el, i) {
+        if (el.hasAttribute('data-amb') || el.__amb) return;
+        // a rendered brush mark inside the card names the topic best
+        var mark = el.querySelector('[data-motif]');
+        var motif = (mark && mark.getAttribute('data-motif')) ||
+          (typeof rule.motif === 'function' ? rule.motif(el, i) : rule.motif);
+        if (!motif) return;
+        var col = (rule.color && rule.color(el)) || el.style.getPropertyValue('--tint') || inlineAccent(el) || '#C4A265';
+        el.setAttribute('data-amb', motif);
+        el.setAttribute('data-amb-color', String(col).trim());
+      });
     });
     ambientSweep(r);
   }
+
 
   /* ================================================================
      BOOT
