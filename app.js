@@ -2913,15 +2913,23 @@ var CURATED = {
      ================================================================ */
   var AMB_KIND = {
     wave: 'water', drop: 'water',
-    flame: 'ember', candle: 'ember', lightning: 'ember',
-    fog: 'mist', crescent: 'mist', bone: 'mist', warning: 'mist',
-    spiral: 'orbit', yinyang: 'orbit', compass: 'orbit', game: 'orbit',
-    target: 'pulse', heart: 'pulse', bond: 'pulse', signal: 'pulse', coin: 'pulse', pin: 'pulse', check: 'pulse',
-    mountain: 'ridge', wall: 'ridge', house: 'ridge', torii: 'ridge', diamond: 'ridge', triangle: 'ridge', door: 'ridge', weight: 'ridge', hammer: 'ridge', sword: 'ridge',
-    sprout: 'grow', lotus: 'grow', leaf: 'grow', rose: 'grow',
-    star: 'dust', sun: 'dust', sunrise: 'dust', eye: 'dust', magnify: 'dust', letter: 'dust', female: 'dust',
-    road: 'flow', fork: 'flow', snake: 'flow', chart: 'flow'
+    flame: 'ember', candle: 'ember',
+    fog: 'mist', crescent: 'mist', bone: 'mist',
+    spiral: 'orbit', compass: 'orbit',
+    target: 'pulse', signal: 'pulse', pin: 'pulse',
+    mountain: 'ridge', wall: 'ridge', triangle: 'ridge',
+    sprout: 'grow', leaf: 'grow',
+    star: 'beam', sun: 'beam', sunrise: 'beam',
+    lotus: 'bloom', rose: 'bloom', heart: 'bloom',
+    bond: 'weave', letter: 'weave', female: 'weave', chart: 'weave',
+    lightning: 'spark', sword: 'spark', warning: 'spark',
+    torii: 'gate', house: 'gate', door: 'gate', diamond: 'gate',
+    check: 'rain', coin: 'rain',
+    yinyang: 'swing', game: 'swing', weight: 'swing', hammer: 'swing',
+    road: 'flow', snake: 'flow', fork: 'flow',
+    eye: 'dust', magnify: 'dust'
   };
+
   function ambKind(motif) { return AMB_KIND[motif] || 'mist'; }
 
   var ambList = [], ambRAF = null, ambIO = null, ambReduced = false;
@@ -2937,8 +2945,9 @@ var CURATED = {
       entries.forEach(function (e) {
         var inst = e.target.__amb;
         if (!inst) return;
+        inst.reported = true;
         inst.vis = e.isIntersecting;
-        if (inst.vis) { inst.w = 0; inst.h = 0; ambSize(inst); if (ambReduced) ambDraw(inst, 4.2); }
+        if (inst.vis) { inst.w = 0; inst.h = 0; ambSize(inst); ambDraw(inst, 4.2); ambStart(); }
         else ambSize(inst);   // release the backing store on the way out
       });
     }, { rootMargin: '80px' });
@@ -2961,8 +2970,15 @@ var CURATED = {
     el.__amb = inst; cv.__amb = inst;
     ambList.push(inst);
     var io = ambObserver();
-    if (io) { inst.vis = false; io.observe(cv); }   // sized when it first scrolls into view
-    else ambSize(inst);
+    if (io) {
+      inst.vis = false; io.observe(cv);            // sized when it first scrolls into view
+      // some engines throttle observer delivery; never leave a card permanently blank
+      setTimeout(function () {
+        if (inst.reported || !inst.cv.isConnected) return;
+        inst.vis = true; inst.w = 0; inst.h = 0; ambSize(inst);
+        ambDraw(inst, 4.2); ambStart();
+      }, 1200);
+    } else ambSize(inst);
     if (ambReduced) { ambDraw(inst, 4.2); return; }
     ambStart();
   }
@@ -3086,7 +3102,7 @@ var CURATED = {
           var y = L.y - Math.abs(Math.sin((x + off) * L.k)) * L.a - Math.abs(Math.sin((x + off) * L.k * 2.7)) * L.a * 0.35;
           ctx.lineTo(x, y);
         }
-        ctx.lineTo(W, H); ctx.closePath(); ctx.fillStyle = ambCol(rgb, L.al); ctx.fill();
+        ctx.lineTo(W, H); ctx.closePath(); ctx.fillStyle = ambCol(rgb, L.al * 1.35); ctx.fill();
       });
     },
     /* swaying stems */
@@ -3099,7 +3115,7 @@ var CURATED = {
         var sway = Math.sin(t * 0.5 + s.p) * 9;
         ctx.beginPath(); ctx.moveTo(s.x, H);
         ctx.quadraticCurveTo(s.x + sway * 0.4, H - s.h * 0.6, s.x + sway, H - s.h);
-        ctx.strokeStyle = ambCol(rgb, 0.22); ctx.lineWidth = 1.3; ctx.stroke();
+        ctx.strokeStyle = ambCol(rgb, 0.28); ctx.lineWidth = 1.3; ctx.stroke();
         ctx.beginPath(); ctx.ellipse(s.x + sway, H - s.h, 4.2, 2.2, sway * 0.03, 0, 6.28);
         ctx.fillStyle = ambCol(rgb, 0.20); ctx.fill();
       });
@@ -3114,10 +3130,91 @@ var CURATED = {
         p.x += p.sx; p.y += p.sy;
         if (p.y < -3) { p.y = H + 3; p.x = Math.random() * W; }
         if (p.x < -3) p.x = W + 3; else if (p.x > W + 3) p.x = -3;
-        var tw = 0.16 + 0.16 * (0.5 + 0.5 * Math.sin(t * 1.1 + p.p));
+        var tw = 0.20 + 0.20 * (0.5 + 0.5 * Math.sin(t * 1.1 + p.p));
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.28);
         ctx.fillStyle = ambCol(rgb, tw); ctx.fill();
       });
+    },
+    /* slow rays turning from a corner */
+    beam: function (ctx, W, H, t, rgb) {
+      var cx = W * 0.86, cy = H * 0.16, R = Math.max(W, H) * 1.15;
+      for (var i = 0; i < 7; i++) {
+        var a = t * 0.055 + i * (6.28 / 7);
+        ctx.beginPath(); ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, R, a - 0.055, a + 0.055); ctx.closePath();
+        ctx.fillStyle = ambCol(rgb, 0.055 + 0.03 * Math.sin(t * 0.6 + i));
+        ctx.fill();
+      }
+    },
+    /* petals breathing open and closed */
+    bloom: function (ctx, W, H, t, rgb) {
+      var cx = W * 0.83, cy = H * 0.52, p = 0.5 + 0.5 * Math.sin(t * 0.34);
+      var R = Math.min(W, H) * (0.20 + p * 0.16);
+      for (var i = 0; i < 6; i++) {
+        var a = i * (6.28 / 6) + t * 0.05;
+        ctx.beginPath();
+        ctx.ellipse(cx + Math.cos(a) * R * 0.52, cy + Math.sin(a) * R * 0.52, R * 0.46, R * 0.20, a, 0, 6.28);
+        ctx.fillStyle = ambCol(rgb, 0.07 + 0.05 * p); ctx.fill();
+      }
+    },
+    /* threads crossing and drifting */
+    weave: function (ctx, W, H, t, rgb) {
+      ctx.lineWidth = 1;
+      for (var i = 0; i < 5; i++) {
+        var o = ((t * 6 + i * 40) % (W + 160)) - 80;
+        ctx.beginPath(); ctx.moveTo(o, -10); ctx.lineTo(o + H + 20, H + 10);
+        ctx.strokeStyle = ambCol(rgb, 0.10); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(W - o, -10); ctx.lineTo(W - o - H - 20, H + 10);
+        ctx.strokeStyle = ambCol(rgb, 0.07); ctx.stroke();
+      }
+    },
+    /* a charge that gathers, then strikes */
+    spark: function (ctx, W, H, t, rgb, inst) {
+      var period = 5.5, ph = (t % period) / period;
+      var cx = W * 0.82, cy = H * 0.5;
+      ctx.beginPath(); ctx.arc(cx, cy, Math.min(W, H) * 0.28, 0, 6.28);
+      ctx.fillStyle = ambCol(rgb, 0.05 + 0.05 * ph); ctx.fill();
+      if (ph > 0.86) {
+        var f = (1 - (ph - 0.86) / 0.14);
+        var r = rng(inst.seed + Math.floor(t / period));
+        ctx.beginPath(); ctx.moveTo(cx, cy - H * 0.42);
+        for (var y = -0.42; y < 0.42; y += 0.14) ctx.lineTo(cx + (r() - 0.5) * W * 0.16, cy + y * H);
+        ctx.strokeStyle = ambCol(rgb, 0.55 * f); ctx.lineWidth = 1.4; ctx.stroke();
+      }
+    },
+    /* light passing through a standing frame */
+    gate: function (ctx, W, H, t, rgb) {
+      var x = ((t * 16) % (W + 220)) - 110;
+      var g = ctx.createLinearGradient(x - 110, 0, x + 110, 0);
+      g.addColorStop(0, ambCol(rgb, 0)); g.addColorStop(0.5, ambCol(rgb, 0.13)); g.addColorStop(1, ambCol(rgb, 0));
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = ambCol(rgb, 0.10); ctx.lineWidth = 1;
+      [0.30, 0.70].forEach(function (p) { ctx.beginPath(); ctx.moveTo(W * p, H * 0.18); ctx.lineTo(W * p, H); ctx.stroke(); });
+      ctx.beginPath(); ctx.moveTo(W * 0.20, H * 0.20); ctx.lineTo(W * 0.80, H * 0.20); ctx.stroke();
+    },
+    /* thin rain */
+    rain: function (ctx, W, H, t, rgb, inst) {
+      if (!inst.parts) {
+        inst.parts = [];
+        for (var i = 0; i < 22; i++) inst.parts.push({ x: Math.random() * W, y: Math.random() * H, s: 1.1 + Math.random() * 1.9, l: 5 + Math.random() * 9 });
+      }
+      ctx.lineWidth = 1;
+      inst.parts.forEach(function (p) {
+        p.y += p.s; if (p.y > H + p.l) { p.y = -p.l; p.x = Math.random() * W; }
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 1.5, p.y - p.l);
+        ctx.strokeStyle = ambCol(rgb, 0.16); ctx.stroke();
+      });
+    },
+    /* a slow pendulum finding its balance */
+    swing: function (ctx, W, H, t, rgb) {
+      var px = W * 0.82, py = -H * 0.12, L = H * 0.92;
+      var a = Math.sin(t * 0.42) * 0.42;
+      var bx = px + Math.sin(a) * L, by = py + Math.cos(a) * L;
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(bx, by);
+      ctx.strokeStyle = ambCol(rgb, 0.16); ctx.lineWidth = 1.1; ctx.stroke();
+      ctx.beginPath(); ctx.arc(bx, by, 4.6, 0, 6.28); ctx.fillStyle = ambCol(rgb, 0.26); ctx.fill();
+      ctx.beginPath(); ctx.arc(px, py, L, 1.05, 2.09);
+      ctx.strokeStyle = ambCol(rgb, 0.05); ctx.stroke();
     },
     /* flowing streamlines */
     flow: function (ctx, W, H, t, rgb) {
@@ -3243,7 +3340,7 @@ var CURATED = {
       if (x == null) { var b = sp.getBoundingClientRect(); x = b.width / 2; y = b.height * 0.42; }
       splashRipple(sp, x, y);
       sp.classList.add('rippling');
-      setTimeout(dismissSplash, 1150);
+      setTimeout(dismissSplash, 1500);
     };
     sp.addEventListener('click', function (e) { go(e.clientX, e.clientY); });
     sp.addEventListener('touchstart', function (e) { var t = e.touches && e.touches[0]; go(t ? t.clientX : null, t ? t.clientY : null); }, { passive: true });
