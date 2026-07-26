@@ -758,3 +758,15 @@ body.light .ess-foryou p{color:rgba(50,38,20,.82)}
 .ess-foryou-r{border-left:3px solid var(--wave-tint,#C4A265)}
 .ess-sources{font-size:11px;line-height:1.8;color:rgba(255,255,255,.38);margin:14px 0 4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
 body.light .ess-sources{color:rgba(60,45,25,.55);border-top-color:rgba(90,70,40,.12)}
+
+/* ---------------------------------------------------------------- */
+/* AMBIENT CANVAS — topic motion behind cards                       */
+/* ---------------------------------------------------------------- */
+.amb{position:absolute;left:0;right:0;top:0;bottom:0;width:100%;height:100%;pointer-events:none;z-index:0;border-radius:inherit;opacity:.85}
+.amb-water{top:auto;height:74px}
+/* wave card reserves a strip under the text for the water to live in */
+.wave-card{padding-bottom:58px!important}
+.wave-card .amb-water{height:56px}
+body.light .amb{opacity:.6}
+/* keep card content above the canvas */
+.today-card>*:not(.amb),.ess-card>*:not(.amb),.wat-card>*:not(.amb),.concept-card>*:not(.amb),.med-card>*:not(.amb),.forge-protocol>*:not(.amb){position:relative;z-index:1}

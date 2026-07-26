@@ -1278,6 +1278,7 @@ var CURATED = {
     var h = location.hash.replace(/^#\/?/, '');
     var page = VALID.indexOf(h) !== -1 ? h : 'today';
     activate(page);
+    ambientDecorate(document.getElementById('page-' + page));
     // scope the decoration scans to the page being shown (subnav is rebuilt per activate)
     var el = document.getElementById('page-' + page);
     if (page === 'concepts') decorateConceptCards();
@@ -1440,7 +1441,7 @@ var CURATED = {
       return '<div class="tsec" data-tsec="' + k + '">' + (b.sec[k] || '') + '</div>';
     }).join('');
     bindToday(page);
-    tintCards(page);
+    tintCards(page); ambientDecorate(page);
   }
   // partial re-render: only the named sections are rebuilt (wave tap, edit, etc.)
   function refreshToday(keys) {
@@ -1452,7 +1453,7 @@ var CURATED = {
       if (w) w.innerHTML = b.sec[k] || '';
     });
     bindToday(page);
-    glassify(page); tintCards(page);
+    glassify(page); tintCards(page); ambientDecorate(page);
     if (PREFS.theme === 'light') applyInlineTheme(true, page);
   }
 
@@ -2028,7 +2029,7 @@ var CURATED = {
     if (!wave || waveEditing) {
       var q = slot === 'evening' ? 'How did the day land in you?' : 'Where are you in your wave?';
       return '<div class="today-sec">Emotional Weather</div>' +
-        '<div class="today-card glass wave-card" id="tdWave">' +
+        '<div class="today-card glass wave-card" id="tdWave" data-amb="wave" data-amb-color="' + (wave ? waveState(wave.v).tint : '#5A7B8C') + '">' +
           '<div class="wave-q">' + q + '</div>' +
           '<div class="wave-scale">' + WAVE_STATES.map(function (w) {
             return '<button class="wave-dot' + (wave && Math.round(+wave.v) === w.v ? ' on' : '') + '" data-wave="' + w.v + '" style="--wd:' + w.tint + '" aria-label="' + w.label + '"><span></span><em>' + w.short + '</em></button>';
@@ -2038,7 +2039,7 @@ var CURATED = {
     }
     var ws = waveState(wave.v);
     return '<div class="today-sec">Emotional Weather</div>' +
-      '<div class="today-card glass wave-card logged" id="tdWave">' +
+      '<div class="today-card glass wave-card logged" id="tdWave" data-amb="wave" data-amb-color="' + ws.tint + '">' +
         '<div class="wave-status"><span class="wave-orb" style="background:' + ws.tint + '"></span>' +
           '<div class="wave-status-body"><div class="wave-state">' + ws.label + (wave.note ? ' · <em>' + esc(wave.note) + '</em>' : '') + '</div>' +
           '<div class="wave-guide">' + waveGuidance() + '</div></div></div>' +
@@ -2435,7 +2436,7 @@ var CURATED = {
       '<div style="margin-bottom:20px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">' + ESSENCE.title + '</h2>' +
       '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">' + ESSENCE.sub + '</p></div>';
     ESSENCE.sections.forEach(function (s, i) {
-      h += '<div class="ess-card glass" data-ess="' + i + '" style="border-left:3px solid ' + s.color + '">' +
+      h += '<div class="ess-card glass" data-ess="' + i + '" data-amb="' + (s.motif || 'spiral') + '" data-amb-color="' + s.color + '" style="border-left:3px solid ' + s.color + '">' +
         '<div class="ess-kicker" style="color:' + s.color + '">' + s.kicker + '</div>' +
         '<div class="ess-title">' + motifSVG(s.motif, 'ess-' + s.id, { color: s.color }) + ' ' + s.title + '</div>' +
         '<div class="ess-body" id="essb-' + i + '">' +
@@ -2494,7 +2495,7 @@ var CURATED = {
       '<div class="wprin-body">' + WATERS.principles.growth + WATERS.principles.polarity + WATERS.principles.safety + WATERS.principles.load + '</div>' +
       '<button class="eft-read-link" id="wPrinMore">read the principles ▾</button></div>';
     WATERS.practices.forEach(function (p, i) {
-      h += '<div class="ess-card wat-card glass" data-wat="' + p.id + '" style="border-left:3px solid ' + p.color + '">' +
+      h += '<div class="ess-card wat-card glass" data-wat="' + p.id + '" data-amb="' + (p.motif || 'drop') + '" data-amb-color="' + p.color + '" style="border-left:3px solid ' + p.color + '">' +
         '<div class="wat-head"><div class="ess-kicker" style="color:' + p.color + '">' + p.num + (p.cadence ? ' · ' + p.cadence : '') + '</div>' + fnChip(p.fn) + '</div>' +
         '<div class="ess-title">' + motifSVG(p.motif, 'wat-' + p.id, { color: p.color }) + ' ' + p.title + '</div>' +
         '<div class="ess-body">' +
@@ -2895,6 +2896,259 @@ var CURATED = {
   }
 
   /* ================================================================
+     AMBIENT CANVAS — topic-representative motion behind cards
+     One shared rAF; only visible canvases draw; reduced-motion = one
+     static frame. Each renderer paints in the card's own accent.
+     ================================================================ */
+  var AMB_KIND = {
+    wave: 'water', drop: 'water',
+    flame: 'ember', candle: 'ember', lightning: 'ember',
+    fog: 'mist', crescent: 'mist', bone: 'mist', warning: 'mist',
+    spiral: 'orbit', yinyang: 'orbit', compass: 'orbit', game: 'orbit',
+    target: 'pulse', heart: 'pulse', bond: 'pulse', signal: 'pulse', coin: 'pulse', pin: 'pulse', check: 'pulse',
+    mountain: 'ridge', wall: 'ridge', house: 'ridge', torii: 'ridge', diamond: 'ridge', triangle: 'ridge', door: 'ridge', weight: 'ridge', hammer: 'ridge', sword: 'ridge',
+    sprout: 'grow', lotus: 'grow', leaf: 'grow', rose: 'grow',
+    star: 'dust', sun: 'dust', sunrise: 'dust', eye: 'dust', magnify: 'dust', letter: 'dust', female: 'dust',
+    road: 'flow', fork: 'flow', snake: 'flow', chart: 'flow'
+  };
+  function ambKind(motif) { return AMB_KIND[motif] || 'mist'; }
+
+  var ambList = [], ambRAF = null, ambIO = null, ambReduced = false;
+  function ambRGB(hex) {
+    var rgb = toRGB(hex) || [196, 162, 101];
+    return rgb;
+  }
+  function ambCol(rgb, a) { return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + a + ')'; }
+
+  function ambObserver() {
+    if (ambIO || !('IntersectionObserver' in window)) return ambIO;
+    ambIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        var inst = e.target.__amb;
+        if (inst) inst.vis = e.isIntersecting;
+      });
+    }, { rootMargin: '80px' });
+    return ambIO;
+  }
+
+  function ambMount(el, motif, color) {
+    if (!el || el.__amb || typeof HTMLCanvasElement === 'undefined') return;
+    var kind = ambKind(motif);
+    var cv = document.createElement('canvas');
+    cv.className = 'amb amb-' + kind;
+    cv.setAttribute('aria-hidden', 'true');
+    el.insertBefore(cv, el.firstChild);
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    var inst = {
+      el: el, cv: cv, ctx: cv.getContext('2d'), kind: kind, rgb: ambRGB(color),
+      vis: true, w: 0, h: 0, seed: (hash32(kind + (el.id || '') + (el.textContent || '').slice(0, 24)) % 1000) / 1000,
+      parts: null
+    };
+    el.__amb = inst; cv.__amb = inst;
+    ambList.push(inst);
+    ambSize(inst);
+    var io = ambObserver();
+    if (io) { inst.vis = false; io.observe(cv); }
+    if (ambReduced) { ambDraw(inst, 4.2); return; }
+    ambStart();
+  }
+  function ambSize(inst) {
+    var r = inst.cv.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    var w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    if (w === inst.w && h === inst.h) return;
+    inst.w = w; inst.h = h;
+    inst.cv.width = Math.round(w * dpr); inst.cv.height = Math.round(h * dpr);
+    inst.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    inst.parts = null;
+  }
+
+  var ambLast = 0;
+  function ambTick(ts) {
+    ambRAF = requestAnimationFrame(ambTick);
+    if (ts - ambLast < 33) return;          // ~30fps ceiling
+    ambLast = ts;
+    if (document.hidden) return;
+    var t = ts / 1000, live = 0;
+    for (var i = 0; i < ambList.length; i++) {
+      var inst = ambList[i];
+      if (!inst.cv.isConnected) { ambList.splice(i--, 1); continue; }
+      if (!inst.vis) continue;
+      live++;
+      ambSize(inst);
+      ambDraw(inst, t);
+    }
+    if (!ambList.length) { cancelAnimationFrame(ambRAF); ambRAF = null; }
+  }
+  function ambStart() { if (!ambRAF && !ambReduced) ambRAF = requestAnimationFrame(ambTick); }
+
+  function ambDraw(inst, t) {
+    var ctx = inst.ctx, W = inst.w, H = inst.h;
+    ctx.clearRect(0, 0, W, H);
+    var fn = AMB_DRAW[inst.kind] || AMB_DRAW.mist;
+    fn(ctx, W, H, t + inst.seed * 40, inst.rgb, inst);
+  }
+
+  var AMB_DRAW = {
+    /* calm water: layered scrolling swell, no crash */
+    water: function (ctx, W, H, t, rgb) {
+      var base = H * 0.52, amp = Math.min(13, H * 0.20);
+      function surf(x, ph, a) {
+        return base + Math.sin(x * 0.020 - ph * 0.85) * a * 0.55
+                    + Math.sin(x * 0.0091 + ph * 0.5) * a * 0.42
+                    + Math.sin(x * 0.041 + ph * 1.25) * a * 0.16;
+      }
+      [{ ph: t * 0.55, a: amp * 0.72, o: 10, fill: 0.10, top: 0.17 },
+       { ph: t * 0.85, a: amp, o: 0, fill: 0.13, top: 0.26 }].forEach(function (L) {
+        ctx.beginPath(); ctx.moveTo(0, H);
+        for (var x = 0; x <= W; x += 7) ctx.lineTo(x, surf(x, L.ph, L.a) + L.o);
+        ctx.lineTo(W, H); ctx.closePath();
+        var g = ctx.createLinearGradient(0, base - amp, 0, H);
+        g.addColorStop(0, ambCol(rgb, L.top)); g.addColorStop(1, ambCol(rgb, L.fill));
+        ctx.fillStyle = g; ctx.fill();
+      });
+      ctx.beginPath();
+      for (var x = 0; x <= W; x += 6) { var y = surf(x, t * 0.85, amp); x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      ctx.strokeStyle = ambCol(rgb, 0.42); ctx.lineWidth = 1.2; ctx.stroke();
+    },
+    /* embers drifting upward */
+    ember: function (ctx, W, H, t, rgb, inst) {
+      if (!inst.parts) {
+        inst.parts = [];
+        for (var i = 0; i < 16; i++) inst.parts.push({ x: Math.random() * W, y: Math.random() * H, s: 0.25 + Math.random() * 0.55, r: 0.7 + Math.random() * 1.5, p: Math.random() * 6.28 });
+      }
+      inst.parts.forEach(function (p) {
+        p.y -= p.s; if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
+        var x = p.x + Math.sin(t * 0.9 + p.p) * 7;
+        var life = p.y / H;
+        ctx.beginPath(); ctx.arc(x, p.y, p.r, 0, 6.28);
+        ctx.fillStyle = ambCol(rgb, 0.30 * life); ctx.fill();
+      });
+      var g = ctx.createLinearGradient(0, H, 0, H * 0.35);
+      g.addColorStop(0, ambCol(rgb, 0.16)); g.addColorStop(1, ambCol(rgb, 0));
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    },
+    /* drifting mist bands */
+    mist: function (ctx, W, H, t, rgb) {
+      for (var i = 0; i < 3; i++) {
+        var y = H * (0.30 + i * 0.24) + Math.sin(t * 0.22 + i) * H * 0.05;
+        var off = ((t * (7 + i * 4)) % (W + 260)) - 130;
+        var g = ctx.createLinearGradient(off - 130, 0, off + 130, 0);
+        g.addColorStop(0, ambCol(rgb, 0)); g.addColorStop(0.5, ambCol(rgb, 0.13 - i * 0.028)); g.addColorStop(1, ambCol(rgb, 0));
+        ctx.fillStyle = g; ctx.fillRect(0, y - 13, W, 26);
+      }
+    },
+    /* slow concentric orbit arcs */
+    orbit: function (ctx, W, H, t, rgb) {
+      var cx = W * 0.82, cy = H * 0.5, R = Math.min(W, H) * 0.52;
+      for (var i = 0; i < 3; i++) {
+        var r = R * (0.5 + i * 0.27), sp = t * (0.16 - i * 0.04) + i * 2.1;
+        ctx.beginPath(); ctx.arc(cx, cy, r, sp, sp + 2.4 + i * 0.5);
+        ctx.strokeStyle = ambCol(rgb, 0.26 - i * 0.06); ctx.lineWidth = 1.4 - i * 0.25; ctx.stroke();
+      }
+    },
+    /* concentric pulse rings */
+    pulse: function (ctx, W, H, t, rgb) {
+      var cx = W * 0.84, cy = H * 0.5, max = Math.max(W, H) * 0.72;
+      for (var i = 0; i < 3; i++) {
+        var p = ((t * 0.22) + i / 3) % 1;
+        ctx.beginPath(); ctx.arc(cx, cy, p * max, 0, 6.28);
+        ctx.strokeStyle = ambCol(rgb, 0.30 * (1 - p)); ctx.lineWidth = 1.3; ctx.stroke();
+      }
+      ctx.beginPath(); ctx.arc(cx, cy, 2.4, 0, 6.28); ctx.fillStyle = ambCol(rgb, 0.35); ctx.fill();
+    },
+    /* parallax ridges */
+    ridge: function (ctx, W, H, t, rgb) {
+      [{ k: 0.011, a: H * 0.16, y: H * 0.72, sp: 5, al: 0.09 },
+       { k: 0.017, a: H * 0.22, y: H * 0.86, sp: 11, al: 0.14 }].forEach(function (L) {
+        var off = t * L.sp;
+        ctx.beginPath(); ctx.moveTo(0, H);
+        for (var x = 0; x <= W; x += 8) {
+          var y = L.y - Math.abs(Math.sin((x + off) * L.k)) * L.a - Math.abs(Math.sin((x + off) * L.k * 2.7)) * L.a * 0.35;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(W, H); ctx.closePath(); ctx.fillStyle = ambCol(rgb, L.al); ctx.fill();
+      });
+    },
+    /* swaying stems */
+    grow: function (ctx, W, H, t, rgb, inst) {
+      if (!inst.parts) {
+        inst.parts = [];
+        for (var i = 0; i < 5; i++) inst.parts.push({ x: W * (0.12 + i * 0.19), h: H * (0.35 + (i % 3) * 0.16), p: i * 1.3 });
+      }
+      inst.parts.forEach(function (s) {
+        var sway = Math.sin(t * 0.5 + s.p) * 9;
+        ctx.beginPath(); ctx.moveTo(s.x, H);
+        ctx.quadraticCurveTo(s.x + sway * 0.4, H - s.h * 0.6, s.x + sway, H - s.h);
+        ctx.strokeStyle = ambCol(rgb, 0.22); ctx.lineWidth = 1.3; ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(s.x + sway, H - s.h, 4.2, 2.2, sway * 0.03, 0, 6.28);
+        ctx.fillStyle = ambCol(rgb, 0.20); ctx.fill();
+      });
+    },
+    /* drifting motes */
+    dust: function (ctx, W, H, t, rgb, inst) {
+      if (!inst.parts) {
+        inst.parts = [];
+        for (var i = 0; i < 20; i++) inst.parts.push({ x: Math.random() * W, y: Math.random() * H, r: 0.6 + Math.random() * 1.3, sx: (Math.random() - 0.5) * 0.16, sy: -0.06 - Math.random() * 0.14, p: Math.random() * 6.28 });
+      }
+      inst.parts.forEach(function (p) {
+        p.x += p.sx; p.y += p.sy;
+        if (p.y < -3) { p.y = H + 3; p.x = Math.random() * W; }
+        if (p.x < -3) p.x = W + 3; else if (p.x > W + 3) p.x = -3;
+        var tw = 0.16 + 0.16 * (0.5 + 0.5 * Math.sin(t * 1.1 + p.p));
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.28);
+        ctx.fillStyle = ambCol(rgb, tw); ctx.fill();
+      });
+    },
+    /* flowing streamlines */
+    flow: function (ctx, W, H, t, rgb) {
+      for (var i = 0; i < 4; i++) {
+        var y0 = H * (0.22 + i * 0.19), ph = i * 1.7, off = (t * (13 + i * 5)) % (W + 200) - 100;
+        ctx.beginPath();
+        for (var x = 0; x <= W; x += 8) {
+          var y = y0 + Math.sin((x + t * 22) * 0.014 + ph) * H * 0.10;
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        var g = ctx.createLinearGradient(off - 100, 0, off + 100, 0);
+        g.addColorStop(0, ambCol(rgb, 0)); g.addColorStop(0.5, ambCol(rgb, 0.26)); g.addColorStop(1, ambCol(rgb, 0));
+        ctx.strokeStyle = g; ctx.lineWidth = 1.1; ctx.stroke();
+      }
+    }
+  };
+
+  /* mount every element carrying data-amb */
+  function ambientSweep(root) {
+    (root || document).querySelectorAll('[data-amb]').forEach(function (el) {
+      if (el.__amb) return;
+      ambMount(el, el.getAttribute('data-amb'), el.getAttribute('data-amb-color') || el.style.getPropertyValue('--tint') || '#C4A265');
+    });
+  }
+  /* decorate sections whose markup is built by the original inline script */
+  function ambientDecorate(root) {
+    var r = root || document;
+    r.querySelectorAll('.forge-protocol').forEach(function (el) {
+      if (el.hasAttribute('data-amb')) return;
+      el.setAttribute('data-amb', 'flame');
+      el.setAttribute('data-amb-color', inlineAccent(el) || el.style.getPropertyValue('--tint') || '#B85C38');
+    });
+    r.querySelectorAll('.med-card').forEach(function (el, i) {
+      if (el.hasAttribute('data-amb')) return;
+      var m = (typeof MEDS !== 'undefined' && MEDS[i]) ? motifFor(MEDS[i].icon) : null;
+      el.setAttribute('data-amb', m || 'lotus');
+      el.setAttribute('data-amb-color', '#C4A265');
+    });
+    r.querySelectorAll('.concept-card').forEach(function (el) {
+      if (el.hasAttribute('data-amb')) return;
+      var m = (el.getAttribute('onclick') || '').match(/openD\('([^']+)'\)/);
+      var c = m && DATA.find(function (x) { return x.id === m[1]; });
+      if (!c) return;
+      el.setAttribute('data-amb', CONCEPT_MOTIFS[c.id] || 'spiral');
+      el.setAttribute('data-amb-color', c.color);
+    });
+    ambientSweep(r);
+  }
+
+  /* ================================================================
      BOOT
      ================================================================ */
   /* footer: keep only the Manifestor line */
@@ -2946,6 +3200,7 @@ var CURATED = {
   }
 
   function boot() {
+    ambReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     scheduleSplash();
     try {
       extendEft();
