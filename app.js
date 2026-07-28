@@ -3024,7 +3024,7 @@ var CURATED = {
       '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">A lexicon of the wave. Specificity is the work; generality is the mind negotiating. Not \u201Cbad\u201D \u2014 slighted, braced, unspent.</p>' +
       '<p class="nm-guard">Let it finish before you name it. This is for after.</p></div>';
 
-    h += '<input class="mirror-input nm-search" id="nmSearch" placeholder="Say it loosely \u2014 \u2018don\u2019t want to see anyone today\u2019 \u2014 or search a word" value="' + esc(st.q) + '">';
+    h += '<div class="nm-row"><input class="mirror-input nm-search" id="nmSearch" enterkeyhint="search" placeholder="Say it loosely \u2014 \u2018don\u2019t want to see anyone today\u2019 \u2014 or search a word" value="' + esc(st.q) + '"><button class="tbtn nm-go" id="nmGo">Name it</button></div>';
 
     h += '<div class="today-sec">The Triage \u2014 three observations</div><div class="today-card glass" id="nmTriage">' +
       nmChipRow('Pointed', 'dir', [{ v: 'out', n: 'at someone' }, { v: 'in', n: 'at myself' }, { v: 'none', n: 'at nothing \u2014 ambient' }]) +
@@ -3066,14 +3066,24 @@ var CURATED = {
       glassify(host);
       if (PREFS.theme === 'light') applyInlineTheme(true, host);
     }
+    function nmFlush(scrollTo) {
+      clearTimeout(deb);
+      nmState.q = inp.value;              // untrimmed — the input is never rewritten
+      nmState.blur = null; nmState.open = null;
+      nmUpdateResults();
+      if (scrollTo) {
+        var host = page.querySelector('#nmResults');
+        if (host && host.firstChild) host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
     inp.oninput = function () {
       clearTimeout(deb);
-      deb = setTimeout(function () {
-        nmState.q = inp.value;            // untrimmed — the input is never rewritten
-        nmState.blur = null; nmState.open = null;
-        nmUpdateResults();
-      }, 300);
+      deb = setTimeout(nmFlush, 300);
     };
+    inp.onkeydown = function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); inp.blur(); nmFlush(true); }
+    };
+    page.querySelector('#nmGo').onclick = function () { inp.blur(); nmFlush(true); };
     page.querySelectorAll('[data-nmx]').forEach(function (b) {
       b.onclick = function () {
         var k = b.dataset.nmx, v = b.dataset.v;

@@ -810,3 +810,6 @@ body.light .nm-cand strong,body.light .nm-w,body.light .nm-say{color:#33291A}
 body.light .nm-cand span,body.light .nm-def{color:rgba(50,38,20,.8)}
 body.light .nm-feels,body.light .nm-vs,body.light .nm-famline{color:rgba(60,45,25,.62)}
 body.light .nm-vs span{color:rgba(60,45,25,.45)}
+.nm-row{display:flex;gap:10px;align-items:stretch}
+.nm-row .nm-search{flex:1;min-width:0}
+.nm-go{flex-shrink:0;align-self:center}
