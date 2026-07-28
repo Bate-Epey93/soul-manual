@@ -4,14 +4,14 @@
    Routes point at existing practices. No tracking — a finder, not a ledger. */
 
 var LEX_FAMILIES = [
-  { id: 'hurt',    name: 'Hurt',            motif: 'heart',    color: '#D9826C', line: 'Something landed on the tender part. The wound decides the word.' },
-  { id: 'anger',   name: 'Anger',           motif: 'flame',    color: '#B85C38', line: 'Heat with a direction. Anger is information about a boundary.' },
-  { id: 'fear',    name: 'Fear',            motif: 'fog',      color: '#6E7FA3', line: 'The body preparing for a future it has already decided on.' },
-  { id: 'sadness', name: 'Sadness',         motif: 'drop',     color: '#5A7B8C', line: 'Weight and water. Something is being grieved, even if small.' },
+  { id: 'hurt', amb: 'riven',    name: 'Hurt',            motif: 'heart',    color: '#D9826C', line: 'Something landed on the tender part. The wound decides the word.' },
+  { id: 'anger', amb: 'ember',   name: 'Anger',           motif: 'flame',    color: '#B85C38', line: 'Heat with a direction. Anger is information about a boundary.' },
+  { id: 'fear', amb: 'snow',    name: 'Fear',            motif: 'fog',      color: '#6E7FA3', line: 'The body preparing for a future it has already decided on.' },
+  { id: 'sadness', amb: 'surge', name: 'Sadness',         motif: 'drop',     color: '#5A7B8C', line: 'Weight and water. Something is being grieved, even if small.' },
   { id: 'shame',   name: 'Shame',           motif: 'crescent', color: '#8B6F47', line: 'The self turned on itself. The word decides whether it is deserved.' },
   { id: 'longing', name: 'Longing',         motif: 'road',     color: '#B8A5D9', line: 'Distance felt as feeling — for a person, a place, a life.' },
-  { id: 'overwhelm', name: 'Overwhelm',     motif: 'wave',     color: '#6B5B8A', line: 'Too much, too fast, too many. Volume as a feeling.' },
-  { id: 'quiet',   name: 'Quiet Positives', motif: 'lotus',    color: '#7BA05B', line: 'Precision is not only for pain. Name the good exactly and it stays longer.' },
+  { id: 'overwhelm', amb: 'churn', name: 'Overwhelm',     motif: 'wave',     color: '#6B5B8A', line: 'Too much, too fast, too many. Volume as a feeling.' },
+  { id: 'quiet', amb: 'water', name: 'Quiet Positives', motif: 'lotus',    color: '#7BA05B', line: 'Precision is not only for pain. Name the good exactly and it stays longer.' },
   { id: 'borrowed', name: 'Untranslatables', motif: 'letter',  color: '#DAA520', line: 'Feelings English never named. Other tongues got there first.' },
   { id: 'manual',  name: 'The Manual’s Own', motif: 'torii',   color: '#C4A265', line: 'Words only this book could give you. Your private vocabulary, formalized.' }
 ];

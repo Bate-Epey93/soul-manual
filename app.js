@@ -2037,6 +2037,25 @@ var CURATED = {
         '<div class="wc-foot"><span>trough</span><span>' + logged + ' day' + (logged === 1 ? '' : 's') + ' logged</span><span>peak</span></div>' +
       '</div>';
   }
+  /* animation for the Emotional Weather card: named word wins, altitude falls back */
+  function waveAmb() {
+    var t = waveToday();
+    if (!t) return null;
+    if (t.note && typeof LEXICON !== 'undefined' && typeof nmFam === 'function') {
+      var e = LEXICON.find(function (x) { return x.w === t.note; });
+      if (e) {
+        var f = nmFam(e.fam);
+        return { kind: f.amb || f.motif, color: f.color };
+      }
+    }
+    return [null,
+      { kind: 'mist',  color: '#5A7B8C' },
+      { kind: 'rain',  color: '#6E7FA3' },
+      { kind: 'water', color: '#C4A265' },
+      { kind: 'flow',  color: '#D4A038' },
+      { kind: 'beam',  color: '#E0B84C' }
+    ][t.v] || null;
+  }
   function waveCardHTML(slot) {
     var wave = waveToday(), spark = waveSparkline();
     if (!wave || waveEditing) {
@@ -2052,7 +2071,7 @@ var CURATED = {
     }
     var ws = waveState(wave.v);
     return '<div class="today-sec">Emotional Weather</div>' +
-      '<div class="today-card glass wave-card logged" id="tdWave" data-amb="wave" data-amb-color="' + ws.tint + '">' +
+      (function () { var wa = waveAmb(); return '<div class="today-card glass wave-card logged" id="tdWave"' + (wa ? ' data-amb="' + wa.kind + '" data-amb-color="' + wa.color + '"' : '') + '>'; })() +
         '<div class="wave-status"><span class="wave-orb" style="background:' + ws.tint + '"></span>' +
           '<div class="wave-status-body"><div class="wave-state">' + ws.label + (wave.note ? ' · <em>' + esc(wave.note) + '</em>' : '') + '</div>' +
           '<div class="wave-guide">' + waveGuidance() + '</div></div></div>' +
@@ -2916,8 +2935,9 @@ var CURATED = {
 
   function nmCandidates() {
     var st = nmState;
-    if (st.q) {
-      var toks = st.q.toLowerCase().split(/[^a-zà-ÿ']+/).filter(function (t) { return t.length > 2; });
+    var qt = (st.q || '').trim();
+    if (qt) {
+      var toks = qt.toLowerCase().split(/[^a-zà-ÿ']+/).filter(function (t) { return t.length > 2; });
       if (!toks.length) return [];
       return LEXICON.map(function (e) {
         var hay = (e.w + ' ' + e.def + ' ' + e.feels + ' ' + (e.need || '') + ' ' + (e.vs || '')).toLowerCase();
@@ -2980,6 +3000,21 @@ var CURATED = {
       '</div></div>';
   }
 
+  function nmResultsHTML() {
+    var st = nmState;
+    var cands = nmCandidates();
+    if (cands && cands.length) {
+      var h = '<div class="today-sec">Candidates \u2014 tap the one that lands</div><div class="nm-cands">';
+      cands.forEach(function (e) {
+        var f = nmFam(e.fam);
+        h += '<button class="nm-cand glass" data-nmword="' + esc(e.w) + '" style="border-left:3px solid ' + f.color + '"><strong>' + esc(e.w) + '</strong><span>' + esc(e.def) + '</span></button>';
+      });
+      h += '</div><div id="nmWordHost">' + (st.open ? nmWordCard(LEXICON.find(function (e) { return e.w === st.open; }) || cands[0]) : '') + '</div>';
+      return h;
+    }
+    if (cands) return '<div class="mj-empty">Nothing close enough. Loosen a filter, or browse the families below.</div>';
+    return '';
+  }
   function renderNaming() {
     var page = document.getElementById('page-naming');
     if (!page || typeof LEXICON === 'undefined') return;
@@ -3005,22 +3040,12 @@ var CURATED = {
     });
     h += '</div>';
 
-    var cands = nmCandidates();
-    if (cands && cands.length) {
-      h += '<div class="today-sec">Candidates \u2014 tap the one that lands</div><div class="nm-cands">';
-      cands.forEach(function (e) {
-        var f = nmFam(e.fam);
-        h += '<button class="nm-cand glass" data-nmword="' + esc(e.w) + '" style="border-left:3px solid ' + f.color + '"><strong>' + esc(e.w) + '</strong><span>' + esc(e.def) + '</span></button>';
-      });
-      h += '</div><div id="nmWordHost">' + (st.open ? nmWordCard(LEXICON.find(function (e) { return e.w === st.open; }) || cands[0]) : '') + '</div>';
-    } else if (cands) {
-      h += '<div class="mj-empty">Nothing close enough. Loosen a filter, or browse the families below.</div>';
-    }
+    h += '<div id="nmResults">' + nmResultsHTML() + '</div>';
 
     h += '<div class="today-sec">Browse the families</div>';
     LEX_FAMILIES.forEach(function (f) {
       var words = LEXICON.filter(function (e) { return e.fam === f.id; });
-      h += '<div class="ess-card wat-card glass" data-amb="' + f.motif + '" data-amb-color="' + f.color + '" style="border-left:3px solid ' + f.color + '">' +
+      h += '<div class="ess-card wat-card glass" data-amb="' + (f.amb || f.motif) + '" data-amb-color="' + f.color + '" style="border-left:3px solid ' + f.color + '">' +
         '<div class="ess-kicker" style="color:' + f.color + '">' + words.length + ' words</div>' +
         '<div class="ess-title">' + motifSVG(f.motif, 'nmf-' + f.id, { color: f.color }) + ' ' + f.name + '</div>' +
         '<div class="ess-body"><div class="nm-famline">' + esc(f.line) + '</div><div class="nm-chips">' +
@@ -3034,10 +3059,20 @@ var CURATED = {
 
     var inp = page.querySelector('#nmSearch');
     var deb = null;
+    function nmUpdateResults() {
+      var host = page.querySelector('#nmResults');
+      host.innerHTML = nmResultsHTML();
+      nmBindResults(host);
+      glassify(host);
+      if (PREFS.theme === 'light') applyInlineTheme(true, host);
+    }
     inp.oninput = function () {
       clearTimeout(deb);
-      var v = inp.value;
-      deb = setTimeout(function () { nmState.q = v.trim(); nmState.blur = null; nmState.open = null; rerender(); var i2 = page.querySelector('#nmSearch'); i2.focus(); i2.setSelectionRange(i2.value.length, i2.value.length); }, 420);
+      deb = setTimeout(function () {
+        nmState.q = inp.value;            // untrimmed — the input is never rewritten
+        nmState.blur = null; nmState.open = null;
+        nmUpdateResults();
+      }, 300);
     };
     page.querySelectorAll('[data-nmx]').forEach(function (b) {
       b.onclick = function () {
@@ -3052,22 +3087,29 @@ var CURATED = {
     });
     var clr = page.querySelector('#nmClear');
     if (clr) clr.onclick = function () { nmState = { dir: null, temp: null, time: null, body: [], blur: null, q: '', open: null }; rerender(); };
-    page.querySelectorAll('[data-nmword]').forEach(function (b) {
-      b.onclick = function (e) {
-        e.stopPropagation();
-        nmState.open = b.dataset.nmword;
-        var entry = LEXICON.find(function (x) { return x.w === nmState.open; });
-        var card = b.closest('.wat-card');
-        if (card && !card.classList.contains('open')) card.classList.add('open');
-        var host = page.querySelector('#nmWordHost');
-        if (!host) { host = document.createElement('div'); host.id = 'nmWordHost'; (card || page).appendChild(host); }
-        host.innerHTML = nmWordCard(entry);
-        bindWordCard(host);
-        if (PREFS.theme === 'light') applyInlineTheme(true, host);
-        glassify(host);
-        host.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      };
-    });
+    function nmBindResults(scope) {
+      scope.querySelectorAll('[data-nmword]').forEach(function (b) {
+        b.onclick = function (e) {
+          e.stopPropagation();
+          nmState.open = b.dataset.nmword;
+          var entry = LEXICON.find(function (x) { return x.w === nmState.open; });
+          var card = b.closest('.wat-card');
+          if (card && !card.classList.contains('open')) card.classList.add('open');
+          var prev = page.querySelector('#nmWordHost');
+          if (prev) prev.remove();
+          var host = document.createElement('div'); host.id = 'nmWordHost';
+          var list = b.closest('.nm-cands');
+          if (list) list.insertAdjacentElement('afterend', host);
+          else (card || page).appendChild(host);
+          host.innerHTML = nmWordCard(entry);
+          bindWordCard(host);
+          if (PREFS.theme === 'light') applyInlineTheme(true, host);
+          glassify(host);
+          host.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+      });
+    }
+    nmBindResults(page);
     function bindWordCard(scope) {
       scope.querySelectorAll('[data-nmcopy]').forEach(function (b) {
         b.onclick = function () {
@@ -3125,7 +3167,7 @@ var CURATED = {
     eye: 'dust', magnify: 'dust'
   };
 
-  function ambKind(motif) { return AMB_KIND[motif] || 'mist'; }
+  function ambKind(motif) { return AMB_DRAW[motif] ? motif : (AMB_KIND[motif] || 'mist'); }
 
   var ambList = [], ambRAF = null, ambIO = null, ambReduced = false;
   function ambRGB(hex) {
@@ -3247,12 +3289,16 @@ var CURATED = {
         inst.parts = [];
         for (var i = 0; i < 16; i++) inst.parts.push({ x: Math.random() * W, y: Math.random() * H, s: 0.25 + Math.random() * 0.55, r: 0.7 + Math.random() * 1.5, p: Math.random() * 6.28 });
       }
+      var hot = [Math.min(255, rgb[0] + 60), Math.max(0, Math.round(rgb[1] * 0.55)), Math.max(0, Math.round(rgb[2] * 0.45))];
       inst.parts.forEach(function (p) {
         p.y -= p.s; if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
         var x = p.x + Math.sin(t * 0.9 + p.p) * 7;
         var life = p.y / H;
-        ctx.beginPath(); ctx.arc(x, p.y, p.r, 0, 6.28);
-        ctx.fillStyle = ambCol(rgb, 0.30 * life); ctx.fill();
+        var fl = 0.75 + 0.25 * Math.sin(t * 2.3 + p.p * 3);
+        ctx.beginPath(); ctx.arc(x, p.y, p.r * 2.4, 0, 6.28);
+        ctx.fillStyle = ambCol(hot, 0.16 * life * fl); ctx.fill();
+        ctx.beginPath(); ctx.arc(x, p.y, p.r * 1.15, 0, 6.28);
+        ctx.fillStyle = ambCol(hot, 0.55 * life * fl); ctx.fill();
       });
       var g = ctx.createLinearGradient(0, H, 0, H * 0.35);
       g.addColorStop(0, ambCol(rgb, 0.16)); g.addColorStop(1, ambCol(rgb, 0));
@@ -3410,6 +3456,109 @@ var CURATED = {
       ctx.beginPath(); ctx.arc(bx, by, 4.6, 0, 6.28); ctx.fillStyle = ambCol(rgb, 0.26); ctx.fill();
       ctx.beginPath(); ctx.arc(px, py, L, 1.05, 2.09);
       ctx.strokeStyle = ambCol(rgb, 0.05); ctx.stroke();
+    },
+    /* a heart, riven — the crack breathes apart and closes */
+    riven: function (ctx, W, H, t, rgb) {
+      var cx = W * 0.82, cy = H * 0.5, S = Math.min(W, H) * 0.34;
+      var gap = (0.5 + 0.5 * Math.sin(t * 0.45)) * S * 0.16;
+      function half(sign) {
+        ctx.save();
+        ctx.translate(cx + sign * gap, cy + (sign > 0 ? gap * 0.35 : 0));
+        ctx.rotate(sign * gap * 0.012);
+        ctx.beginPath();
+        ctx.moveTo(0, S * 0.55);
+        ctx.bezierCurveTo(sign * S * 1.05, -S * 0.15, sign * S * 0.62, -S * 0.85, 0, -S * 0.28);
+        // jagged crack edge back down the middle
+        ctx.lineTo(sign * S * 0.10, -S * 0.05);
+        ctx.lineTo(-0 + sign * S * 0.02, S * 0.12);
+        ctx.lineTo(sign * S * 0.12, S * 0.28);
+        ctx.closePath();
+        ctx.fillStyle = ambCol(rgb, 0.16);
+        ctx.fill();
+        ctx.restore();
+      }
+      half(-1); half(1);
+    },
+    /* snowfall — slow, cold, swaying */
+    snow: function (ctx, W, H, t, rgb, inst) {
+      if (!inst.parts) {
+        inst.parts = [];
+        for (var i = 0; i < 18; i++) inst.parts.push({ x: Math.random() * W, y: Math.random() * H, s: 0.22 + Math.random() * 0.4, r: 1 + Math.random() * 1.8, p: Math.random() * 6.28, star: Math.random() < 0.35 });
+      }
+      var cold = [Math.round(rgb[0] * 0.8 + 40), Math.round(rgb[1] * 0.85 + 40), Math.min(255, rgb[2] + 60)];
+      inst.parts.forEach(function (p) {
+        p.y += p.s; if (p.y > H + 4) { p.y = -4; p.x = Math.random() * W; }
+        var x = p.x + Math.sin(t * 0.5 + p.p) * 9;
+        ctx.strokeStyle = ambCol(cold, 0.4); ctx.fillStyle = ambCol(cold, 0.34); ctx.lineWidth = 0.8;
+        if (p.star) {
+          for (var a = 0; a < 3; a++) {
+            var th = a * Math.PI / 3 + t * 0.12;
+            ctx.beginPath();
+            ctx.moveTo(x - Math.cos(th) * p.r * 2.1, p.y - Math.sin(th) * p.r * 2.1);
+            ctx.lineTo(x + Math.cos(th) * p.r * 2.1, p.y + Math.sin(th) * p.r * 2.1);
+            ctx.stroke();
+          }
+        } else {
+          ctx.beginPath(); ctx.arc(x, p.y, p.r, 0, 6.28); ctx.fill();
+        }
+      });
+    },
+    /* a swell that crosses and breaks on the card walls */
+    surge: function (ctx, W, H, t, rgb, inst) {
+      var base = H * 0.55, amp = Math.min(14, H * 0.22);
+      var period = 7, ph = (t % period) / period;
+      var dirRight = Math.floor(t / period) % 2 === 0;
+      var sx = dirRight ? ph * (W + 120) - 60 : W + 60 - ph * (W + 120);
+      function surf(x) {
+        var y = base + Math.sin(x * 0.02 - t * 0.8) * amp * 0.4 + Math.sin(x * 0.009 + t * 0.5) * amp * 0.3;
+        var d = x - sx, w = 60;
+        y -= Math.exp(-(d * d) / (2 * w * w)) * amp * 1.5;
+        return y;
+      }
+      ctx.beginPath(); ctx.moveTo(0, H);
+      for (var x = 0; x <= W; x += 7) ctx.lineTo(x, surf(x));
+      ctx.lineTo(W, H); ctx.closePath();
+      var g = ctx.createLinearGradient(0, base - amp, 0, H);
+      g.addColorStop(0, ambCol(rgb, 0.26)); g.addColorStop(1, ambCol(rgb, 0.10));
+      ctx.fillStyle = g; ctx.fill();
+      ctx.beginPath();
+      for (var x2 = 0; x2 <= W; x2 += 6) { var y2 = surf(x2); x2 === 0 ? ctx.moveTo(x2, y2) : ctx.lineTo(x2, y2); }
+      ctx.strokeStyle = ambCol(rgb, 0.42); ctx.lineWidth = 1.2; ctx.stroke();
+      // foam burst while the swell is against a wall
+      var nearWall = dirRight ? sx > W - 40 : sx < 40;
+      if (nearWall) {
+        if (!inst.parts) inst.parts = [];
+        var wx = dirRight ? W - 6 : 6;
+        if (inst.parts.length < 26) for (var i = 0; i < 3; i++) inst.parts.push({ x: wx, y: base - amp - Math.random() * amp, vx: (dirRight ? -1 : 1) * (0.3 + Math.random() * 1.4), vy: -(0.8 + Math.random() * 2), life: 1 });
+      }
+      if (inst.parts) {
+        for (var k = inst.parts.length - 1; k >= 0; k--) {
+          var f = inst.parts[k];
+          f.x += f.vx; f.y += f.vy; f.vy += 0.11; f.life -= 0.022;
+          if (f.life <= 0) { inst.parts.splice(k, 1); continue; }
+          ctx.beginPath(); ctx.arc(f.x, f.y, 1.4 * f.life + 0.4, 0, 6.28);
+          ctx.fillStyle = ambCol([Math.min(255, rgb[0] + 70), Math.min(255, rgb[1] + 70), Math.min(255, rgb[2] + 70)], f.life * 0.7);
+          ctx.fill();
+        }
+      }
+    },
+    /* turbulent churn — crossing chop, no rest */
+    churn: function (ctx, W, H, t, rgb) {
+      var base = H * 0.5, amp = Math.min(15, H * 0.24);
+      [{ sp: 1.6, k1: 0.05, k2: 0.023, o: 8, al: 0.12, dir: 1 },
+       { sp: 2.3, k1: 0.041, k2: 0.017, o: 0, al: 0.18, dir: -1 },
+       { sp: 3.1, k1: 0.062, k2: 0.031, o: -6, al: 0.13, dir: 1 }].forEach(function (L) {
+        ctx.beginPath(); ctx.moveTo(0, H);
+        for (var x = 0; x <= W; x += 5) {
+          var y = base + L.o
+            + Math.sin(x * L.k1 + L.dir * t * L.sp) * amp * 0.5
+            + Math.sin(x * L.k2 - L.dir * t * L.sp * 1.7) * amp * 0.45
+            + Math.sin(x * 0.11 + t * 4.2) * amp * 0.12;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(W, H); ctx.closePath();
+        ctx.fillStyle = ambCol(rgb, L.al); ctx.fill();
+      });
     },
     /* flowing streamlines */
     flow: function (ctx, W, H, t, rgb) {
