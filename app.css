@@ -775,3 +775,38 @@ body.light .amb{opacity:.6}
 .ztoast .zt-x{background:none;border:none;color:rgba(255,255,255,.42);font-size:12px;line-height:1;padding:8px;cursor:pointer;flex-shrink:0}
 .ztoast .zt-x:hover{color:rgba(255,255,255,.8)}
 body.light .ztoast .zt-x{color:rgba(60,45,25,.5)}
+
+/* ---------------------------------------------------------------- */
+/* THE NAMING — lexicon finder                                      */
+/* ---------------------------------------------------------------- */
+.nm-guard{font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(196,162,101,.5);margin-top:8px}
+.nm-search{margin:10px 0 4px;font-size:14px!important;padding:13px 15px!important}
+.nm-axis{margin-bottom:13px}
+.nm-axis:last-child{margin-bottom:0}
+.nm-axis-label{display:block;font-family:monospace;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.34);margin-bottom:7px}
+.nm-chips{display:flex;flex-wrap:wrap;gap:8px}
+.nm-chip{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.62);font-family:'Source Serif 4',Georgia,serif;font-size:12.5px;padding:8px 14px;border-radius:18px;cursor:pointer;transition:all .25s;-webkit-tap-highlight-color:transparent}
+.nm-chip:hover{background:rgba(255,255,255,.09)}
+.nm-chip.on{background:rgba(196,162,101,.16);border-color:rgba(196,162,101,.5);color:#E8DCC8}
+.nm-blur{margin-bottom:4px}
+.nm-cands{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.nm-cand{text-align:left;background:rgba(255,255,255,.03);border:none;border-radius:13px;padding:13px 15px;cursor:pointer;display:flex;flex-direction:column;gap:4px;-webkit-tap-highlight-color:transparent}
+.nm-cand strong{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:#EDE4D3;letter-spacing:.01em}
+.nm-cand span{font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.55)}
+.nm-word{border-radius:16px!important;padding:20px;margin:6px 0 16px}
+.nm-w{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:#EDE4D3;margin:8px 0 6px;letter-spacing:.01em}
+.nm-def{font-size:14.5px;line-height:1.7;color:rgba(255,255,255,.8)}
+.nm-feels{font-size:13px;line-height:1.65;color:rgba(255,255,255,.55);font-style:italic;margin-top:9px}
+.nm-vs{font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.6);margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+.nm-vs span{font-family:monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-right:7px}
+.nm-say{font-family:'Cormorant Garamond',serif;font-size:16.5px;font-style:italic;color:#E8DCC8;margin-top:12px;line-height:1.5}
+.nm-famline{font-size:12.5px;font-style:italic;color:rgba(255,255,255,.5);margin-bottom:11px;line-height:1.6}
+body.light .nm-guard{color:rgba(138,107,52,.75)}
+body.light .nm-axis-label{color:rgba(60,45,25,.5)}
+body.light .nm-chip{background:rgba(90,70,40,.06);border-color:rgba(90,70,40,.16);color:rgba(50,38,20,.75)}
+body.light .nm-chip.on{background:rgba(138,107,52,.16);border-color:rgba(138,107,52,.5);color:#33291A}
+body.light .nm-cand{background:rgba(90,70,40,.06)}
+body.light .nm-cand strong,body.light .nm-w,body.light .nm-say{color:#33291A}
+body.light .nm-cand span,body.light .nm-def{color:rgba(50,38,20,.8)}
+body.light .nm-feels,body.light .nm-vs,body.light .nm-famline{color:rgba(60,45,25,.62)}
+body.light .nm-vs span{color:rgba(60,45,25,.45)}

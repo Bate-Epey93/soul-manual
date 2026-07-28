@@ -638,7 +638,7 @@ var CURATED = {
     'page-arch': 'torii', 'page-mirror': 'eye', 'page-crisis': 'warning',
     'page-trees': 'fork', 'page-eft': 'target', 'page-guide': 'road',
     'page-meditations': 'lotus', 'page-ledger': 'chart',
-    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart'
+    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart', 'page-naming': 'letter'
   };
   function pageEnsoHTML(pageId) {
     return '<div class="page-enso">' +
@@ -1242,11 +1242,11 @@ var CURATED = {
   var GROUPS = [
     { id: 'today', label: 'Today', motif: 'sun', pages: ['today'] },
     { id: 'learn', label: 'Learn', motif: null, enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'essence', 'arch', 'mirror', 'dramas', 'guide'] },
-    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'marie', 'eft', 'forge', 'edge', 'ledger'] },
+    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'naming', 'marie', 'eft', 'forge', 'edge', 'ledger'] },
     { id: 'mapg', label: 'Map', motif: 'road', pages: ['map', 'trees'] },
     { id: 'crisisg', label: 'Crisis', motif: 'warning', pages: ['crisis'] }
   ];
-  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
+  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', naming: 'The Naming', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
   var VALID = Object.keys(PAGE_LABELS);
   var groupChoice = {}; // last-visited page per group
   var navEl = null, subnavEl = null;
@@ -1309,6 +1309,7 @@ var CURATED = {
     if (page === 'essence') renderEssence();
     if (page === 'waters') renderWaters();
     if (page === 'marie') renderMarie();
+    if (page === 'naming') renderNaming();
     if (page === 'guide') decorateEntry();
     if (page === 'eft') refreshEftStats();
     if (page === 'mirror') decorateMirror();
@@ -1324,7 +1325,7 @@ var CURATED = {
 
   function createPages() {
     var anchor = document.getElementById('page-concepts');
-    ['today', 'ledger', 'essence', 'waters', 'marie'].forEach(function (id) {
+    ['today', 'ledger', 'essence', 'waters', 'marie', 'naming'].forEach(function (id) {
       var d = document.createElement('div');
       d.className = 'page'; d.id = 'page-' + id;
       anchor.parentNode.insertBefore(d, anchor);
@@ -1474,6 +1475,7 @@ var CURATED = {
     on('tdQMap', function (e) { e.stopPropagation(); navTo('map'); });
     on('tdQ', function () { navTo('map'); });
     on('tdWaveEdit', function () { waveEditing = true; refreshToday(['wave']); });
+    on('tdWaveName', function (e) { e.stopPropagation(); navTo('naming'); });
     on('tdEntryCta', function () { navTo('guide'); });
     on('tdEss', function () { if (todayCtx.essRead != null) openReader('essence', todayCtx.essRead); });
     on('tdEssRead', function (e) { e.stopPropagation(); if (todayCtx.essRead != null) openReader('essence', todayCtx.essRead); });
@@ -2055,7 +2057,7 @@ var CURATED = {
           '<div class="wave-status-body"><div class="wave-state">' + ws.label + (wave.note ? ' · <em>' + esc(wave.note) + '</em>' : '') + '</div>' +
           '<div class="wave-guide">' + waveGuidance() + '</div></div></div>' +
         (spark ? '<div class="wave-spark-wrap">' + spark + '</div>' : '') +
-        '<div class="today-actions"><button class="tbtn ghost" id="tdWaveEdit">Change</button></div>' +
+        '<div class="today-actions"><button class="tbtn ghost" id="tdWaveEdit">Change</button><button class="tbtn ghost" id="tdWaveName">Name it precisely &rarr;</button></div>' +
       '</div>';
   }
 
@@ -2904,6 +2906,199 @@ var CURATED = {
     if (slot === 'morning') return { id: 'anchor', label: 'The Morning Anchor', sub: 'Before the phone: three breaths, the first word to orí.', guided: null };
     if (slot === 'day') return { id: 'inplace', label: 'The Return-in-Place', sub: 'Two long exhales, feet, one line: “Orí, I’m here.” Thirty invisible seconds.', guided: null };
     return { id: 'reservoir', label: 'The Reservoir', sub: 'Five minutes of attention parked in the breath — the daily deposit.', guided: 'reservoir' };
+  }
+
+  /* ================================================================
+     THE NAMING — offline emotion lexicon + finder
+     ================================================================ */
+  var nmState = { dir: null, temp: null, time: null, body: [], blur: null, q: '' };
+  function nmFam(id) { return LEX_FAMILIES.find(function (f) { return f.id === id; }); }
+
+  function nmCandidates() {
+    var st = nmState;
+    if (st.q) {
+      var toks = st.q.toLowerCase().split(/[^a-zà-ÿ']+/).filter(function (t) { return t.length > 2; });
+      if (!toks.length) return [];
+      return LEXICON.map(function (e) {
+        var hay = (e.w + ' ' + e.def + ' ' + e.feels + ' ' + (e.need || '') + ' ' + (e.vs || '')).toLowerCase();
+        var score = 0;
+        toks.forEach(function (t) { if (hay.indexOf(t) !== -1) score += (e.w.toLowerCase().indexOf(t) !== -1 ? 3 : 1); });
+        return { e: e, score: score };
+      }).filter(function (x) { return x.score > 0; })
+        .sort(function (a, b) { return b.score - a.score; })
+        .slice(0, 6).map(function (x) { return x.e; });
+    }
+    if (st.blur) {
+      return LEXICON.filter(function (e) { return (e.blur || []).indexOf(st.blur) !== -1; }).slice(0, 9);
+    }
+    if (!st.dir && !st.temp && !st.time) return null;
+    function match(list, relax) {
+      return LEXICON.filter(function (e) {
+        if (st.dir && e.axes.dir.indexOf(st.dir) === -1) return false;
+        if (!relax.temp && st.temp && e.axes.temp.indexOf(st.temp) === -1) return false;
+        if (!relax.time && st.time && e.axes.time.indexOf(st.time) === -1) return false;
+        return true;
+      });
+    }
+    var out = match({}, {});
+    if (out.length < 3) out = match({}, { time: true });
+    if (out.length < 3) out = match({}, { time: true, temp: true });
+    if (st.body.length) {
+      out = out.slice().sort(function (a, b) {
+        var sa = (a.body || []).filter(function (x) { return st.body.indexOf(x) !== -1; }).length;
+        var sb = (b.body || []).filter(function (x) { return st.body.indexOf(x) !== -1; }).length;
+        return sb - sa;
+      });
+    }
+    return out.slice(0, 6);
+  }
+
+  function nmChipRow(label, key, opts) {
+    var h = '<div class="nm-axis"><span class="nm-axis-label">' + label + '</span><div class="nm-chips">';
+    opts.forEach(function (o) {
+      var on = key === 'body' ? nmState.body.indexOf(o.v) !== -1 : nmState[key] === o.v;
+      h += '<button class="nm-chip' + (on ? ' on' : '') + '" data-nmx="' + key + '" data-v="' + o.v + '">' + o.n + '</button>';
+    });
+    return h + '</div></div>';
+  }
+
+  function nmWordCard(e) {
+    var f = nmFam(e.fam);
+    var route = e.route || null;
+    var hasWave = !!waveToday();
+    return '<div class="nm-word glass tinted-card" style="--tint:' + f.color + ';--tint-bg:' + hexA(f.color, 0.2) + ';--tint-bg2:' + hexA(f.color, 0.07) + ';--tint-bd:' + hexA(f.color, 0.4) + '">' +
+      '<div class="ess-kicker" style="color:' + f.color + '">' + motifSVG(f.motif, 'nm-' + e.w, { color: f.color }) + ' ' + f.name + ' · ' + (e.need ? 'the need: ' + esc(e.need) : '') + '</div>' +
+      '<div class="nm-w">' + esc(e.w) + '</div>' +
+      '<div class="nm-def">' + esc(e.def) + '</div>' +
+      '<div class="nm-feels">' + esc(e.feels) + '</div>' +
+      (e.vs ? '<div class="nm-vs"><span>vs</span>' + esc(e.vs) + '</div>' : '') +
+      '<div class="nm-say">\u201C' + esc(e.say) + '\u201D</div>' +
+      '<div class="today-actions">' +
+        '<button class="tbtn" data-nmcopy="' + esc(e.say) + '">Copy the sentence</button>' +
+        (hasWave ? '<button class="tbtn ghost" data-nmwave="' + esc(e.w) + '">Set as today\u2019s wave note</button>' : '') +
+        (route ? '<button class="tbtn ghost" data-nmroute="' + route.page + '">' + esc(route.label) + ' &rarr;</button>' : '') +
+      '</div></div>';
+  }
+
+  function renderNaming() {
+    var page = document.getElementById('page-naming');
+    if (!page || typeof LEXICON === 'undefined') return;
+    var st = nmState;
+    var h = pageEnsoHTML('page-naming') +
+      '<div style="margin-bottom:6px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">The Naming</h2>' +
+      '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">A lexicon of the wave. Specificity is the work; generality is the mind negotiating. Not \u201Cbad\u201D \u2014 slighted, braced, unspent.</p>' +
+      '<p class="nm-guard">Let it finish before you name it. This is for after.</p></div>';
+
+    h += '<input class="mirror-input nm-search" id="nmSearch" placeholder="Say it loosely \u2014 \u2018don\u2019t want to see anyone today\u2019 \u2014 or search a word" value="' + esc(st.q) + '">';
+
+    h += '<div class="today-sec">The Triage \u2014 three observations</div><div class="today-card glass" id="nmTriage">' +
+      nmChipRow('Pointed', 'dir', [{ v: 'out', n: 'at someone' }, { v: 'in', n: 'at myself' }, { v: 'none', n: 'at nothing \u2014 ambient' }]) +
+      nmChipRow('Temperature', 'temp', [{ v: 'hot', n: 'hot \u2014 charging' }, { v: 'cold', n: 'cold \u2014 draining' }, { v: 'tight', n: 'tight \u2014 braced' }]) +
+      nmChipRow('Time', 'time', [{ v: 'past', n: 'what happened' }, { v: 'now', n: 'what\u2019s happening' }, { v: 'ahead', n: 'what might' }]) +
+      nmChipRow('Body (optional)', 'body', [{ v: 'chest', n: 'chest' }, { v: 'throat', n: 'throat' }, { v: 'gut', n: 'gut' }, { v: 'shoulders', n: 'shoulders' }, { v: 'jaw', n: 'jaw' }, { v: 'face', n: 'face' }]) +
+      ((st.dir || st.temp || st.time || st.blur || st.q) ? '<div class="today-actions"><button class="tbtn ghost" id="nmClear">Clear</button></div>' : '') +
+      '</div>';
+
+    h += '<div class="today-sec">Or start from the blur</div><div class="nm-chips nm-blur">';
+    LEX_BLUR.forEach(function (b) {
+      h += '<button class="nm-chip' + (st.blur === b.id ? ' on' : '') + '" data-nmblur="' + b.id + '">\u201C' + b.label + '\u201D</button>';
+    });
+    h += '</div>';
+
+    var cands = nmCandidates();
+    if (cands && cands.length) {
+      h += '<div class="today-sec">Candidates \u2014 tap the one that lands</div><div class="nm-cands">';
+      cands.forEach(function (e) {
+        var f = nmFam(e.fam);
+        h += '<button class="nm-cand glass" data-nmword="' + esc(e.w) + '" style="border-left:3px solid ' + f.color + '"><strong>' + esc(e.w) + '</strong><span>' + esc(e.def) + '</span></button>';
+      });
+      h += '</div><div id="nmWordHost">' + (st.open ? nmWordCard(LEXICON.find(function (e) { return e.w === st.open; }) || cands[0]) : '') + '</div>';
+    } else if (cands) {
+      h += '<div class="mj-empty">Nothing close enough. Loosen a filter, or browse the families below.</div>';
+    }
+
+    h += '<div class="today-sec">Browse the families</div>';
+    LEX_FAMILIES.forEach(function (f) {
+      var words = LEXICON.filter(function (e) { return e.fam === f.id; });
+      h += '<div class="ess-card wat-card glass" data-amb="' + f.motif + '" data-amb-color="' + f.color + '" style="border-left:3px solid ' + f.color + '">' +
+        '<div class="ess-kicker" style="color:' + f.color + '">' + words.length + ' words</div>' +
+        '<div class="ess-title">' + motifSVG(f.motif, 'nmf-' + f.id, { color: f.color }) + ' ' + f.name + '</div>' +
+        '<div class="ess-body"><div class="nm-famline">' + esc(f.line) + '</div><div class="nm-chips">' +
+        words.map(function (e) { return '<button class="nm-chip" data-nmword="' + esc(e.w) + '">' + esc(e.w) + '</button>'; }).join('') +
+        '</div></div></div>';
+    });
+
+    page.innerHTML = h;
+
+    function rerender() { renderNaming(); glassify(page); tintCards(page); if (PREFS.theme === 'light') applyInlineTheme(true, page); }
+
+    var inp = page.querySelector('#nmSearch');
+    var deb = null;
+    inp.oninput = function () {
+      clearTimeout(deb);
+      var v = inp.value;
+      deb = setTimeout(function () { nmState.q = v.trim(); nmState.blur = null; nmState.open = null; rerender(); var i2 = page.querySelector('#nmSearch'); i2.focus(); i2.setSelectionRange(i2.value.length, i2.value.length); }, 420);
+    };
+    page.querySelectorAll('[data-nmx]').forEach(function (b) {
+      b.onclick = function () {
+        var k = b.dataset.nmx, v = b.dataset.v;
+        if (k === 'body') { var i = nmState.body.indexOf(v); if (i === -1) nmState.body.push(v); else nmState.body.splice(i, 1); }
+        else nmState[k] = nmState[k] === v ? null : v;
+        nmState.q = ''; nmState.blur = null; nmState.open = null; rerender();
+      };
+    });
+    page.querySelectorAll('[data-nmblur]').forEach(function (b) {
+      b.onclick = function () { nmState.blur = nmState.blur === b.dataset.nmblur ? null : b.dataset.nmblur; nmState.q = ''; nmState.dir = nmState.temp = nmState.time = null; nmState.open = null; rerender(); };
+    });
+    var clr = page.querySelector('#nmClear');
+    if (clr) clr.onclick = function () { nmState = { dir: null, temp: null, time: null, body: [], blur: null, q: '', open: null }; rerender(); };
+    page.querySelectorAll('[data-nmword]').forEach(function (b) {
+      b.onclick = function (e) {
+        e.stopPropagation();
+        nmState.open = b.dataset.nmword;
+        var entry = LEXICON.find(function (x) { return x.w === nmState.open; });
+        var card = b.closest('.wat-card');
+        if (card && !card.classList.contains('open')) card.classList.add('open');
+        var host = page.querySelector('#nmWordHost');
+        if (!host) { host = document.createElement('div'); host.id = 'nmWordHost'; (card || page).appendChild(host); }
+        host.innerHTML = nmWordCard(entry);
+        bindWordCard(host);
+        if (PREFS.theme === 'light') applyInlineTheme(true, host);
+        glassify(host);
+        host.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+    });
+    function bindWordCard(scope) {
+      scope.querySelectorAll('[data-nmcopy]').forEach(function (b) {
+        b.onclick = function () {
+          var t = b.dataset.nmcopy;
+          if (navigator.clipboard) navigator.clipboard.writeText(t);
+          b.textContent = 'Copied'; buzz(12);
+          setTimeout(function () { b.textContent = 'Copy the sentence'; }, 1600);
+        };
+      });
+      scope.querySelectorAll('[data-nmwave]').forEach(function (b) {
+        b.onclick = function () {
+          var t = waveToday(); if (!t) return;
+          logWave(t.v, b.dataset.nmwave);
+          showToast('Named: ' + b.dataset.nmwave, null);
+          buzz(15);
+        };
+      });
+      scope.querySelectorAll('[data-nmroute]').forEach(function (b) {
+        b.onclick = function () { navTo(b.dataset.nmroute); };
+      });
+    }
+    bindWordCard(page);
+    page.querySelectorAll('.wat-card').forEach(function (card) {
+      card.onclick = function (e) {
+        if (e.target.closest('button,input,#nmWordHost')) return;
+        card.classList.toggle('open');
+      };
+    });
+    ambientSweep(page);
+    glassify(page); tintCards(page);
+    if (PREFS.theme === 'light') applyInlineTheme(true, page);
   }
 
   /* ================================================================
