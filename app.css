@@ -813,3 +813,16 @@ body.light .nm-vs span{color:rgba(60,45,25,.45)}
 .nm-row{display:flex;gap:10px;align-items:stretch}
 .nm-row .nm-search{flex:1;min-width:0}
 .nm-go{flex-shrink:0;align-self:center}
+
+/* ---------------------------------------------------------------- */
+/* PAGE WEATHER — a fixed climate behind each page                  */
+/* ---------------------------------------------------------------- */
+#pageWeather{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.62;transition:opacity 1.1s ease}
+#pageWeather.wx-in{animation:wxIn 1.4s ease}
+@keyframes wxIn{from{opacity:0}to{opacity:.62}}
+body.light #pageWeather{opacity:.42}
+body.light #pageWeather.wx-in{animation:wxInLight 1.4s ease}
+@keyframes wxInLight{from{opacity:0}to{opacity:.42}}
+/* content sits above the weather; fixed chrome keeps its own positioning */
+.container{position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){#pageWeather{opacity:.34}#pageWeather.wx-in{animation:none}}

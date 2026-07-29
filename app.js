@@ -1286,6 +1286,7 @@ var CURATED = {
     glassify(el); tintCards(el);
     if (subnavEl) glassify(subnavEl);
     ambientDecorate(el);
+    setWeather(page);
   }
   function activate(page) {
     var g = groupOf(page);
@@ -3267,7 +3268,7 @@ var CURATED = {
   function ambDraw(inst, t) {
     var ctx = inst.ctx, W = inst.w, H = inst.h;
     ctx.clearRect(0, 0, W, H);
-    var fn = AMB_DRAW[inst.kind] || AMB_DRAW.mist;
+    var fn = (inst.weather ? (WX_DRAW[inst.kind] || WX_DRAW.mistlight) : (AMB_DRAW[inst.kind] || AMB_DRAW.mist));
     fn(ctx, W, H, t + inst.seed * 40, inst.rgb, inst);
   }
 
@@ -3582,6 +3583,305 @@ var CURATED = {
         var g = ctx.createLinearGradient(off - 100, 0, off + 100, 0);
         g.addColorStop(0, ambCol(rgb, 0)); g.addColorStop(0.5, ambCol(rgb, 0.26)); g.addColorStop(1, ambCol(rgb, 0));
         ctx.strokeStyle = g; ctx.lineWidth = 1.1; ctx.stroke();
+      }
+    }
+  };
+
+  /* ================================================================
+     PAGE WEATHER — one fixed scene behind the whole page
+     Each page gets its own climate; the scene crossfades on navigation.
+     ================================================================ */
+  var PAGE_WEATHER = {
+    today:       { s: 'sunleaves', c: '#D4A038' },  // morning light, a few leaves turning down
+    concepts:    { s: 'leaves',    c: '#C4A265' },  // a cool breeze through the pages
+    essence:     { s: 'mistlight', c: '#7E9E8E' },  // river mist before the sun burns it off
+    waters:      { s: 'waterfall', c: '#5A7B8C' },  // the fall, and the moving water beneath it
+    naming:      { s: 'snowfall',  c: '#8FA8C4' },  // first snow — the air gone precise
+    meditations: { s: 'sunleaves', c: '#C4A265' },  // low sun, slow leaves
+    eft:         { s: 'rain',      c: '#6B5B8A' },  // steady rain, the rhythm of the points
+    forge:       { s: 'embers',    c: '#B85C38' },  // the fire kept warm
+    edge:        { s: 'embers',    c: '#D4A038' },  // sparks off the edge
+    crisis:      { s: 'storm',     c: '#8FA3C4' },  // rain and far thunder
+    dramas:      { s: 'fogbank',   c: '#6B5B8A' },  // the fog the dramas live in
+    mirror:      { s: 'stillwater',c: '#B8A5D9' },  // rain rings on a still surface
+    arch:        { s: 'sunbeam',   c: '#D4A038' },  // dust in a shaft of temple light
+    map:         { s: 'ridges',    c: '#7BA05B' },  // ridgelines and weather moving over them
+    trees:       { s: 'leaves',    c: '#8FB08F' },  // wind at the fork in the path
+    guide:       { s: 'sunleaves', c: '#B8894A' },  // the road in autumn light
+    ledger:      { s: 'stillwater',c: '#C4A265' },  // quiet water, nothing to prove
+    marie:       { s: 'petals',    c: '#E88BA0' }   // petals carried over water
+  };
+
+  var wxCanvas = null, wxInst = null, wxFade = 0;
+  function ensureWeather() {
+    if (wxCanvas) return wxInst;
+    wxCanvas = document.createElement('canvas');
+    wxCanvas.id = 'pageWeather';
+    wxCanvas.setAttribute('aria-hidden', 'true');
+    document.body.insertBefore(wxCanvas, document.body.firstChild);
+    wxInst = {
+      el: wxCanvas, cv: wxCanvas, ctx: wxCanvas.getContext('2d'),
+      kind: 'sunleaves', rgb: [196, 162, 101], vis: true, weather: true,
+      w: 0, h: 0, seed: 0.2, parts: null, reported: true
+    };
+    wxCanvas.__amb = wxInst;
+    ambList.push(wxInst);
+    ambSize(wxInst);
+    ambDraw(wxInst, 4.2);
+    ambStart();
+    window.addEventListener('resize', function () { if (wxInst) { wxInst.w = 0; wxInst.h = 0; wxInst.parts = null; } });
+    return wxInst;
+  }
+  function setWeather(page) {
+    var w = PAGE_WEATHER[page] || PAGE_WEATHER.today;
+    var inst = ensureWeather();
+    if (inst.kind === w.s && inst.rgb === w.rgb) return;
+    inst.kind = w.s; inst.rgb = ambRGB(w.c); inst.parts = null;
+    wxCanvas.classList.remove('wx-in'); void wxCanvas.offsetWidth; wxCanvas.classList.add('wx-in');
+    ambDraw(inst, 4.2);
+  }
+
+  /* ---- scene renderers: full-viewport, sparse, slow ---- */
+  function wxSpawn(inst, n, make) { if (!inst.parts) { inst.parts = []; for (var i = 0; i < n; i++) inst.parts.push(make(i)); } return inst.parts; }
+  function wxLeaf(ctx, x, y, r, s, rgb, a) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(r);
+    ctx.beginPath(); ctx.ellipse(0, 0, s * 1.9, s * 0.75, 0, 0, 6.28);
+    ctx.fillStyle = ambCol(rgb, a); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-s * 1.9, 0); ctx.lineTo(s * 1.9, 0);
+    ctx.strokeStyle = ambCol(rgb, a * 0.55); ctx.lineWidth = 0.6; ctx.stroke();
+    ctx.restore();
+  }
+
+  var WX_DRAW = {
+    /* leaves carried sideways on a cool breeze */
+    leaves: function (ctx, W, H, t, rgb, inst) {
+      var P = wxSpawn(inst, 16, function () {
+        return { x: Math.random() * W, y: Math.random() * H, s: 3 + Math.random() * 4,
+                 vx: 0.5 + Math.random() * 1.1, p: Math.random() * 6.28, spin: (Math.random() - 0.5) * 0.03 };
+      });
+      P.forEach(function (l) {
+        var gust = 1 + 0.5 * Math.sin(t * 0.23 + l.p);
+        l.x += l.vx * gust;
+        l.y += Math.sin(t * 0.7 + l.p) * 0.5 + 0.12;
+        l.p += l.spin;
+        if (l.x > W + 20) { l.x = -20; l.y = Math.random() * H; }
+        if (l.y > H + 20) l.y = -20;
+        wxLeaf(ctx, l.x, l.y, l.p, l.s, rgb, 0.24);
+      });
+    },
+    /* low sun, and leaves letting go */
+    sunleaves: function (ctx, W, H, t, rgb, inst) {
+      var cx = W * 0.80, cy = H * 0.12;
+      var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.65);
+      g.addColorStop(0, ambCol(rgb, 0.16)); g.addColorStop(1, ambCol(rgb, 0));
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      for (var i = 0; i < 5; i++) {
+        var a = t * 0.03 + i * 1.25;
+        ctx.beginPath(); ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, Math.max(W, H), a - 0.045, a + 0.045); ctx.closePath();
+        ctx.fillStyle = ambCol(rgb, 0.035); ctx.fill();
+      }
+      var P = wxSpawn(inst, 12, function () {
+        return { x: Math.random() * W, y: Math.random() * H, s: 3 + Math.random() * 3.5,
+                 vy: 0.25 + Math.random() * 0.4, p: Math.random() * 6.28, spin: (Math.random() - 0.5) * 0.02 };
+      });
+      P.forEach(function (l) {
+        l.y += l.vy; l.x += Math.sin(t * 0.5 + l.p) * 0.7; l.p += l.spin;
+        if (l.y > H + 20) { l.y = -20; l.x = Math.random() * W; }
+        wxLeaf(ctx, l.x, l.y, l.p, l.s, rgb, 0.20);
+      });
+    },
+    /* petals drifting over water */
+    petals: function (ctx, W, H, t, rgb, inst) {
+      var P = wxSpawn(inst, 14, function () {
+        return { x: Math.random() * W, y: Math.random() * H, s: 3 + Math.random() * 3,
+                 vx: 0.25 + Math.random() * 0.5, p: Math.random() * 6.28 };
+      });
+      P.forEach(function (l) {
+        l.x += l.vx; l.y += Math.sin(t * 0.6 + l.p) * 0.35 + 0.16; l.p += 0.006;
+        if (l.x > W + 16) { l.x = -16; l.y = Math.random() * H; }
+        if (l.y > H + 16) l.y = -16;
+        ctx.save(); ctx.translate(l.x, l.y); ctx.rotate(l.p);
+        ctx.beginPath(); ctx.ellipse(0, 0, l.s * 1.5, l.s * 0.8, 0, 0, 6.28);
+        ctx.fillStyle = ambCol(rgb, 0.22); ctx.fill(); ctx.restore();
+      });
+      var base = H * 0.88;
+      ctx.beginPath(); ctx.moveTo(0, H);
+      for (var x = 0; x <= W; x += 10) ctx.lineTo(x, base + Math.sin(x * 0.012 + t * 0.5) * 6);
+      ctx.lineTo(W, H); ctx.closePath(); ctx.fillStyle = ambCol(rgb, 0.07); ctx.fill();
+    },
+    /* warm embers rising from a low fire */
+    embers: function (ctx, W, H, t, rgb, inst) {
+      var hot = [Math.min(255, rgb[0] + 55), Math.round(rgb[1] * 0.6), Math.round(rgb[2] * 0.45)];
+      var g = ctx.createLinearGradient(0, H, 0, H * 0.45);
+      g.addColorStop(0, ambCol(hot, 0.16)); g.addColorStop(1, ambCol(hot, 0));
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      var P = wxSpawn(inst, 26, function () {
+        return { x: Math.random() * W, y: H + Math.random() * H, r: 0.8 + Math.random() * 1.9,
+                 s: 0.35 + Math.random() * 0.9, p: Math.random() * 6.28 };
+      });
+      P.forEach(function (e) {
+        e.y -= e.s; if (e.y < -6) { e.y = H + 6; e.x = Math.random() * W; }
+        var x = e.x + Math.sin(t * 0.8 + e.p) * 12;
+        var life = Math.max(0, e.y / H), fl = 0.7 + 0.3 * Math.sin(t * 2.4 + e.p * 3);
+        ctx.beginPath(); ctx.arc(x, e.y, e.r * 2.6, 0, 6.28);
+        ctx.fillStyle = ambCol(hot, 0.10 * life * fl); ctx.fill();
+        ctx.beginPath(); ctx.arc(x, e.y, e.r, 0, 6.28);
+        ctx.fillStyle = ambCol(hot, 0.42 * life * fl); ctx.fill();
+      });
+    },
+    /* a fall on the right, moving water beneath */
+    waterfall: function (ctx, W, H, t, rgb, inst) {
+      var fx = W * 0.80, fw = Math.min(150, W * 0.26), pool = H * 0.80;
+      var g = ctx.createLinearGradient(fx - fw / 2, 0, fx + fw / 2, 0);
+      g.addColorStop(0, ambCol(rgb, 0)); g.addColorStop(0.5, ambCol(rgb, 0.10)); g.addColorStop(1, ambCol(rgb, 0));
+      ctx.fillStyle = g; ctx.fillRect(fx - fw / 2, 0, fw, pool);
+      var P = wxSpawn(inst, 30, function () {
+        return { x: fx - fw / 2 + Math.random() * fw, y: Math.random() * pool, s: 5 + Math.random() * 9, v: 5 + Math.random() * 7 };
+      });
+      ctx.lineWidth = 1;
+      P.forEach(function (d) {
+        d.y += d.v; if (d.y > pool) { d.y = -d.s; d.x = fx - fw / 2 + Math.random() * fw; }
+        ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y - d.s);
+        ctx.strokeStyle = ambCol(rgb, 0.22); ctx.stroke();
+      });
+      for (var i = 0; i < 3; i++) {
+        var r = ((t * 0.5 + i / 3) % 1) * fw * 1.4;
+        ctx.beginPath(); ctx.ellipse(fx, pool, r, r * 0.22, 0, 0, 6.28);
+        ctx.strokeStyle = ambCol(rgb, 0.16 * (1 - r / (fw * 1.4))); ctx.stroke();
+      }
+      [{ o: 0, a: 0.13, sp: 0.7 }, { o: 14, a: 0.09, sp: 0.45 }].forEach(function (L) {
+        ctx.beginPath(); ctx.moveTo(0, H);
+        for (var x = 0; x <= W; x += 8) {
+          ctx.lineTo(x, pool + L.o + Math.sin(x * 0.016 - t * L.sp) * 7 + Math.sin(x * 0.007 + t * L.sp * 0.6) * 5);
+        }
+        ctx.lineTo(W, H); ctx.closePath(); ctx.fillStyle = ambCol(rgb, L.a); ctx.fill();
+      });
+    },
+    /* steady rain */
+    rain: function (ctx, W, H, t, rgb, inst) {
+      var P = wxSpawn(inst, 46, function () {
+        return { x: Math.random() * W, y: Math.random() * H, l: 9 + Math.random() * 16, v: 5 + Math.random() * 6 };
+      });
+      ctx.lineWidth = 1;
+      P.forEach(function (d) {
+        d.y += d.v; d.x += 0.7;
+        if (d.y > H + d.l) { d.y = -d.l; d.x = Math.random() * W; }
+        ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - 1.6, d.y - d.l);
+        ctx.strokeStyle = ambCol(rgb, 0.16); ctx.stroke();
+      });
+    },
+    /* light rain with far thunder */
+    storm: function (ctx, W, H, t, rgb, inst) {
+      WX_DRAW.rain(ctx, W, H, t, rgb, inst);
+      var period = 9, ph = (t % period) / period;
+      if (ph > 0.94) {
+        var f = (1 - (ph - 0.94) / 0.06);
+        var flash = Math.pow(f, 2) * (0.5 + 0.5 * Math.sin(t * 60));
+        ctx.fillStyle = ambCol([Math.min(255, rgb[0] + 60), Math.min(255, rgb[1] + 60), 255], 0.09 * flash);
+        ctx.fillRect(0, 0, W, H);
+        var r = rng(Math.floor(t / period));
+        var bx = W * (0.15 + r() * 0.7);
+        ctx.beginPath(); ctx.moveTo(bx, -10);
+        for (var y = 0; y < H * 0.45; y += H * 0.09) ctx.lineTo(bx + (r() - 0.5) * 46, y);
+        ctx.strokeStyle = ambCol([255, 255, 255], 0.30 * flash); ctx.lineWidth = 1.4; ctx.stroke();
+      }
+    },
+    /* slow first snow */
+    snowfall: function (ctx, W, H, t, rgb, inst) {
+      var P = wxSpawn(inst, 40, function () {
+        return { x: Math.random() * W, y: Math.random() * H, r: 0.9 + Math.random() * 1.9, v: 0.25 + Math.random() * 0.55, p: Math.random() * 6.28 };
+      });
+      P.forEach(function (f) {
+        f.y += f.v; if (f.y > H + 4) { f.y = -4; f.x = Math.random() * W; }
+        var x = f.x + Math.sin(t * 0.4 + f.p) * 14;
+        ctx.beginPath(); ctx.arc(x, f.y, f.r, 0, 6.28);
+        ctx.fillStyle = ambCol(rgb, 0.30); ctx.fill();
+      });
+    },
+    /* river mist with light coming through */
+    mistlight: function (ctx, W, H, t, rgb) {
+      for (var i = 0; i < 4; i++) {
+        var y = H * (0.22 + i * 0.20) + Math.sin(t * 0.16 + i * 1.4) * H * 0.045;
+        var off = ((t * (10 + i * 5)) % (W + 420)) - 210;
+        var g = ctx.createLinearGradient(off - 210, 0, off + 210, 0);
+        g.addColorStop(0, ambCol(rgb, 0)); g.addColorStop(0.5, ambCol(rgb, 0.10 - i * 0.014)); g.addColorStop(1, ambCol(rgb, 0));
+        ctx.fillStyle = g; ctx.fillRect(0, y - 34, W, 68);
+      }
+      var lg = ctx.createRadialGradient(W * 0.5, -H * 0.1, 0, W * 0.5, -H * 0.1, H * 0.9);
+      lg.addColorStop(0, ambCol(rgb, 0.09)); lg.addColorStop(1, ambCol(rgb, 0));
+      ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
+    },
+    /* heavy fog rolling */
+    fogbank: function (ctx, W, H, t, rgb) {
+      for (var i = 0; i < 5; i++) {
+        var y = H * (0.12 + i * 0.19) + Math.sin(t * 0.13 + i) * H * 0.03;
+        var off = ((t * (5 + i * 3.5)) % (W + 520)) - 260;
+        var g = ctx.createLinearGradient(off - 260, 0, off + 260, 0);
+        g.addColorStop(0, ambCol(rgb, 0)); g.addColorStop(0.5, ambCol(rgb, 0.11)); g.addColorStop(1, ambCol(rgb, 0));
+        ctx.fillStyle = g; ctx.fillRect(0, y - 46, W, 92);
+      }
+    },
+    /* still water taking slow rings */
+    stillwater: function (ctx, W, H, t, rgb, inst) {
+      var base = H * 0.62;
+      ctx.beginPath(); ctx.moveTo(0, H);
+      for (var x = 0; x <= W; x += 10) ctx.lineTo(x, base + Math.sin(x * 0.008 + t * 0.25) * 5);
+      ctx.lineTo(W, H); ctx.closePath();
+      var g = ctx.createLinearGradient(0, base, 0, H);
+      g.addColorStop(0, ambCol(rgb, 0.10)); g.addColorStop(1, ambCol(rgb, 0.03));
+      ctx.fillStyle = g; ctx.fill();
+      var R = wxSpawn(inst, 4, function (i) { return { x: 0, y: 0, born: -i * 2.4, set: false }; });
+      R.forEach(function (r, i) {
+        var age = (t - r.born) % 9.6;
+        if (!r.set || age < 0.1) {
+          if (!r.set || r.lastAge > age) { r.x = W * (0.15 + ((i * 0.37 + Math.floor(t / 9.6) * 0.21) % 0.7)); r.y = base + 10 + (i % 3) * 22; }
+          r.set = true;
+        }
+        r.lastAge = age;
+        var p = age / 9.6;
+        ctx.beginPath(); ctx.ellipse(r.x, r.y, p * W * 0.30, p * W * 0.30 * 0.18, 0, 0, 6.28);
+        ctx.strokeStyle = ambCol(rgb, 0.22 * (1 - p)); ctx.lineWidth = 1; ctx.stroke();
+      });
+    },
+    /* dust turning in a shaft of temple light */
+    sunbeam: function (ctx, W, H, t, rgb, inst) {
+      ctx.save();
+      ctx.translate(W * 0.72, -H * 0.1); ctx.rotate(0.32);
+      var g = ctx.createLinearGradient(-W * 0.18, 0, W * 0.18, 0);
+      g.addColorStop(0, ambCol(rgb, 0)); g.addColorStop(0.5, ambCol(rgb, 0.10)); g.addColorStop(1, ambCol(rgb, 0));
+      ctx.fillStyle = g; ctx.fillRect(-W * 0.18, 0, W * 0.36, H * 1.5);
+      ctx.restore();
+      var P = wxSpawn(inst, 34, function () {
+        return { x: Math.random() * W, y: Math.random() * H, r: 0.6 + Math.random() * 1.2,
+                 sx: (Math.random() - 0.5) * 0.14, sy: -0.05 - Math.random() * 0.12, p: Math.random() * 6.28 };
+      });
+      P.forEach(function (d) {
+        d.x += d.sx; d.y += d.sy;
+        if (d.y < -3) { d.y = H + 3; d.x = Math.random() * W; }
+        var tw = 0.14 + 0.20 * (0.5 + 0.5 * Math.sin(t * 1.2 + d.p));
+        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.28);
+        ctx.fillStyle = ambCol(rgb, tw); ctx.fill();
+      });
+    },
+    /* ridgelines with weather moving over them */
+    ridges: function (ctx, W, H, t, rgb) {
+      [{ k: 0.0042, a: H * 0.10, y: H * 0.52, sp: 2.5, al: 0.07 },
+       { k: 0.0061, a: H * 0.13, y: H * 0.66, sp: 5, al: 0.09 },
+       { k: 0.0090, a: H * 0.17, y: H * 0.82, sp: 9, al: 0.11 }].forEach(function (L) {
+        var off = t * L.sp;
+        ctx.beginPath(); ctx.moveTo(0, H);
+        for (var x = 0; x <= W; x += 10) {
+          var y = L.y - Math.abs(Math.sin((x + off) * L.k)) * L.a - Math.abs(Math.sin((x + off) * L.k * 2.6)) * L.a * 0.4;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(W, H); ctx.closePath(); ctx.fillStyle = ambCol(rgb, L.al); ctx.fill();
+      });
+      for (var i = 0; i < 3; i++) {
+        var cx = ((t * (7 + i * 4)) % (W + 300)) - 150, cy = H * (0.16 + i * 0.09);
+        var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 120);
+        g.addColorStop(0, ambCol(rgb, 0.07)); g.addColorStop(1, ambCol(rgb, 0));
+        ctx.fillStyle = g; ctx.fillRect(cx - 120, cy - 60, 240, 120);
       }
     }
   };
