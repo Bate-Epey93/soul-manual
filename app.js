@@ -369,7 +369,7 @@
     '✉': 'letter',
     '♀': 'female',
     '📡': 'signal',
-    '💰': 'coin', '🪙': 'coin',
+    '💰': 'coin', '🪙': 'coin', '⏭': 'road',
     '◆': 'diamond', '◈': 'diamond',
     '△': 'triangle'
   };
@@ -1420,6 +1420,37 @@ var CURATED = {
         '<div class="today-actions"><button class="tbtn" id="tdChRead">Read</button></div>' +
       '</div>';
 
+    var doyF = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 864e5);
+    if (typeof FORGE !== 'undefined' && FORGE.protocols && FORGE.protocols.length) {
+      var fp = FORGE.protocols[doyF % FORGE.protocols.length];
+      var fIntro = String(fp.intro || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      sec.forge =
+        '<div class="today-sec">The Forge · today\u2019s protocol</div>' +
+        '<div class="today-card glass" id="tdForge" style="border-left:3px solid ' + fp.color + '" data-amb="ember" data-amb-color="' + fp.color + '">' +
+          '<div class="tc-kicker" style="color:' + fp.color + '">' + motifSVG(motifFor(fp.icon), 'fp-' + fp.id) + ' Protocol ' + ((doyF % FORGE.protocols.length) + 1) + ' of ' + FORGE.protocols.length + '</div>' +
+          '<div class="tc-title" style="font-size:19px">' + fp.title + '</div>' +
+          '<div class="tc-sub">' + esc(fIntro.slice(0, 130)) + '\u2026</div>' +
+          '<div class="today-actions"><button class="tbtn" id="tdForgeRead">Read</button></div>' +
+        '</div>';
+    }
+    if (typeof EDGE !== 'undefined') {
+      var edgeKeys = ['body', 'joy', 'failure', 'community', 'anger', 'audit', 'mamba', 'inner_game'].filter(function (k) { return EDGE[k] && EDGE[k].title; });
+      if (edgeKeys.length) {
+        var ek = edgeKeys[doyF % edgeKeys.length], eb = EDGE[ek];
+        var eIntro = String(eb.intro || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        sec.edge =
+          '<div class="today-sec">Living Edge · today\u2019s read</div>' +
+          '<div class="today-card glass" id="tdEdge" style="border-left:3px solid #D4A038" data-amb="spark" data-amb-color="#D4A038">' +
+            '<div class="tc-kicker" style="color:#D4A038">' + motifSVG('wave', 'ed-' + ek) + ' The Living Edge</div>' +
+            '<div class="tc-title" style="font-size:19px">' + eb.title + '</div>' +
+            '<div class="tc-sub">' + esc(eIntro.slice(0, 130)) + '\u2026</div>' +
+            '<div class="today-actions"><button class="tbtn" id="tdEdgeRead">Read</button></div>' +
+          '</div>';
+        todayCtx.edgeKey = ek;
+      }
+    }
+    todayCtx.forgeIdx = (typeof FORGE !== 'undefined' && FORGE.protocols) ? doyF % FORGE.protocols.length : 0;
+
     sec.practice =
       '<div class="today-sec">Practice</div>' +
       '<div class="today-tiles">' +
@@ -1432,9 +1463,9 @@ var CURATED = {
       : 'Your ledger is empty. One breath begins it. &rarr;';
     sec.ledger = '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
 
-    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'essence', 'chapter', 'marie', 'quarter', 'practice', 'ledger']
-      : slot === 'evening' ? ['head', 'wave', 'marie', 'mirror', 'essence', 'med', 'chapter', 'entry', 'quarter', 'practice', 'ledger']
-      : ['head', 'med', 'wave', 'entry', 'essence', 'chapter', 'marie', 'quarter', 'mirror', 'practice', 'ledger'];
+    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'essence', 'chapter', 'forge', 'edge', 'marie', 'quarter', 'practice', 'ledger']
+      : slot === 'evening' ? ['head', 'wave', 'marie', 'mirror', 'essence', 'med', 'chapter', 'forge', 'edge', 'entry', 'quarter', 'practice', 'ledger']
+      : ['head', 'med', 'wave', 'entry', 'essence', 'chapter', 'forge', 'edge', 'marie', 'quarter', 'mirror', 'practice', 'ledger'];
     return { sec: sec, order: order };
   }
 
@@ -1476,6 +1507,7 @@ var CURATED = {
     on('tdQMap', function (e) { e.stopPropagation(); navTo('map'); });
     on('tdQ', function () { navTo('map'); });
     on('tdWaveEdit', function () { waveEditing = true; refreshToday(['wave']); });
+    on('tdWaveGo', function (e) { e.stopPropagation(); var sg = weatherSuggest(); if (sg) sg.go(); });
     on('tdWaveName', function (e) { e.stopPropagation(); navTo('naming'); });
     on('tdEntryCta', function () { navTo('guide'); });
     on('tdEss', function () { if (todayCtx.essRead != null) openReader('essence', todayCtx.essRead); });
@@ -1488,6 +1520,10 @@ var CURATED = {
       else { navTo('waters'); setTimeout(function () { var el = document.querySelector('[data-wat="' + ws.id + '"]'); if (el) { el.classList.add('open'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 350); }
     });
     on('tdMirrorMore', function () { navTo('mirror'); });
+    on('tdForge', function () { navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', todayCtx.forgeIdx); }, 450); });
+    on('tdForgeRead', function (e) { e.stopPropagation(); navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', todayCtx.forgeIdx); }, 450); });
+    on('tdEdge', function () { navTo('edge'); setTimeout(function () { scrollToEdge(todayCtx.edgeKey); }, 450); });
+    on('tdEdgeRead', function (e) { e.stopPropagation(); navTo('edge'); setTimeout(function () { scrollToEdge(todayCtx.edgeKey); }, 450); });
     var mSave = page.querySelector('#tdMirrorSave');
     if (mSave) mSave.onclick = function () {
       var inp = page.querySelector('#tdMirrorInput'), v = inp.value.trim(); if (!v) return;
@@ -2038,6 +2074,61 @@ var CURATED = {
         '<div class="wc-foot"><span>trough</span><span>' + logged + ' day' + (logged === 1 ? '' : 's') + ' logged</span><span>peak</span></div>' +
       '</div>';
   }
+  function scrollToNth(sel, n) {
+    var els = document.querySelectorAll(sel);
+    var el = els[n] || els[0];
+    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('open'); }
+  }
+  function scrollToEdge(key) {
+    var el = document.getElementById('page-edge');
+    if (!el) return;
+    var titles = el.querySelectorAll('.edge-section-title');
+    var target = null;
+    if (typeof EDGE !== 'undefined' && EDGE[key] && EDGE[key].title) {
+      titles.forEach(function (t) { if (t.textContent.indexOf(EDGE[key].title) !== -1) target = t; });
+    }
+    (target || el).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* named weather routes to a practice: EFT · breath · waters · forge · edge */
+  var FAM_PRACTICE = {
+    hurt:      { label: 'Breathing Through Conflict', sub: 'The Forge \u2014 repair runs through the body first.', go: function () { navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', 1); }, 450); } },
+    anger:     { label: 'EFT \u2014 For Anger That Needs to Speak', sub: 'Give the heat a channel before it picks one.', go: function () { openEftByTitle('Anger'); } },
+    fear:      { label: 'EFT \u2014 For Groundedness', sub: 'The body anchors what the mind rehearses.', go: function () { openEftByTitle('Groundedness'); } },
+    sadness:   { label: 'The Two Waters', sub: 'Salt for what leaves. Cool water for what remains.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="twowaters"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
+    shame:     { label: 'The Or\u00edk\u00ec File', sub: 'Counter-training: praise earned, spoken in your own mouth.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="oriki"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
+    longing:   { label: 'For Marie', sub: 'Distance felt as feeling \u2014 send one line across the water.', go: function () { navTo('marie'); } },
+    overwhelm: { label: 'EFT \u2014 For Crisis & Overwhelm', sub: 'Too much, too fast \u2014 tap the volume down first.', go: function () { openEftByTitle('Crisis'); } },
+    quiet:     { label: 'The Reservoir', sub: 'Good weather is for depositing, not just passing through.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="reservoir"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
+    borrowed:  { label: 'Return to Essence', sub: 'A feeling from another tongue \u2014 read the grammar it lives in.', go: function () { navTo('essence'); } },
+    manual:    { label: 'Return-in-Place', sub: 'Thirty seconds: exhale long, feet down, one line.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="inplace"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } }
+  };
+  var ALT_PRACTICE = [null,
+    { label: 'Solar Plexus Breathing', sub: 'Trough days ask for the breath, not the page.', go: function () { openTimer(); } },
+    { label: 'The Reservoir', sub: 'Low and moving \u2014 park attention in the belly awhile.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="reservoir"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
+    { label: 'Return-in-Place', sub: 'Level water \u2014 practice the return while it is cheap.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="inplace"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
+    { label: 'The Forge \u2014 today\u2019s protocol', sub: 'Rising current \u2014 spend it on the field kit.', go: function () { navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', todayCtx.forgeIdx || 0); }, 450); } },
+    { label: 'Compose the \u00e0f\u1ecd\u0300\u1e63\u1eb9 sentence', sub: 'Peak \u2014 hold the word now, speak it into force at the rite.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="twowaters"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } }
+  ];
+  function openEftByTitle(frag) {
+    navTo('eft');
+    setTimeout(function () {
+      if (typeof EFT === 'undefined') return;
+      var idx = -1;
+      EFT.sequences.forEach(function (sq, i) { if (idx === -1 && sq.title.indexOf(frag) !== -1) idx = i; });
+      if (idx !== -1 && typeof openTap === 'function') openTap(idx);
+    }, 500);
+  }
+  function weatherSuggest() {
+    var t = waveToday();
+    if (!t) return null;
+    if (t.note && typeof LEXICON !== 'undefined') {
+      var e = LEXICON.find(function (x) { return x.w === t.note; });
+      if (e && FAM_PRACTICE[e.fam]) return FAM_PRACTICE[e.fam];
+    }
+    return ALT_PRACTICE[t.v] || null;
+  }
+
   /* animation for the Emotional Weather card: named word wins, altitude falls back */
   function waveAmb() {
     var t = waveToday();
@@ -2075,7 +2166,9 @@ var CURATED = {
       (function () { var wa = waveAmb(); return '<div class="today-card glass wave-card logged" id="tdWave"' + (wa ? ' data-amb="' + wa.kind + '" data-amb-color="' + wa.color + '"' : '') + '>'; })() +
         '<div class="wave-status"><span class="wave-orb" style="background:' + ws.tint + '"></span>' +
           '<div class="wave-status-body"><div class="wave-state">' + ws.label + (wave.note ? ' · <em>' + esc(wave.note) + '</em>' : '') + '</div>' +
-          '<div class="wave-guide">' + waveGuidance() + '</div></div></div>' +
+          '<div class="wave-guide">' + waveGuidance() + '</div>' +
+          (function () { var sg = weatherSuggest(); return sg ? '<div class="wave-suggest"><div class="ws-body"><div class="ws-label">For this weather</div><div class="ws-name">' + sg.label + '</div><div class="ws-sub">' + sg.sub + '</div></div><button class="tbtn" id="tdWaveGo">Begin</button></div>' : ''; })() +
+          '</div></div>' +
         (spark ? '<div class="wave-spark-wrap">' + spark + '</div>' : '') +
         '<div class="today-actions"><button class="tbtn ghost" id="tdWaveEdit">Change</button><button class="tbtn ghost" id="tdWaveName">Name it precisely &rarr;</button></div>' +
       '</div>';
