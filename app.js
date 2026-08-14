@@ -638,7 +638,7 @@ var CURATED = {
     'page-arch': 'torii', 'page-mirror': 'eye', 'page-crisis': 'warning',
     'page-trees': 'fork', 'page-eft': 'target', 'page-guide': 'road',
     'page-meditations': 'lotus', 'page-ledger': 'chart',
-    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart', 'page-naming': 'letter'
+    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart', 'page-way': 'road', 'page-naming': 'letter'
   };
   function pageEnsoHTML(pageId) {
     return '<div class="page-enso">' +
@@ -1242,11 +1242,11 @@ var CURATED = {
   var GROUPS = [
     { id: 'today', label: 'Today', motif: 'sun', pages: ['today'] },
     { id: 'learn', label: 'Learn', motif: null, enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'essence', 'arch', 'mirror', 'dramas', 'guide'] },
-    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'naming', 'marie', 'eft', 'forge', 'edge', 'ledger'] },
+    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'way', 'naming', 'marie', 'eft', 'forge', 'edge', 'ledger'] },
     { id: 'mapg', label: 'Map', motif: 'road', pages: ['map', 'trees'] },
     { id: 'crisisg', label: 'Crisis', motif: 'warning', pages: ['crisis'] }
   ];
-  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', naming: 'The Naming', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
+  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', way: 'The Way', naming: 'The Naming', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
   var VALID = Object.keys(PAGE_LABELS);
   var groupChoice = {}; // last-visited page per group
   var navEl = null, subnavEl = null;
@@ -1310,6 +1310,7 @@ var CURATED = {
     if (page === 'essence') renderEssence();
     if (page === 'waters') renderWaters();
     if (page === 'marie') renderMarie();
+    if (page === 'way') renderWay();
     if (page === 'naming') renderNaming();
     if (page === 'guide') decorateEntry();
     if (page === 'eft') refreshEftStats();
@@ -1326,7 +1327,7 @@ var CURATED = {
 
   function createPages() {
     var anchor = document.getElementById('page-concepts');
-    ['today', 'ledger', 'essence', 'waters', 'marie', 'naming'].forEach(function (id) {
+    ['today', 'ledger', 'essence', 'waters', 'marie', 'naming', 'way'].forEach(function (id) {
       var d = document.createElement('div');
       d.className = 'page'; d.id = 'page-' + id;
       anchor.parentNode.insertBefore(d, anchor);
@@ -2096,7 +2097,7 @@ var CURATED = {
     anger:     { label: 'EFT \u2014 For Anger That Needs to Speak', sub: 'Give the heat a channel before it picks one.', go: function () { openEftByTitle('Anger'); } },
     fear:      { label: 'EFT \u2014 For Groundedness', sub: 'The body anchors what the mind rehearses.', go: function () { openEftByTitle('Groundedness'); } },
     sadness:   { label: 'The Two Waters', sub: 'Salt for what leaves. Cool water for what remains.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="twowaters"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
-    shame:     { label: 'The Or\u00edk\u00ec File', sub: 'Counter-training: praise earned, spoken in your own mouth.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="oriki"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
+    shame:     { label: 'The Temperature Practice', sub: 'The record surfaced. Warmth, not tribunal.', go: function () { openTemperature(); } },
     longing:   { label: 'For Marie', sub: 'Distance felt as feeling \u2014 send one line across the water.', go: function () { navTo('marie'); } },
     overwhelm: { label: 'EFT \u2014 For Crisis & Overwhelm', sub: 'Too much, too fast \u2014 tap the volume down first.', go: function () { openEftByTitle('Crisis'); } },
     quiet:     { label: 'The Reservoir', sub: 'Good weather is for depositing, not just passing through.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="reservoir"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
@@ -3702,7 +3703,8 @@ var CURATED = {
     trees:       { s: 'leaves',    c: '#8FB08F' },  // wind at the fork in the path
     guide:       { s: 'sunleaves', c: '#B8894A' },  // the road in autumn light
     ledger:      { s: 'stillwater',c: '#C4A265' },  // quiet water, nothing to prove
-    marie:       { s: 'petals',    c: '#E88BA0' }   // petals carried over water
+    marie:       { s: 'petals',    c: '#E88BA0' },  // petals carried over water
+    way:         { s: 'stillwater',c: '#7E9E8E' }   // still water — ice returning to liquid
   };
 
   var wxCanvas = null, wxInst = null, wxFade = 0;
@@ -4044,6 +4046,288 @@ var CURATED = {
     ambientSweep(r);
   }
 
+
+  /* ================================================================
+     THE WAY — the unfettered practice (kata · zengzi · temperature ·
+     empty entrance · shu-ha-ri). Anti-tomaru constraints enforced:
+     no streaks, sealed entries, unsaved threshold field.
+     ================================================================ */
+  var WYK = 'soulzen-way';
+  function wayStore() { var w = store(WYK); w.kata = w.kata || { start: 0, log: {} }; w.zengzi = w.zengzi || []; return w; }
+  function waySave(w) { saveStore(WYK, w); }
+  function kataPhase() {
+    var w = wayStore();
+    if (!w.kata.start) return { name: 'Shu', day: 0, label: 'not yet begun' };
+    var day = Math.round((dayMidnight(Date.now()) - dayMidnight(w.kata.start)) / 864e5) + 1;
+    var name = day <= 90 ? 'Shu' : day <= 180 ? 'Ha' : 'Ri';
+    return { name: name, day: day, label: name + ' · day ' + day };
+  }
+  function kataMarkedToday() { return !!wayStore().kata.log[todayISO()]; }
+  function kataMark() {
+    var w = wayStore();
+    if (!w.kata.start) w.kata.start = Date.now();
+    w.kata.log[todayISO()] = 1;
+    waySave(w);
+  }
+  function kataReps() { return Object.keys(wayStore().kata.log).length; }
+  function zengziToday() { var d = todayISO(); return wayStore().zengzi.find(function (e) { return e.d === d; }) || null; }
+  function zengziSeal(a1, a2, a3) {
+    var w = wayStore();
+    if (w.zengzi.find(function (e) { return e.d === todayISO(); })) return;
+    w.zengzi.push({ d: todayISO(), t: Date.now(), a: [a1, a2, a3] });
+    w.zengzi = w.zengzi.slice(-200);
+    waySave(w);
+  }
+
+  function renderWay() {
+    var page = document.getElementById('page-way');
+    if (!page || typeof WAY === 'undefined') return;
+    var h = pageEnsoHTML('page-way') +
+      '<div style="margin-bottom:18px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">' + WAY.title + '</h2>' +
+      '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">' + WAY.sub + '</p></div>';
+    h += '<div class="today-card glass way-thesis" style="border-left:3px solid #C4A265"><div class="ess-kicker" style="color:#C4A265">The thesis — in your words</div>' +
+      '<div class="way-thesis-text">“' + WAY.thesis + '”</div>' +
+      '<div class="wat-note">Right about the record. Wrong about the courtroom. The correction follows.</div></div>';
+
+    WAY.sections.forEach(function (sc, i) {
+      h += '<div class="ess-card wat-card glass" data-wayread="' + i + '" style="border-left:3px solid ' + sc.color + '">' +
+        '<div class="ess-kicker" style="color:' + sc.color + '">' + sc.kicker + '</div>' +
+        '<div class="ess-title">' + motifSVG(sc.motif, 'way-' + sc.id, { color: sc.color }) + ' ' + sc.title + '</div>' +
+        '<div class="ess-body"><div class="ess-text">' + sc.body + '</div></div></div>';
+    });
+
+    h += '<div class="today-sec">The Reframe — tap a row to cross the room</div><div class="way-table glass">';
+    WAY.reframe.forEach(function (r, i) {
+      h += '<div class="way-row" data-flip="' + i + '" role="button" tabindex="0">' +
+        '<div class="way-side court"><span>courtroom</span>' + r.court + '</div>' +
+        '<div class="way-side wayv"><span>the way</span>' + r.way + '</div></div>';
+    });
+    h += '</div>';
+
+    h += '<div class="today-sec">The Practices</div>';
+    WAY.practices.forEach(function (p) {
+      h += '<div class="ess-card wat-card glass" data-wat="way-' + p.id + '" style="border-left:3px solid ' + p.color + '">' +
+        '<div class="wat-head"><div class="ess-kicker" style="color:' + p.color + '">' + p.num + ' · ' + p.cadence + '</div></div>' +
+        '<div class="ess-title">' + motifSVG(p.motif, 'wayp-' + p.id, { color: p.color }) + ' ' + p.title + '</div>' +
+        '<div class="ess-body">' +
+          '<ol class="wat-steps">' + p.steps.map(function (st) { return '<li>' + st + '</li>'; }).join('') + '</ol>' +
+          (p.note ? '<div class="wat-note">' + p.note + '</div>' : '') +
+          (p.id === 'kata' ? '<div id="kataHost"></div>' : '') +
+          (p.zengzi ? '<div id="zzHost"></div>' : '') +
+          '<div class="today-actions">' +
+            (p.guided === 'kata' ? '<button class="tbtn" data-wayguided="kata">Begin the form · 3 min</button>' : '') +
+            (p.guided === 'temperature' ? '<button class="tbtn" data-wayguided="temperature">Begin · the ice is here</button>' : '') +
+            (p.guided === 'entrance' ? '<button class="tbtn" data-wayguided="entrance">Stand at the threshold</button>' : '') +
+          '</div>' +
+        '</div></div>';
+    });
+
+    page.innerHTML = h;
+    page.querySelectorAll('.wat-card').forEach(function (card) {
+      card.onclick = function (e) {
+        if (e.target.closest('button,input,textarea,#kataHost,#zzHost')) return;
+        card.classList.toggle('open');
+      };
+    });
+    page.querySelectorAll('[data-flip]').forEach(function (r) {
+      r.addEventListener('keydown', kbToggle);
+      r.onclick = function () { r.classList.toggle('flipped'); buzz(10); };
+    });
+    page.querySelectorAll('[data-wayguided]').forEach(function (b) {
+      b.onclick = function (e) {
+        e.stopPropagation();
+        var k = b.dataset.wayguided;
+        if (k === 'kata') openKata();
+        else if (k === 'temperature') openTemperature();
+        else openEntrance();
+      };
+    });
+    renderKataTracker(); renderZengzi();
+    glassify(page); tintCards(page); ambientDecorate(page);
+    if (PREFS.theme === 'light') applyInlineTheme(true, page);
+  }
+
+  /* kata tracker: total reps + phase only. A missed day renders nothing. */
+  function renderKataTracker() {
+    var host = document.getElementById('kataHost'); if (!host) return;
+    var ph = kataPhase(), done = kataMarkedToday();
+    host.innerHTML =
+      '<div class="kata-track">' +
+        '<div class="kata-stat"><div class="ks-num">' + kataReps() + '</div><div class="ks-label">repetitions — the drawer only fills</div></div>' +
+        '<div class="kata-stat"><div class="ks-num">' + (ph.day ? ph.name : '—') + '</div><div class="ks-label">' + (ph.day ? 'day ' + ph.day : 'begins with the first form') + '</div></div>' +
+      '</div>' +
+      (done ? '<div class="kata-done">The form is kept.</div>' :
+        '<div class="today-actions"><button class="tbtn ghost" id="kataMark">Mark the form kept</button></div>');
+    var b = host.querySelector('#kataMark');
+    if (b) b.onclick = function (e) { e.stopPropagation(); kataMark(); buzz(15); renderKataTracker(); };
+  }
+
+  /* zengzi close: 3 questions, 3 minutes, seals. Weekly read-only on Sundays. */
+  var zzTimer = null;
+  function renderZengzi() {
+    var host = document.getElementById('zzHost'); if (!host) return;
+    clearInterval(zzTimer);
+    var entry = zengziToday();
+    var w = wayStore();
+    var isSunday = new Date().getDay() === 0;
+    var h = '';
+    if (entry) {
+      h += '<div class="kata-done">The examination is closed.</div>';
+    } else {
+      h += '<div class="zz-timer" id="zzTimer">3:00</div>' +
+        '<div class="kw-label">Did I keep faith with what I said today?</div><textarea class="mirror-input kw-inp" id="zz1" rows="1"></textarea>' +
+        '<div class="kw-label">Did I practice what I already know, or only recognize it?</div><textarea class="mirror-input kw-inp" id="zz2" rows="1"></textarea>' +
+        '<div class="kw-label">Where did my mind stop today? One phrase, no analysis.</div><textarea class="mirror-input kw-inp" id="zz3" rows="1"></textarea>' +
+        '<div class="today-actions"><button class="tbtn" id="zzSeal">Close the examination</button></div>';
+    }
+    if (w.zengzi.length && isSunday) {
+      h += '<button class="eft-read-link" id="zzWeekly">the weekly view ▾</button><div id="zzPast" style="display:none">' +
+        '<div class="wat-note">One question, read across the week: what is the practice teaching that the mind has not caught up to yet?</div>' +
+        w.zengzi.slice(-7).map(function (e) {
+          return '<div class="kw-entry"><div class="mj-date">' + e.d + '</div>' +
+            e.a.map(function (a, i) { return a ? '<div class="kw-line"><span>' + (i + 1) + '</span>' + esc(a) + '</div>' : ''; }).join('') + '</div>';
+        }).join('') + '</div>';
+    } else if (w.zengzi.length) {
+      h += '<div class="wat-note">' + w.zengzi.length + ' sealed entr' + (w.zengzi.length === 1 ? 'y' : 'ies') + '. The record opens on Sunday, read-only.</div>';
+    }
+    host.innerHTML = h;
+    if (!entry) {
+      var left = 180, tEl = host.querySelector('#zzTimer');
+      function seal() {
+        clearInterval(zzTimer);
+        zengziSeal(
+          (host.querySelector('#zz1') || {}).value || '',
+          (host.querySelector('#zz2') || {}).value || '',
+          (host.querySelector('#zz3') || {}).value || ''
+        );
+        buzz(20); renderZengzi();
+        if (PREFS.theme === 'light') applyInlineTheme(true, document.getElementById('page-way'));
+      }
+      var started = false;
+      host.querySelectorAll('textarea').forEach(function (t) {
+        t.addEventListener('focus', function () {
+          if (started) return; started = true;
+          zzTimer = setInterval(function () {
+            left--;
+            if (tEl) tEl.textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+            if (left <= 0) seal();
+          }, 1000);
+        });
+      });
+      host.querySelector('#zzSeal').onclick = function (e) { e.stopPropagation(); seal(); };
+    }
+    var wk = host.querySelector('#zzWeekly');
+    if (wk) wk.onclick = function (e) { e.stopPropagation(); var p = host.querySelector('#zzPast'); p.style.display = p.style.display === 'none' ? 'block' : 'none'; };
+  }
+
+  /* guided kata: 3-minute standing form on the zen overlay */
+  function openKata() {
+    openOverlay('#8B6F47');
+    newSession();
+    Z.zKicker.textContent = 'THE DAILY KATA · 3 MIN';
+    Z.zPoint.textContent = 'The Standing Form';
+    Z.zPhrase.textContent = 'Stand. Feet under hips, hands loose.';
+    Z.zSub.textContent = 'Three slow breaths, exhale longer than inhale. Then one slow bow. Then stillness, attention in the lower belly.';
+    Z.zCount.style.display = 'block';
+    var left = 180;
+    Z.zCount.textContent = fmt(left);
+    ac(); chimeStart();
+    var restart = runBreathLoop(function () { Z.zHint.textContent = 'the form is the practice — nothing to evaluate'; });
+    every(1000, function () {
+      if (!S || S.paused) return;
+      left--;
+      Z.zCount.textContent = fmt(Math.max(0, left));
+      if (left === 150) { Z.zPhrase.textContent = 'One slow bow — full, unhurried.'; Z.zSub.textContent = 'The bow produces the respect; not the reverse.'; }
+      if (left === 130) { Z.zPhrase.textContent = 'Stillness.'; Z.zSub.textContent = 'When the mind leaves, return it without commentary. The return is the repetition.'; }
+      if (left <= 0) {
+        stopSession(); newSession();
+        chimeEnd(); buzz([40, 80, 40]);
+        kataMark();
+        Z.zCount.style.display = 'none';
+        Z.zPhrase.textContent = 'The form is kept.';
+        Z.zSub.textContent = '';
+        Z.zHint.textContent = '';
+        Z.zCtls.innerHTML = '';
+        ctlBtn('Close', 'zen-btn', function () { closeOverlay(false); renderKataTracker(); });
+      }
+    });
+    Z.zCtls.innerHTML = '';
+    ctlBtn('&#10005;', 'zen-ctl', function () { closeOverlay(false); renderKataTracker(); });
+  }
+
+  /* guided temperature: 4 steps, tap-advance; the named ice is never saved */
+  function openTemperature() {
+    openOverlay('#5A7B8C');
+    newSession();
+    var steps = [
+      { t: 'Name the ice', phrase: 'The mind has stopped on …', sub: 'One phrase. Say it, or type it — it is not saved. Naming is the whole step.', input: true, btn: 'Named' },
+      { t: 'Locate it', phrase: 'Where in the body is the freeze?', sub: 'Jaw, chest, hands. Find the place where the water stopped.', btn: 'Found' },
+      { t: 'Warm it', phrase: 'Three slow breaths, directed there.', sub: 'No argument. No counter-case. No reassurance. Temperature only.', breathe: true, btn: 'Warmed' },
+      { t: 'Return to the field', phrase: 'Name three things presently in the room.', sub: 'The mind redistributes from the stopping-place to everywhere.', btn: 'Returned' }
+    ];
+    var cur = -1;
+    function go(i) {
+      if (!S) return;
+      S.timers.forEach(clearTimeout); S.timers = []; clearBeats();
+      cur = i;
+      var st = steps[i];
+      if (!st) {
+        chimeEnd(); buzz([30, 60, 30]);
+        Z.zPoint.textContent = '';
+        Z.zPhrase.textContent = 'Nothing was forgiven. Something was melted.';
+        Z.zSub.textContent = 'The seam stays in the vessel, gold.';
+        Z.zChips.style.display = 'none'; Z.zCtls.innerHTML = '';
+        ctlBtn('Close', 'zen-btn', function () { closeOverlay(false); });
+        return;
+      }
+      Z.zKicker.textContent = 'THE TEMPERATURE PRACTICE · ' + (i + 1) + ' OF 4';
+      Z.zPoint.textContent = st.t;
+      Z.zPhrase.textContent = st.phrase;
+      Z.zSub.textContent = st.sub;
+      Z.zChips.style.display = st.input ? 'flex' : 'none';
+      Z.zChips.innerHTML = st.input ? '<textarea class="mirror-input tw-input" rows="1" placeholder="the mind has stopped on…"></textarea>' : '';
+      if (st.breathe) {
+        Z.zOrb.style.transition = 'transform 4s cubic-bezier(.4,0,.4,1)'; Z.zOrb.style.transform = 'scale(1.3)';
+        after(4200, function () { if (cur === i) { Z.zOrb.style.transition = 'transform 6s cubic-bezier(.4,0,.4,1)'; Z.zOrb.style.transform = 'scale(1)'; } });
+      }
+      Z.zCtls.innerHTML = '';
+      ctlBtn(st.btn, 'zen-btn', function () { buzz(12); go(i + 1); });
+      if (i === 0) { ac(); chimeStart(); }
+    }
+    go(0);
+  }
+
+  /* empty entrance: 30 seconds at the threshold; the field is never saved */
+  function openEntrance() {
+    openOverlay('#D9826C');
+    newSession();
+    Z.zKicker.textContent = 'THE EMPTY ENTRANCE · 30 SEC';
+    Z.zPoint.textContent = 'The Threshold';
+    Z.zPhrase.textContent = 'What stays outside?';
+    Z.zSub.textContent = 'The case, the verdict, the read on her state. Type it if it helps — it is not saved. The case is left at the door, not archived.';
+    Z.zChips.style.display = 'flex';
+    Z.zChips.innerHTML = '<textarea class="mirror-input tw-input" rows="2" placeholder="the case stays here…"></textarea>';
+    Z.zCount.style.display = 'block';
+    var left = 30;
+    Z.zCount.textContent = '0:30';
+    ac(); chimeStart();
+    every(1000, function () {
+      if (!S || S.paused) return;
+      left--;
+      Z.zCount.textContent = '0:' + String(Math.max(0, left)).padStart(2, '0');
+      if (left <= 0) {
+        stopSession(); newSession();
+        buzz(25);
+        Z.zCount.style.display = 'none'; Z.zChips.style.display = 'none';
+        Z.zPhrase.textContent = 'Enter small.';
+        Z.zSub.textContent = 'Bent, unarmed, able to receive.';
+        Z.zCtls.innerHTML = '';
+        ctlBtn('Enter', 'zen-btn', function () { closeOverlay(false); });
+      }
+    });
+    Z.zCtls.innerHTML = '';
+    ctlBtn('&#10005;', 'zen-ctl', function () { closeOverlay(false); });
+  }
 
   /* ================================================================
      BOOT

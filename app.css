@@ -834,3 +834,33 @@ body.light #pageWeather.wx-in{animation:wxInLight 1.4s ease}
 body.light .ws-name{color:#33291A}
 body.light .ws-sub{color:rgba(60,45,25,.6)}
 body.light .wave-suggest{background:rgba(90,70,40,.05);border-color:rgba(90,70,40,.14)}
+
+/* ---------------------------------------------------------------- */
+/* THE WAY — thesis · reframe table · kata tracker · zengzi         */
+/* ---------------------------------------------------------------- */
+.way-thesis{margin-bottom:22px}
+.way-thesis-text{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.55;color:#EDE4D3;font-style:italic;margin:8px 0 10px}
+body.light .way-thesis-text{color:#3a2c18}
+.way-table{border-radius:16px;padding:8px;margin-bottom:8px}
+.way-row{position:relative;border-radius:12px;margin:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:hidden}
+.way-side{padding:14px 16px;font-size:13.5px;line-height:1.65;transition:opacity .45s ease,transform .45s ease}
+.way-side span{display:block;font-family:monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:5px}
+.way-side.court{color:rgba(255,255,255,.55);background:rgba(184,92,56,.07)}
+.way-side.court span{color:rgba(184,92,56,.8)}
+.way-side.wayv{color:rgba(255,255,255,.8);background:rgba(126,158,142,.09);display:none}
+.way-side.wayv span{color:#7E9E8E}
+.way-row.flipped .court{display:none}
+.way-row.flipped .wayv{display:block}
+body.light .way-side.court{color:rgba(60,45,25,.65)}
+body.light .way-side.wayv{color:rgba(40,32,16,.85)}
+.way-row:focus-visible{outline:2px solid rgba(196,162,101,.7);outline-offset:2px}
+.kata-track{display:flex;gap:12px;margin:12px 0}
+.kata-stat{flex:1;text-align:center;padding:14px 8px;border-radius:13px;background:rgba(255,255,255,.03)}
+.kata-stat .ks-num{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:#E8DCC8;line-height:1.1}
+.kata-stat .ks-label{font-family:monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:5px;line-height:1.5}
+body.light .kata-stat{background:rgba(90,70,40,.05)}
+body.light .kata-stat .ks-num{color:#33291A}
+body.light .kata-stat .ks-label{color:rgba(60,45,25,.5)}
+.kata-done{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:rgba(196,162,101,.85);margin:12px 0 4px;text-align:center}
+.zz-timer{font-family:monospace;font-size:22px;letter-spacing:.1em;color:rgba(255,255,255,.5);text-align:center;margin:10px 0 4px}
+body.light .zz-timer{color:rgba(60,45,25,.6)}
