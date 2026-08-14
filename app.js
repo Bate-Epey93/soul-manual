@@ -1452,6 +1452,28 @@ var CURATED = {
     }
     todayCtx.forgeIdx = (typeof FORGE !== 'undefined' && FORGE.protocols) ? doyF % FORGE.protocols.length : 0;
 
+    if (typeof WAY !== 'undefined') {
+      var kph = kataPhase(), kdone = kataMarkedToday(), zdone = !!zengziToday();
+      var wayLine, wayBtn, wayBtnId;
+      if (slot === 'evening' && kdone && !zdone) {
+        wayLine = 'The form is kept. The examination is still open \u2014 three questions, three minutes, then it seals.';
+        wayBtn = 'Close the examination'; wayBtnId = 'tdWayZengzi';
+      } else if (!kdone) {
+        wayLine = kph.day ? kph.label + ' \u00b7 ' + kataReps() + ' repetition' + (kataReps() === 1 ? '' : 's') + ' in the drawer. Today\u2019s form is not yet kept.' : 'The drawer is empty. The Way begins with the first form \u2014 three minutes, standing.';
+        wayBtn = 'Begin the form \u00b7 3 min'; wayBtnId = 'tdWayKata';
+      } else {
+        wayLine = 'The form is kept \u2014 ' + kataReps() + ' repetition' + (kataReps() === 1 ? '' : 's') + ', ' + kph.label + '.' + (zdone ? ' The examination is closed.' : '');
+        wayBtn = null;
+      }
+      sec.way =
+        '<div class="today-sec">The Way</div>' +
+        '<div class="today-card glass" id="tdWay" style="border-left:3px solid #7E9E8E" data-amb="stillwater" data-amb-color="#7E9E8E">' +
+          '<div class="tc-kicker" style="color:#7E9E8E">' + motifSVG('road', 'td-way') + ' The Unfettered Practice</div>' +
+          '<div class="tc-sub" style="font-style:normal">' + wayLine + '</div>' +
+          (wayBtn ? '<div class="today-actions"><button class="tbtn" id="' + wayBtnId + '">' + wayBtn + '</button></div>' : '') +
+        '</div>';
+    }
+
     sec.practice =
       '<div class="today-sec">Practice</div>' +
       '<div class="today-tiles">' +
@@ -1464,9 +1486,9 @@ var CURATED = {
       : 'Your ledger is empty. One breath begins it. &rarr;';
     sec.ledger = '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
 
-    var order = slot === 'morning' ? ['head', 'wave', 'entry', 'med', 'essence', 'chapter', 'forge', 'edge', 'marie', 'quarter', 'practice', 'ledger']
-      : slot === 'evening' ? ['head', 'wave', 'marie', 'mirror', 'essence', 'med', 'chapter', 'forge', 'edge', 'entry', 'quarter', 'practice', 'ledger']
-      : ['head', 'med', 'wave', 'entry', 'essence', 'chapter', 'forge', 'edge', 'marie', 'quarter', 'mirror', 'practice', 'ledger'];
+    var order = slot === 'morning' ? ['head', 'wave', 'way', 'entry', 'med', 'essence', 'chapter', 'forge', 'edge', 'marie', 'quarter', 'practice', 'ledger']
+      : slot === 'evening' ? ['head', 'wave', 'way', 'marie', 'mirror', 'essence', 'med', 'chapter', 'forge', 'edge', 'entry', 'quarter', 'practice', 'ledger']
+      : ['head', 'med', 'wave', 'way', 'entry', 'essence', 'chapter', 'forge', 'edge', 'marie', 'quarter', 'mirror', 'practice', 'ledger'];
     return { sec: sec, order: order };
   }
 
@@ -1521,6 +1543,9 @@ var CURATED = {
       else { navTo('waters'); setTimeout(function () { var el = document.querySelector('[data-wat="' + ws.id + '"]'); if (el) { el.classList.add('open'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 350); }
     });
     on('tdMirrorMore', function () { navTo('mirror'); });
+    on('tdWay', function () { navTo('way'); });
+    on('tdWayKata', function (e) { e.stopPropagation(); openKata(); });
+    on('tdWayZengzi', function (e) { e.stopPropagation(); navTo('way'); setTimeout(function () { var c = document.querySelector('[data-wat="way-zengzi"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); });
     on('tdForge', function () { navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', todayCtx.forgeIdx); }, 450); });
     on('tdForgeRead', function (e) { e.stopPropagation(); navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', todayCtx.forgeIdx); }, 450); });
     on('tdEdge', function () { navTo('edge'); setTimeout(function () { scrollToEdge(todayCtx.edgeKey); }, 450); });
