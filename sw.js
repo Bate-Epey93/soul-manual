@@ -1,4 +1,4 @@
-const VERSION = 'soul-manual-v39';
+const VERSION = 'soul-manual-v40';
 const PRECACHE = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const PRECACHE = [
   './lexicon.js',
   './way.js',
   './love.js',
+  './seventeen.js',
   './manifest.webmanifest',
   './fonts/fonts.css',
   './icons/icon-192.png',

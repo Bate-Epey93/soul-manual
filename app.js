@@ -638,7 +638,7 @@ var CURATED = {
     'page-arch': 'torii', 'page-mirror': 'eye', 'page-crisis': 'warning',
     'page-trees': 'fork', 'page-eft': 'target', 'page-guide': 'road',
     'page-meditations': 'lotus', 'page-ledger': 'chart',
-    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart', 'page-way': 'road', 'page-love': 'bond', 'page-naming': 'letter'
+    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart', 'page-way': 'road', 'page-love': 'bond', 'page-naming': 'letter', 'page-seventeen': 'magnify'
   };
   function pageEnsoHTML(pageId) {
     return '<div class="page-enso">' +
@@ -1254,11 +1254,11 @@ var CURATED = {
   var GROUPS = [
     { id: 'today', label: 'Today', motif: 'sun', pages: ['today'] },
     { id: 'learn', label: 'Learn', motif: null, enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'essence', 'love', 'arch', 'mirror', 'dramas', 'guide'] },
-    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'way', 'naming', 'marie', 'eft', 'forge', 'edge', 'ledger'] },
+    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'way', 'seventeen', 'naming', 'marie', 'eft', 'forge', 'edge', 'ledger'] },
     { id: 'mapg', label: 'Map', motif: 'road', pages: ['map', 'trees'] },
     { id: 'crisisg', label: 'Crisis', motif: 'warning', pages: ['crisis'] }
   ];
-  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', love: 'Love & Marriage', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', way: 'The Way', naming: 'The Naming', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
+  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', love: 'Love & Marriage', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', way: 'The Way', seventeen: 'The Seventeen', naming: 'The Naming', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
   var VALID = Object.keys(PAGE_LABELS);
   var groupChoice = {}; // last-visited page per group
   var navEl = null, subnavEl = null;
@@ -1324,6 +1324,7 @@ var CURATED = {
     if (page === 'marie') renderMarie();
     if (page === 'way') renderWay();
     if (page === 'love') renderLove();
+    if (page === 'seventeen') renderSeventeen();
     if (page === 'naming') renderNaming();
     if (page === 'guide') decorateEntry();
     if (page === 'eft') refreshEftStats();
@@ -1340,7 +1341,7 @@ var CURATED = {
 
   function createPages() {
     var anchor = document.getElementById('page-concepts');
-    ['today', 'ledger', 'essence', 'waters', 'marie', 'naming', 'way', 'love'].forEach(function (id) {
+    ['today', 'ledger', 'essence', 'waters', 'marie', 'naming', 'way', 'love', 'seventeen'].forEach(function (id) {
       var d = document.createElement('div');
       d.className = 'page'; d.id = 'page-' + id;
       anchor.parentNode.insertBefore(d, anchor);
@@ -1501,6 +1502,19 @@ var CURATED = {
       todayCtx.loveIdx = lvi;
     }
 
+    if (typeof SEVENTEEN !== 'undefined') {
+      var svw = svWeek(), svq = svThisQuestion(), svl = svLive(), svSun = new Date().getDay() === 0;
+      var svDone = svStore().sessions.some(function (x) { return x.week === svWeekKey() && !x.stopped; });
+      sec.seventeen =
+        '<div class="today-sec">The Seventeen</div>' +
+        '<div class="today-card glass" id="tdSv" style="border-left:3px solid #C4A265" data-amb="dust" data-amb-color="#C4A265">' +
+          '<div class="tc-kicker" style="color:#C4A265">' + motifSVG('magnify', 'td-sv') + ' ' + (svw < 1 ? 'Begins Sunday' : 'Week ' + svw + ' \u00b7 Q' + svq.id) + '</div>' +
+          '<div class="tc-sub" style="font-style:normal">' + svq.text + '</div>' +
+          (svl.length ? '<div class="sv-td-live">' + svl.map(function (id) { var p = svPr(id); return '<button class="tbtn ghost" data-svlog="' + id + '">' + (p.last && p.last > dayMidnight(Date.now()) ? '\u2713 ' : '') + SEVENTEEN.practices[id].name + '</button>'; }).join('') + '</div>' : '') +
+          (svSun && svw >= 1 && !svDone ? '<div class="today-actions"><button class="tbtn" id="tdSvSession">Open the session</button></div>' : '') +
+        '</div>';
+    }
+
     sec.practice =
       '<div class="today-sec">Practice</div>' +
       '<div class="today-tiles">' +
@@ -1513,9 +1527,9 @@ var CURATED = {
       : 'Your ledger is empty. One breath begins it. &rarr;';
     sec.ledger = '<div class="today-ledger-line" id="tdLedger">' + ledgerLine + '</div>';
 
-    var order = slot === 'morning' ? ['head', 'wave', 'way', 'entry', 'med', 'essence', 'chapter', 'forge', 'edge', 'marie', 'love', 'quarter', 'practice', 'ledger']
-      : slot === 'evening' ? ['head', 'wave', 'way', 'marie', 'love', 'mirror', 'essence', 'med', 'chapter', 'forge', 'edge', 'entry', 'quarter', 'practice', 'ledger']
-      : ['head', 'med', 'wave', 'way', 'entry', 'essence', 'chapter', 'forge', 'edge', 'marie', 'love', 'quarter', 'mirror', 'practice', 'ledger'];
+    var order = slot === 'morning' ? ['head', 'wave', 'way', 'seventeen', 'entry', 'med', 'essence', 'chapter', 'forge', 'edge', 'marie', 'love', 'quarter', 'practice', 'ledger']
+      : slot === 'evening' ? ['head', 'wave', 'way', 'seventeen', 'marie', 'love', 'mirror', 'essence', 'med', 'chapter', 'forge', 'edge', 'entry', 'quarter', 'practice', 'ledger']
+      : ['head', 'med', 'wave', 'way', 'seventeen', 'entry', 'essence', 'chapter', 'forge', 'edge', 'marie', 'love', 'quarter', 'mirror', 'practice', 'ledger'];
     return { sec: sec, order: order };
   }
 
@@ -1571,6 +1585,9 @@ var CURATED = {
     });
     on('tdMirrorMore', function () { navTo('mirror'); });
     on('tdWay', function () { navTo('way'); });
+    on('tdSv', function () { navTo('seventeen'); });
+    on('tdSvSession', function (e) { e.stopPropagation(); svTab = 'session'; navTo('seventeen'); });
+    page.querySelectorAll('[data-svlog]').forEach(function (b) { b.onclick = function (e) { e.stopPropagation(); var p = svPr(b.dataset.svlog); p.last = Date.now(); p.log = (p.log || []).concat([Date.now()]).slice(-120); svSetPr(b.dataset.svlog, p); buzz(12); refreshToday(['seventeen']); }; });
     on('tdLove', function () { openReader('love', todayCtx.loveIdx || 0); });
     on('tdLoveRead', function (e) { e.stopPropagation(); openReader('love', todayCtx.loveIdx || 0); });
     on('tdWayKata', function (e) { e.stopPropagation(); openKata(); });
@@ -3760,7 +3777,8 @@ var CURATED = {
     ledger:      { s: 'stillwater',c: '#C4A265' },  // quiet water, nothing to prove
     marie:       { s: 'petals',    c: '#E88BA0' },  // petals carried over water
     way:         { s: 'stillwater',c: '#7E9E8E' },  // still water — ice returning to liquid
-    love:        { s: 'embers',    c: '#D9826C' }   // the hearth kept
+    love:        { s: 'embers',    c: '#D9826C' },  // the hearth kept
+    seventeen:   { s: 'sunbeam',   c: '#C4A265' }   // dust in the light over the notebook
   };
 
   var wxCanvas = null, wxInst = null, wxFade = 0;
@@ -4545,6 +4563,276 @@ var CURATED = {
       if (i === 0) { ac(); chimeStart(); }
     }
     go(0);
+  }
+
+  /* ================================================================
+     THE SEVENTEEN — inquiry instrument. Collects writing; never answers.
+     Constraints: two live practices max, 14-day drop rule, no streaks,
+     ledger ratio as a fraction, routing always visible.
+     ================================================================ */
+  var SVK = 'soulzen-seventeen';
+  function svStore() { var s = store(SVK); s.sessions = s.sessions || []; s.pr = s.pr || {}; s.weeks = s.weeks || []; return s; }
+  function svSave(s) { saveStore(SVK, s); }
+  function svSunday(ts) { var d = new Date(ts); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + ((7 - d.getDay()) % 7)); return d.getTime(); }
+  function svBegin() { var s = svStore(); if (!s.began) { s.began = svSunday(Date.now()); svSave(s); } return s.began; }
+  function svWeek() { var b = svBegin(); return Math.max(0, Math.floor((dayMidnight(Date.now()) - b) / (7 * 864e5)) + 1); }
+  function svCluster(week) { var w = Math.min(Math.max(week, 1), 12); return SEVENTEEN.clusters.filter(function (c) { return !c.parallel; }).find(function (c) { return w >= c.weeks[0] && w <= c.weeks[1]; }); }
+  function svQ(id) { return SEVENTEEN.questions.find(function (q) { return q.id === id; }); }
+  function svThisQuestion() {
+    var w = svWeek(); if (w < 1) return svQ(1);
+    var c = svCluster(w); var idx = (w - c.weeks[0]) % c.qs.length;
+    return svQ(c.qs[idx]);
+  }
+  function svWeekKey(ts) { var d = new Date(ts || Date.now()); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - d.getDay()); return d.toISOString().slice(0, 10); }
+  /* practices: status lives in s.pr[id] = {status, last, log[]} */
+  function svPr(id) { var s = svStore(); return s.pr[id] || { status: 'available', last: 0, log: [] }; }
+  function svSetPr(id, p) { var s = svStore(); s.pr[id] = p; svSave(s); }
+  function svLive() { var s = svStore(); return Object.keys(s.pr).filter(function (k) { return s.pr[k].status === 'live'; }); }
+  function svDropRule() {
+    var s = svStore(), cut = Date.now() - 14 * 864e5, dropped = [];
+    Object.keys(s.pr).forEach(function (k) { var p = s.pr[k]; if (p.status === 'live' && (p.last || p.since || 0) < cut) { p.status = 'dropped'; p.droppedAt = Date.now(); dropped.push(k); } });
+    if (dropped.length) svSave(s);
+    return dropped;
+  }
+  function svGrade(g) { return '<span class="sv-grade sv-g-' + g.charAt(0) + '">' + g + '</span>'; }
+
+  var svTab = 'plan';
+  function renderSeventeen(tab) {
+    var page = document.getElementById('page-seventeen');
+    if (!page || typeof SEVENTEEN === 'undefined') return;
+    if (tab) svTab = tab;
+    svBegin();
+    var h = pageEnsoHTML('page-seventeen') +
+      '<div style="margin-bottom:14px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">' + SEVENTEEN.title + '</h2>' +
+      '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">' + SEVENTEEN.sub + '</p></div>';
+    h += '<div class="sv-tabs">' + [['plan', 'Plan'], ['session', 'Session'], ['practices', 'Practices'], ['ledger', 'Ledger'], ['questions', 'Questions'], ['routing', 'Routing']].map(function (t) {
+      return '<button class="sv-tab' + (svTab === t[0] ? ' on' : '') + (t[0] === 'routing' ? ' sv-route' : '') + '" data-svtab="' + t[0] + '">' + t[1] + '</button>';
+    }).join('') + '</div>';
+    h += '<div id="svBody">' + ({ plan: svPlanHTML, session: svSessionHTML, practices: svPracticesHTML, ledger: svLedgerHTML, questions: svQuestionsHTML, routing: svRoutingHTML })[svTab]() + '</div>';
+    page.innerHTML = h;
+    page.querySelectorAll('[data-svtab]').forEach(function (b) { b.onclick = function () { renderSeventeen(b.dataset.svtab); window.scrollTo(0, 0); }; });
+    ({ plan: svBindPlan, session: svBindSession, practices: svBindPractices, ledger: svBindLedger, questions: svBindQuestions, routing: function () {} })[svTab](page);
+    glassify(page); tintCards(page); ambientDecorate(page);
+    if (PREFS.theme === 'light') applyInlineTheme(true, page);
+  }
+
+  /* ---- Plan ---- */
+  function svPlanHTML() {
+    var w = svWeek(), q = svThisQuestion(), c = svCluster(Math.max(w, 1));
+    var h = '<div class="today-card glass" style="border-left:3px solid #C4A265"><div class="tc-kicker" style="color:#C4A265">' + (w < 1 ? 'Begins Sunday' : 'Week ' + w + ' of 12 · Cluster ' + c.id + ' — ' + c.name) + '</div>' +
+      '<div class="tc-title" style="font-size:18px">Q' + q.id + '. ' + q.text + '</div>' +
+      '<div class="tc-sub">' + (w < 1 ? 'The first session opens this Sunday. Read the question until then; write nothing yet.' : 'This Sunday’s question. Forty-five to sixty minutes, the method in order, one if-then at the end.') + '</div>' +
+      '<div class="today-actions"><button class="tbtn" id="svOpenSession">Open the session</button><button class="tbtn ghost" data-svq="' + q.id + '">Read the question</button></div></div>';
+    h += '<div class="today-sec">The clusters</div><div class="sv-clusters glass">';
+    SEVENTEEN.clusters.forEach(function (cl) {
+      var live = !cl.parallel && c && cl.id === c.id && w >= 1;
+      h += '<div class="sv-cluster' + (live ? ' live' : '') + '"><div class="sv-cl-head"><span class="sv-cl-id">' + cl.id + '</span><span class="sv-cl-name">' + cl.name + '</span><span class="sv-cl-weeks">' + (cl.parallel ? 'parallel · weeks 1–12' : 'weeks ' + cl.weeks[0] + '–' + cl.weeks[1]) + '</span></div>' +
+        '<div class="sv-cl-mech">' + cl.mech + '</div><div class="sv-cl-qs">' + cl.qs.map(function (id) { return '<button class="sv-qchip" data-svq="' + id + '">Q' + id + '</button>'; }).join('') + '</div></div>';
+    });
+    h += '</div>';
+    h += '<div class="today-sec">The rules</div><div class="ess-card wat-card glass open" style="border-left:3px solid #7E9E8E"><div class="ess-body"><ol class="wat-steps">' + SEVENTEEN.rules.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ol><div class="wat-note">' + SEVENTEEN.success + '</div></div></div>';
+    h += '<div class="today-sec">The weekly rhythm</div><div class="ess-card wat-card glass open" style="border-left:3px solid #6E7FA3"><div class="ess-body"><ol class="wat-steps"><li><strong>Sunday, 45 to 60 minutes:</strong> the inquiry session. One question from the live cluster. End with one if-then.</li><li><strong>Daily, 10 minutes or less:</strong> the live practices. Two at most. The first is always cyclic sighing.</li><li><strong>Sunday, 5 minutes:</strong> the ledger. Did last week’s action happen? The only scoreboard.</li></ol></div></div>';
+    return h;
+  }
+  function svBindPlan(page) {
+    var b = page.querySelector('#svOpenSession'); if (b) b.onclick = function () { renderSeventeen('session'); window.scrollTo(0, 0); };
+    page.querySelectorAll('[data-svq]').forEach(function (x) { x.onclick = function (e) { e.stopPropagation(); svOpenQuestion(+x.dataset.svq); }; });
+  }
+
+  /* ---- Session: guided stepper ---- */
+  var svS = null, svTimer = null;
+  function svSessionHTML() {
+    var q = svThisQuestion(), s = svStore();
+    var done = s.sessions.find(function (x) { return x.week === svWeekKey(); });
+    if (done && !svS) {
+      return '<div class="today-card glass" style="border-left:3px solid #7BA05B"><div class="tc-kicker" style="color:#7BA05B">This week’s session is closed</div>' +
+        '<div class="tc-title" style="font-size:18px">Q' + done.q + '</div>' +
+        '<div class="kw-line" style="margin-top:8px"><span>if-then</span>' + esc(done.ifThen || '') + '</div>' +
+        '<div class="wat-note">The notebook is closed. No rereading until next Sunday. The ledger will ask whether it was kept.</div></div>';
+    }
+    if (!svS) {
+      return '<div class="today-card glass" style="border-left:3px solid #C4A265"><div class="tc-kicker" style="color:#C4A265">Q' + q.id + ' · this Sunday</div>' +
+        '<div class="tc-title" style="font-size:18px">' + q.text + '</div>' +
+        '<div class="tc-sub">' + q.reframe + '</div>' +
+        '<div class="wat-note">Eight steps, timed gently: 5 · 5 · 20 · 5 · 5 ' + (q.person ? '· 10 ' : '') + '· 2. The free-write locks editing. Nothing here is graded, and nothing here will comment on what you write.</div>' +
+        '<div class="today-actions"><button class="tbtn" id="svStart">Begin</button><button class="tbtn ghost" data-svq="' + q.id + '">Read the question first</button></div></div>';
+    }
+    var st = svS.steps[svS.i], m = st.m;
+    var h = '<div class="today-card glass sv-step" style="border-left:3px solid #C4A265">' +
+      '<div class="sv-step-head"><span class="tc-kicker" style="color:#C4A265">Step ' + (svS.i + 1) + ' of ' + svS.steps.length + ' · ' + m.name + ' ' + svGrade(m.grade) + '</span><span class="sv-clock" id="svClock">' + m.min + ':00</span></div>' +
+      '<div class="tc-sub" style="font-style:normal">' + m.text + '</div>';
+    if (m.id === 'terms') h += '<div class="sv-prompt">' + q.prompts[0] + '</div>';
+    if (m.id === 'freewrite') h += '<div class="sv-prompt">Write through, in order:</div><ol class="wat-steps sv-prompts">' + q.prompts.slice(1, -1).map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ol>';
+    if (m.showPrev) h += '<div class="sv-prev"><div class="kw-label">written by a man named Bate</div><div class="sv-prev-text">' + esc(svS.w.freewrite || '').replace(/\n/g, '<br>') + '</div></div>';
+    if (m.id === 'action') h += '<div class="sv-prompt">' + q.prompts[q.prompts.length - 1] + '</div>';
+    if (m.write) h += '<textarea class="mirror-input sv-inp" id="svInp" rows="' + (m.id === 'freewrite' ? 14 : m.ifthen ? 2 : 5) + '" placeholder="' + (m.ifthen ? 'If … then I …' : '') + '"' + (m.lock ? ' data-lock="1"' : '') + '>' + esc(svS.w[m.id] || '') + '</textarea>';
+    else h += '<div class="sv-breath"><div class="sv-orb" id="svOrb"></div><div class="wat-note" style="text-align:center">nose in · short top-up · long mouth exhale</div></div>';
+    h += '<div class="today-actions">' + (svS.i > 0 ? '<button class="tbtn ghost" id="svBack">Back</button>' : '') + '<button class="tbtn" id="svNext">' + (svS.i === svS.steps.length - 1 ? 'Close the notebook' : 'Next') + '</button>' +
+      '<button class="tbtn ghost sv-route-btn" id="svRouteFlag">Too heavy — stop</button></div></div>';
+    return h;
+  }
+  function svBindSession(page) {
+    var q = svThisQuestion();
+    page.querySelectorAll('[data-svq]').forEach(function (x) { x.onclick = function () { svOpenQuestion(+x.dataset.svq); }; });
+    var st = page.querySelector('#svStart');
+    if (st) st.onclick = function () {
+      var steps = SEVENTEEN.method.filter(function (m) { return !m.optional || q.person; }).map(function (m) { return { m: m }; });
+      svS = { q: q.id, i: 0, steps: steps, w: {}, started: Date.now() };
+      renderSeventeen('session');
+    };
+    if (!svS) return;
+    var m = svS.steps[svS.i].m, inp = page.querySelector('#svInp');
+    clearInterval(svTimer);
+    var left = m.min * 60, clk = page.querySelector('#svClock');
+    svTimer = setInterval(function () { left--; if (left < 0) { clearInterval(svTimer); clk.textContent = 'time'; clk.classList.add('over'); buzz(20); return; } clk.textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0'); }, 1000);
+    var orb = page.querySelector('#svOrb');
+    if (orb) { var ph = 0; var cyc = setInterval(function () { if (!document.body.contains(orb)) return clearInterval(cyc); ph = (ph + 1) % 3; orb.style.transform = ph === 0 ? 'scale(1.25)' : ph === 1 ? 'scale(1.4)' : 'scale(1)'; orb.style.transition = 'transform ' + (ph === 2 ? 6 : 2) + 's ease'; }, ph === 2 ? 6000 : 2200); }
+    if (inp) {
+      inp.focus();
+      if (inp.dataset.lock) {
+        var lastLen = inp.value.length;
+        inp.addEventListener('keydown', function (e) {
+          var v = inp.value, pos = inp.selectionStart;
+          if (pos !== v.length || inp.selectionEnd !== v.length) { inp.setSelectionRange(v.length, v.length); }
+          if (e.key === 'Backspace') { var tail = v.slice(v.lastIndexOf(' ') + 1); if (!tail.length || /\n$/.test(v)) e.preventDefault(); }
+          if (['ArrowLeft', 'ArrowUp', 'Home', 'Delete'].indexOf(e.key) !== -1 || (e.metaKey || e.ctrlKey) && /[zxva]/i.test(e.key)) e.preventDefault();
+        });
+        inp.addEventListener('paste', function (e) { e.preventDefault(); });
+        inp.addEventListener('mouseup', function () { inp.setSelectionRange(inp.value.length, inp.value.length); });
+      }
+      inp.oninput = function () { svS.w[m.id] = inp.value; };
+    }
+    var nx = page.querySelector('#svNext'), bk = page.querySelector('#svBack');
+    if (bk) bk.onclick = function () { svS.i--; renderSeventeen('session'); };
+    nx.onclick = function () {
+      if (m.ifthen) {
+        var t = (svS.w.action || '').trim();
+        if (!/^if\b/i.test(t) || !/\bthen\b/i.test(t)) { nx.textContent = 'Needs an if and a then'; return; }
+        var s = svStore();
+        s.sessions.push({ week: svWeekKey(), q: svS.q, t: Date.now(), steps: svS.w, ifThen: t, routing: false });
+        s.weeks.push({ week: svWeekKey(), ifThen: t, kept: null, requests: 0, departure: null });
+        s.sessions = s.sessions.slice(-60);
+        svSave(s); svS = null; clearInterval(svTimer); buzz([20, 40, 20]);
+        renderSeventeen('session'); window.scrollTo(0, 0); return;
+      }
+      svS.i++; renderSeventeen('session'); window.scrollTo(0, 0);
+    };
+    page.querySelector('#svRouteFlag').onclick = function () {
+      var s = svStore(); s.sessions.push({ week: svWeekKey(), q: svS.q, t: Date.now(), steps: svS.w, ifThen: '', routing: true, stopped: true });
+      svSave(s); svS = null; clearInterval(svTimer);
+      renderSeventeen('routing'); window.scrollTo(0, 0);
+    };
+  }
+
+  /* ---- Practices ---- */
+  function svPracticesHTML() {
+    svDropRule();
+    var s = svStore(), P = SEVENTEEN.practices, live = svLive();
+    function card(id, p, st) {
+      var qs = SEVENTEEN.questions.filter(function (q) { return q.practices.indexOf(id) !== -1; }).map(function (q) { return 'Q' + q.id; }).join(' · ');
+      var h = '<div class="sv-pr' + (st.status === 'live' ? ' live' : st.status === 'dropped' ? ' dropped' : '') + '" data-pr="' + id + '">' +
+        '<div class="sv-pr-head"><span class="sv-pr-name">' + p.name + '</span>' + svGrade(p.grade) + '</div>' +
+        '<div class="sv-pr-meta">' + p.freq + (p.min ? ' · ' + p.min + ' min' : '') + ' · ' + qs + (p.mapsTo ? ' · maps to ' + p.mapsTo : '') + '</div>' +
+        '<div class="sv-pr-rec">' + p.record + '</div>';
+      if (st.status === 'live') h += '<div class="sv-pr-foot"><span class="sv-pr-last">' + (st.last ? 'logged ' + dayLabel(st.last) : 'not yet logged') + '</span><button class="tbtn" data-log="' + id + '">Log</button><button class="tbtn ghost" data-drop="' + id + '">Drop</button></div>';
+      else if (st.status === 'dropped') h += '<div class="sv-pr-foot"><span class="sv-pr-last">dropped ' + dayLabel(st.droppedAt || 0) + ' — fourteen days silent, or by hand</span><button class="tbtn ghost" data-adopt="' + id + '">Adopt again</button></div>';
+      else h += '<div class="sv-pr-foot"><button class="tbtn ghost" data-adopt="' + id + '">Make live</button></div>';
+      return h + '</div>';
+    }
+    var h = '<div class="today-card glass" style="border-left:3px solid #7BA05B"><div class="tc-kicker" style="color:#7BA05B">Live · ' + live.length + ' of 2</div>' +
+      (live.length ? live.map(function (id) { return card(id, P[id], svPr(id)); }).join('') : '<div class="tc-sub">Nothing live. Start with cyclic sighing — the floor — and one from this week’s question.</div>') + '</div>';
+    var avail = Object.keys(P).filter(function (id) { return svPr(id).status === 'available'; });
+    var dropped = Object.keys(P).filter(function (id) { return svPr(id).status === 'dropped'; });
+    h += '<div class="today-sec">Available</div><div class="sv-prlist glass">' + avail.map(function (id) { return card(id, P[id], svPr(id)); }).join('') + '</div>';
+    if (dropped.length) h += '<div class="today-sec">Dropped</div><div class="sv-prlist glass">' + dropped.map(function (id) { return card(id, P[id], svPr(id)); }).join('') + '</div>';
+    h += '<div id="svPick" style="display:none"></div>';
+    return h;
+  }
+  function svBindPractices(page) {
+    page.querySelectorAll('[data-log]').forEach(function (b) { b.onclick = function () { var p = svPr(b.dataset.log); p.last = Date.now(); p.log = (p.log || []).concat([Date.now()]).slice(-120); svSetPr(b.dataset.log, p); buzz(12); renderSeventeen('practices'); }; });
+    page.querySelectorAll('[data-drop]').forEach(function (b) { b.onclick = function () { var p = svPr(b.dataset.drop); p.status = 'dropped'; p.droppedAt = Date.now(); svSetPr(b.dataset.drop, p); renderSeventeen('practices'); }; });
+    page.querySelectorAll('[data-adopt]').forEach(function (b) {
+      b.onclick = function () {
+        var id = b.dataset.adopt, live = svLive();
+        if (live.length >= 2) {
+          var pick = page.querySelector('#svPick');
+          pick.style.display = 'block';
+          pick.innerHTML = '<div class="today-card glass" style="border-left:3px solid #B85C38"><div class="tc-kicker" style="color:#B85C38">Two live, never three</div><div class="tc-sub">To make <strong>' + SEVENTEEN.practices[id].name + '</strong> live, one of these drops:</div><div class="today-actions">' +
+            live.map(function (l) { return '<button class="tbtn ghost" data-swap="' + l + '">' + SEVENTEEN.practices[l].name + '</button>'; }).join('') + '</div></div>';
+          pick.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          pick.querySelectorAll('[data-swap]').forEach(function (x) { x.onclick = function () { var d = svPr(x.dataset.swap); d.status = 'dropped'; d.droppedAt = Date.now(); svSetPr(x.dataset.swap, d); svAdopt(id); }; });
+          return;
+        }
+        svAdopt(id);
+      };
+    });
+  }
+  function svAdopt(id) { var p = svPr(id); p.status = 'live'; p.since = Date.now(); p.last = p.last || 0; svSetPr(id, p); buzz(12); renderSeventeen('practices'); }
+
+  /* ---- Ledger ---- */
+  function svLedgerHTML() {
+    var s = svStore(), weeks = s.weeks.slice().reverse(), thisWk = svWeekKey();
+    var pending = s.weeks.filter(function (w) { return w.kept === null && w.week !== thisWk; });
+    var kept = s.weeks.filter(function (w) { return w.kept === true; }).length, judged = s.weeks.filter(function (w) { return w.kept !== null; }).length;
+    var h = '<div class="today-card glass" style="border-left:3px solid #C4A265"><div class="tc-kicker" style="color:#C4A265">Kept</div><div class="sv-ratio">' + kept + ' / ' + judged + '</div><div class="tc-sub">Actions kept, over actions judged. A fraction, not a percentage, not a colour. The only scoreboard.</div></div>';
+    pending.forEach(function (w) {
+      h += '<div class="today-card glass" style="border-left:3px solid #7BA05B"><div class="tc-kicker" style="color:#7BA05B">Week of ' + w.week + ' · was it kept?</div><div class="kw-line"><span>if-then</span>' + esc(w.ifThen) + '</div>' +
+        '<div class="today-actions"><button class="tbtn" data-kept="1" data-wk="' + w.week + '">Kept</button><button class="tbtn ghost" data-kept="0" data-wk="' + w.week + '">Not kept</button></div></div>';
+    });
+    h += '<div class="today-sec">This week</div><div class="ess-card wat-card glass open" style="border-left:3px solid #6E7FA3"><div class="ess-body">' +
+      '<div class="kw-label">Requests made out loud this week</div><div class="today-actions"><span class="sv-count" id="svReqN">' + svWeekRow().requests + '</span><button class="tbtn ghost" id="svReqPlus">+ one</button></div>' +
+      '<div class="kw-label" style="margin-top:12px">Longest departure today, in minutes (optional)</div><div class="today-actions"><input class="mirror-input" id="svDep" type="number" min="0" style="width:90px" value="' + (svWeekRow().departure == null ? '' : svWeekRow().departure) + '"><button class="tbtn ghost" id="svDepSave">Note</button></div></div></div>';
+    h += '<div class="today-sec">The weeks</div><div class="sv-weeks glass">' + (weeks.length ? weeks.map(function (w) {
+      return '<div class="sv-wk"><div class="sv-wk-d">' + w.week + '</div><div class="sv-wk-a">' + esc(w.ifThen || '—') + '</div><div class="sv-wk-k">' + (w.kept === null ? '·' : w.kept ? 'kept' : 'not kept') + '</div><div class="sv-wk-r">' + (w.requests || 0) + ' req' + (w.departure != null ? ' · ' + w.departure + ' min' : '') + '</div></div>';
+    }).join('') : '<div class="mj-empty">No weeks yet. The first row is written on Sunday.</div>') + '</div>';
+    return h;
+  }
+  function svWeekRow() { var s = svStore(), k = svWeekKey(); var r = s.weeks.find(function (w) { return w.week === k; }); if (!r) { r = { week: k, ifThen: '', kept: null, requests: 0, departure: null }; s.weeks.push(r); svSave(s); } return r; }
+  function svBindLedger(page) {
+    page.querySelectorAll('[data-kept]').forEach(function (b) { b.onclick = function () { var s = svStore(); var w = s.weeks.find(function (x) { return x.week === b.dataset.wk; }); if (w) { w.kept = b.dataset.kept === '1'; svSave(s); buzz(12); renderSeventeen('ledger'); } }; });
+    page.querySelector('#svReqPlus').onclick = function () { var s = svStore(), k = svWeekKey(); var r = s.weeks.find(function (w) { return w.week === k; }); r.requests = (r.requests || 0) + 1; svSave(s); page.querySelector('#svReqN').textContent = r.requests; buzz(10); };
+    page.querySelector('#svDepSave').onclick = function () { var v = page.querySelector('#svDep').value; var s = svStore(), k = svWeekKey(); var r = s.weeks.find(function (w) { return w.week === k; }); r.departure = v === '' ? null : Math.max(0, +v); svSave(s); buzz(10); };
+  }
+
+  /* ---- Questions (read-only) ---- */
+  function svQuestionHTML(q, full) {
+    var c = SEVENTEEN.clusters.find(function (x) { return x.id === q.cluster; });
+    var h = '<div class="ess-kicker" style="color:#C4A265">Q' + q.id + ' · Cluster ' + c.id + ' — ' + c.name + '</div>';
+    h += '<div class="sv-q-text">' + q.text + '</div><div class="ess-text"><p><strong>What it is really asking.</strong> ' + q.reframe + '</p>';
+    h += '<p><strong>Lenses.</strong></p><ul class="sv-ul">' + q.lenses.map(function (l) { return '<li><em>' + l[0] + ':</em> ' + l[1] + '</li>'; }).join('') + '</ul>';
+    h += '<p><strong>Evidence anchors.</strong></p><ul class="sv-ul">' + q.evidence.map(function (e) { return '<li>' + e[0] + ' ' + svGrade(e[1]) + '</li>'; }).join('') + '</ul>';
+    h += '<p><strong>Thinking path.</strong> Write through, in order.</p><ol class="wat-steps">' + q.prompts.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ol>';
+    h += '<p><strong>Practices.</strong></p><ul class="sv-ul">' + q.practices.map(function (id) { var p = SEVENTEEN.practices[id]; return '<li><strong>' + p.name + '</strong> ' + svGrade(p.grade) + ' — ' + p.record + '</li>'; }).join('') + '</ul>';
+    h += '<p><strong>Read.</strong> ' + q.read.join(' · ') + '</p>';
+    h += '<div class="wat-note"><strong>The trap.</strong> ' + q.trap + '</div></div>';
+    return h;
+  }
+  function svQuestionsHTML() {
+    var h = '';
+    SEVENTEEN.clusters.forEach(function (c) {
+      h += '<div class="today-sec">Cluster ' + c.id + ' · ' + c.name + '</div>';
+      c.qs.forEach(function (id) {
+        var q = svQ(id);
+        h += '<div class="ess-card wat-card glass" data-wat="sv-q' + id + '" style="border-left:3px solid #C4A265"><div class="ess-title">Q' + id + '. ' + q.text + '</div><div class="ess-body">' + svQuestionHTML(q) + '</div></div>';
+      });
+    });
+    var sy = SEVENTEEN.symbolic;
+    h += '<div class="today-sec">' + sy.title + ' ' + svGrade('S') + '</div><div class="ess-card wat-card glass" data-wat="sv-sym" style="border-left:3px solid #6B5B8A"><div class="ess-title">Mirrors that talk</div><div class="ess-body"><div class="ess-text"><p>' + sy.barnum + '</p><p><strong>Numerology, Pythagorean method.</strong> ' + sy.numerology + '</p><p><strong>Human Design.</strong> ' + sy.hd + '</p></div><div class="wat-note">' + sy.rule + '</div></div></div>';
+    return h;
+  }
+  function svBindQuestions(page) {
+    page.querySelectorAll('.wat-card').forEach(function (card) { card.onclick = function (e) { if (e.target.closest('button')) return; card.classList.toggle('open'); }; });
+  }
+  function svOpenQuestion(id) { renderSeventeen('questions'); var c = document.querySelector('[data-wat="sv-q' + id + '"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+
+  /* ---- Routing (shown, never linked) ---- */
+  function svRoutingHTML() {
+    var r = SEVENTEEN.routing;
+    return '<div class="today-card glass" style="border-left:3px solid #B85C38"><div class="tc-kicker" style="color:#B85C38">' + r.title + '</div><div class="tc-sub" style="font-style:normal">' + r.intro + '</div>' +
+      '<ul class="sv-ul sv-signs">' + r.signs.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul>' +
+      '<div class="tc-sub" style="font-style:normal"><strong>Routing options.</strong> ' + r.options + '</div>' +
+      '<div class="wat-note">' + r.close + '</div>' +
+      '<div class="today-actions"><button class="tbtn" onclick="location.hash=\'/crisis\'">Crisis page</button></div></div>';
   }
 
   /* ================================================================
