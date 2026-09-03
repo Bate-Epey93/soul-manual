@@ -1040,3 +1040,24 @@ body.light .td-slip-t{color:#241B10}
 /* nav icons: give the brush room */
 .znav .zi svg{width:26px!important;height:26px!important}
 .znav .zi{display:block;line-height:0;margin-bottom:5px}
+
+/* ---- v44: softer page silhouette — a wash, not a rule ---- */
+body[data-page="love"] .ess-card[data-lovesec],
+body[data-page="essence"] .ess-card[data-essread],
+body[data-page="way"] .ess-card[data-wayread],
+body[data-page="seventeen"] .ess-card[data-wat^="sv-q"],
+body[data-page="marie"] .ess-card{
+  position:relative;
+  background:radial-gradient(130% 100% at 12% 0%,rgba(var(--page-accent-rgb),.075),rgba(var(--page-accent-rgb),.018) 55%,transparent 80%)!important;
+  border:0!important;border-radius:22px!important;padding:26px 22px 28px!important;margin-bottom:14px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important}
+body[data-page="love"] .ess-card[data-lovesec]::after,
+body[data-page="essence"] .ess-card[data-essread]::after,
+body[data-page="way"] .ess-card[data-wayread]::after,
+body[data-page="seventeen"] .ess-card[data-wat^="sv-q"]::after,
+body[data-page="marie"] .ess-card::after{
+  content:'';position:absolute;left:10%;right:10%;bottom:-8px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(var(--page-accent-rgb),.28) 35%,rgba(var(--page-accent-rgb),.28) 65%,transparent);
+  filter:blur(.4px)}
+body.light[data-page="love"] .ess-card[data-lovesec],body.light[data-page="essence"] .ess-card[data-essread],body.light[data-page="way"] .ess-card[data-wayread],body.light[data-page="seventeen"] .ess-card[data-wat^="sv-q"],body.light[data-page="marie"] .ess-card{
+  background:radial-gradient(130% 100% at 12% 0%,rgba(var(--page-accent-rgb),.11),rgba(255,250,240,.35) 55%,rgba(255,250,240,.2) 80%)!important;box-shadow:none!important}
