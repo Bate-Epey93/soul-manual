@@ -1179,6 +1179,11 @@ var CURATED = {
       if (m.carry) h += '<div class="reader-carry">“' + m.carry + '”</div>';
       h += '<div class="reader-fin"></div>';
       h += '<div class="reader-actions"><button class="tbtn" id="rAct1"><span class="zb-orb" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265)"></span> Begin solar plexus breathing</button></div>';
+    } else if (kind === 'way') {
+      var wy = WAY.sections[i];
+      rEls.rKicker.textContent = ('The Way · ' + wy.kicker).toUpperCase();
+      h += '<h1 class="reader-title">' + motifSVG(wy.motif, 'way-' + wy.id, { color: wy.color, style: 'width:26px;height:26px;margin-right:8px;vertical-align:-3px' }) + wy.title + '</h1>';
+      h += '<div class="reader-text">' + wy.body + '</div><div class="reader-fin"></div>';
     } else if (kind === 'love') {
       var lv = LOVE.sections[i];
       rEls.rKicker.textContent = ('The Second Architecture · ' + lv.kicker).toUpperCase();
@@ -1309,6 +1314,8 @@ var CURATED = {
     var g = groupOf(page);
     groupChoice[g.id] = page;
     showPage(page, null);
+    var pel = document.getElementById('page-' + page);
+    if (pel && !ambReduced) { pel.classList.remove('page-in'); void pel.offsetWidth; pel.classList.add('page-in'); }
     navEl.querySelectorAll('.znav-item').forEach(function (b) { b.classList.toggle('active', b.dataset.group === g.id); });
     subnavEl.innerHTML = '';
     if (g.pages.length > 1) {
@@ -2703,6 +2710,9 @@ var CURATED = {
     page.querySelectorAll('[data-essread]').forEach(function (b) {
       b.onclick = function (e) { e.stopPropagation(); openReader('essence', +b.dataset.essread); };
     });
+    page.querySelectorAll('.ess-card[data-essread]').forEach(function (card) {
+      card.onclick = function (e) { if (e.target.closest('button,a')) return; openReader('essence', +card.dataset.essread); };
+    });
     page.querySelectorAll('[data-essdeep]').forEach(function (b) {
       b.onclick = function (e) {
         e.stopPropagation();
@@ -3841,6 +3851,10 @@ var CURATED = {
     var inst = ensureWeather();
     if (inst.kind === w.s && inst.rgb === w.rgb) return;
     inst.kind = w.s; inst.rgb = ambRGB(w.c); inst.parts = null;
+    var quiet = ['concepts', 'essence', 'love', 'arch', 'dramas', 'guide', 'seventeen', 'naming', 'mirror', 'ledger'].indexOf(page) !== -1;
+    var hr = new Date().getHours(), night = hr >= 22 || hr < 5, dawn = hr >= 5 && hr < 9;
+    var op = (quiet ? 0.3 : 0.62) * (night ? 0.55 : dawn ? 0.85 : 1);
+    document.body.style.setProperty('--wx-op', op.toFixed(2));
     wxCanvas.classList.remove('wx-in'); void wxCanvas.offsetWidth; wxCanvas.classList.add('wx-in');
     ambDraw(inst, 4.2);
   }
@@ -4251,6 +4265,9 @@ var CURATED = {
         else openEntrance();
       };
     });
+    page.querySelectorAll('.ess-card[data-wayread]').forEach(function (card) {
+      card.onclick = function (e) { if (e.target.closest('button,a')) return; openReader('way', +card.dataset.wayread); };
+    });
     renderKataTracker(); renderZengzi();
     glassify(page); tintCards(page); ambientDecorate(page);
     if (PREFS.theme === 'light') applyInlineTheme(true, page);
@@ -4531,6 +4548,9 @@ var CURATED = {
     });
     page.querySelectorAll('[data-loveread]').forEach(function (b) {
       b.onclick = function (e) { e.stopPropagation(); openReader('love', +b.dataset.loveread); };
+    });
+    page.querySelectorAll('.ess-card[data-lovesec]').forEach(function (card) {
+      card.onclick = function (e) { if (e.target.closest('button,a')) return; openReader('love', +card.dataset.lovesec); };
     });
     var rp = page.querySelector('#lvRepair');
     if (rp) rp.onclick = function (e) { e.stopPropagation(); openRepairSentence(); };

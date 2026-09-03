@@ -1012,3 +1012,31 @@ body.light[data-page="love"] .ess-card[data-lovesec],body.light[data-page="essen
 .td-slipbody .today-sec{display:none}
 body.light .td-slip-t{color:#33291A}body.light .td-slips,body.light .td-slipwrap{border-color:rgba(90,70,40,.14)}
 @media (max-width:480px){.td-slip-k{min-width:78px;font-size:12.5px}.td-slip-t{font-size:15.5px}}
+
+/* ---- v43: weather intensity · page turn · Parchment · nav icons ---- */
+body{--wx-op:.62}
+#pageWeather{opacity:var(--wx-op)}
+#pageWeather.wx-in{animation:wxIn2 1.4s ease}
+@keyframes wxIn2{from{opacity:0}to{opacity:var(--wx-op)}}
+body.light #pageWeather{opacity:calc(var(--wx-op) * .7)}
+body.light #pageWeather.wx-in{animation:wxIn3 1.4s ease}
+@keyframes wxIn3{from{opacity:0}to{opacity:calc(var(--wx-op) * .7)}}
+
+.page.page-in{animation:pageIn .28s cubic-bezier(.2,.7,.3,1)}
+@keyframes pageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.page.page-in{animation:none}}
+
+/* Parchment: paper, ink, and an accent that survives on paper */
+body.light{background:#F3EBDD!important;color:#2A2116}
+body.light .container{color:#2A2116}
+body.light .page .tc-kicker,body.light .page .ess-kicker,body.light .page .today-sec,body.light .page .kw-label,body.light .page .ws-label,body.light .page .lv-ref-ch,body.light .page .sv-cl-id,body.light .page .reader-block-label,body.light .td-slip-k{color:color-mix(in srgb,var(--page-accent) 62%,#3A2A10)!important}
+body.light .page .today-card,body.light .page .ess-card,body.light .page .wat-card{border-left-color:color-mix(in srgb,var(--page-accent) 70%,#3A2A10)!important}
+body.light .today-card,body.light .ess-card,body.light .wat-card,body.light .glass{background:rgba(255,250,240,.55)!important;border-color:rgba(90,70,40,.13)}
+body.light .main-title,body.light .ess-title,body.light .tc-title,body.light .reader-title{color:#241B10!important}
+body.light .tc-sub,body.light .ess-text,body.light .reader-text{color:rgba(42,33,22,.82)!important}
+body.light .znav{background:rgba(243,235,221,.9)!important;border-top-color:rgba(90,70,40,.14)!important}
+body.light .td-slip-t{color:#241B10}
+
+/* nav icons: give the brush room */
+.znav .zi svg{width:26px!important;height:26px!important}
+.znav .zi{display:block;line-height:0;margin-bottom:5px}
