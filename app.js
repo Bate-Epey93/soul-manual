@@ -4803,6 +4803,11 @@ var CURATED = {
     h += '<p><strong>Evidence anchors.</strong></p><ul class="sv-ul">' + q.evidence.map(function (e) { return '<li>' + e[0] + ' ' + svGrade(e[1]) + '</li>'; }).join('') + '</ul>';
     h += '<p><strong>Thinking path.</strong> Write through, in order.</p><ol class="wat-steps">' + q.prompts.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ol>';
     h += '<p><strong>Practices.</strong></p><ul class="sv-ul">' + q.practices.map(function (id) { var p = SEVENTEEN.practices[id]; return '<li><strong>' + p.name + '</strong> ' + svGrade(p.grade) + ' — ' + p.record + '</li>'; }).join('') + '</ul>';
+    if (q.notes && q.notes.length) {
+      h += '<p><strong>The sources, explained.</strong> What each one actually says, and why it bears on this question — for when the book will not be read.</p><div class="sv-notes">' + q.notes.map(function (nt) {
+        return '<div class="sv-note"><div class="sv-note-s">' + nt.s + '</div><div class="sv-note-g">' + nt.g + '</div><div class="sv-note-w"><span>for you</span>' + nt.w + '</div></div>';
+      }).join('') + '</div>';
+    }
     h += '<p><strong>Read.</strong> ' + q.read.join(' · ') + '</p>';
     h += '<div class="wat-note"><strong>The trap.</strong> ' + q.trap + '</div></div>';
     return h;
