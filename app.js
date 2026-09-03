@@ -1301,6 +1301,11 @@ var CURATED = {
     setWeather(page);
   }
   function activate(page) {
+    document.body.dataset.page = page;
+    var pw = (typeof PAGE_WEATHER !== 'undefined' && PAGE_WEATHER[page]) ? PAGE_WEATHER[page].c : '#C4A265';
+    var prgb = ambRGB(pw);
+    document.body.style.setProperty('--page-accent', pw);
+    document.body.style.setProperty('--page-accent-rgb', prgb.join(','));
     var g = groupOf(page);
     groupChoice[g.id] = page;
     showPage(page, null);
@@ -1536,9 +1541,39 @@ var CURATED = {
   function renderToday() {
     var page = document.getElementById('page-today');
     var b = buildTodaySections();
-    page.innerHTML = pageEnsoHTML('page-today') + b.order.map(function (k) {
-      return '<div class="tsec" data-tsec="' + k + '">' + (b.sec[k] || '') + '</div>';
-    }).join('');
+    var reads = ['essence', 'chapter', 'forge', 'edge', 'love', 'marie', 'entry', 'med'].filter(function (k) { return b.sec[k]; });
+    var doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 864e5);
+    var readOfDay = reads.length ? reads[doy % reads.length] : null;
+    var NOW = ['head', 'wave', 'way', 'seventeen', readOfDay];
+    var h = pageEnsoHTML('page-today'), slips = '';
+    b.order.forEach(function (k) {
+      if (!b.sec[k]) return;
+      if (NOW.indexOf(k) !== -1) { h += '<div class="tsec" data-tsec="' + k + '">' + b.sec[k] + '</div>'; return; }
+      var html = b.sec[k];
+      var tm = html.match(/class="tc-title[^"]*"[^>]*>([\s\S]*?)<\/div>/), km = html.match(/class="today-sec">([\s\S]*?)<\/div>/);
+      var kick = km ? km[1].replace(/<[^>]+>/g, '').trim() : ({ practice: 'Practice', ledger: 'Ledger' })[k] || k;
+      var title = tm ? tm[1].replace(/<[^>]+>/g, '').trim() : '';
+      if (!title || title === kick) {
+        var plain = html.replace(/<div class="today-sec">[\s\S]*?<\/div>/, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        if (plain.indexOf(kick) === 0) plain = plain.slice(kick.length).trim();
+        title = ({ practice: 'Breath · tapping · the timer', ledger: 'Sessions kept, this month', marie: 'One line for her, today' })[k] || (plain.length > 72 ? plain.slice(0, 70).replace(/\s\S*$/, '') + '\u2026' : plain);
+      }
+      slips += '<div class="td-slipwrap"><button class="td-slip" data-slip="' + k + '"><span class="td-slip-k">' + kick + '</span><span class="td-slip-t">' + (title || kick) + '</span><span class="td-slip-c">›</span></button>' +
+        '<div class="tsec td-slipbody" data-tsec="' + k + '" hidden>' + html + '</div></div>';
+    });
+    if (slips) h += '<div class="today-sec td-also">Also today</div><div class="td-slips">' + slips + '</div>';
+    page.innerHTML = h;
+    page.querySelectorAll('[data-slip]').forEach(function (btn) {
+      btn.onclick = function () {
+        var body = btn.nextElementSibling, open = !body.hidden;
+        body.hidden = open; btn.classList.toggle('open', !open);
+        if (!open) {
+          body.querySelectorAll('canvas.amb').forEach(function (c) { var i = ambList.indexOf(c.__amb); if (i !== -1) ambList.splice(i, 1); c.remove(); });
+          body.querySelectorAll('[data-amb]').forEach(function (el) { el.__amb = null; });
+          ambientSweep(body); ambientDecorate(body);
+        }
+      };
+    });
     bindToday(page);
     tintCards(page); ambientDecorate(page);
   }

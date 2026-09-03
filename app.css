@@ -957,3 +957,58 @@ body.light .sv-ul li{color:rgba(50,38,20,.78)}
 .sv-note-w span{display:block;font-family:monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:#C4A265;margin-bottom:3px}
 body.light .sv-note{background:rgba(90,70,40,.04);border-color:rgba(90,70,40,.12)}
 body.light .sv-note-s{color:#33291A}body.light .sv-note-g{color:rgba(50,38,20,.75)}body.light .sv-note-w{color:rgba(50,38,20,.85);border-top-color:rgba(90,70,40,.12)}
+
+/* ================================================================ */
+/* AESTHETIC PASS v42 — masthead · one accent per page · kickers ·   */
+/* card silhouettes · Today tiers                                    */
+/* ================================================================ */
+body{--page-accent:#C4A265;--page-accent-rgb:196,162,101}
+
+/* 1. masthead: whole on Today, a hairline everywhere else */
+.header .intro{display:none}
+body[data-page]:not([data-page="today"]) .header{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+body[data-page]:not([data-page="today"]) .header .header-ornament,
+body[data-page]:not([data-page="today"]) .header .label,
+body[data-page]:not([data-page="today"]) .header .main-subtitle,
+body[data-page]:not([data-page="today"]) .header .author,
+body[data-page]:not([data-page="today"]) .header .dedication{display:none}
+body[data-page]:not([data-page="today"]) .header .main-title{font-size:15px;letter-spacing:.06em;color:rgba(232,220,200,.42);margin:0;font-style:italic}
+body.light[data-page]:not([data-page="today"]) .header{border-bottom-color:rgba(90,70,40,.14)}
+body.light[data-page]:not([data-page="today"]) .header .main-title{color:rgba(60,45,25,.5)}
+
+/* 3. one accent per page — borders and kickers inherit; motifs keep their own tint */
+.page .today-card,.page .ess-card,.page .wat-card,.page .mk-card{border-left-color:var(--page-accent)!important}
+.page .tc-kicker,.page .ess-kicker,.page .today-sec,.page .kw-label,.page .ws-label,.page .lv-ref-ch,.page .sv-cl-id,.page .reader-block-label{color:var(--page-accent)!important}
+.page .tbtn:not(.ghost){border-color:rgba(var(--page-accent-rgb),.45)}
+
+/* 4. kickers: running heads, not dashboard labels */
+.page .tc-kicker,.page .ess-kicker,.page .today-sec,.page .kw-label,.page .ws-label,.page .lv-ref-ch,.page .sv-pr-meta,.page .sv-cl-weeks,.page .ks-label,.page .mj-date,.page .sv-wk-d,.page .sv-note-w span,.page .wat-head .ess-kicker,.page .sv-wk-k{
+  font-family:'Cormorant Garamond',serif!important;font-style:italic;font-size:14px!important;letter-spacing:.01em!important;text-transform:none!important;line-height:1.35}
+.page .today-sec{font-size:15px!important;margin:30px 0 10px;opacity:.85}
+.page .tc-kicker{margin-bottom:6px}
+.page .sv-pr-meta,.page .sv-cl-weeks,.page .mj-date,.page .sv-wk-d,.page .ks-label{opacity:.6}
+
+/* 5. silhouettes — plate (default glass) · page (prose reads) · slip (Today rotation) */
+body[data-page="love"] .ess-card[data-lovesec],
+body[data-page="essence"] .ess-card[data-essread],
+body[data-page="way"] .ess-card[data-wayread],
+body[data-page="seventeen"] .ess-card[data-wat^="sv-q"],
+body[data-page="marie"] .ess-card{
+  background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;
+  border:0!important;border-bottom:1px solid rgba(255,255,255,.07)!important;border-radius:0!important;padding:24px 2px!important;margin-bottom:0!important}
+body[data-page="love"] .ess-card[data-lovesec] .ess-title,body[data-page="essence"] .ess-card[data-essread] .ess-title,body[data-page="way"] .ess-card[data-wayread] .ess-title{font-size:22px}
+body[data-page="love"] .ess-card[data-lovesec] canvas.amb,body[data-page="essence"] .ess-card[data-essread] canvas.amb,body[data-page="way"] .ess-card[data-wayread] canvas.amb,body[data-page="seventeen"] .ess-card[data-wat^="sv-q"] canvas.amb{opacity:.35}
+body.light[data-page="love"] .ess-card[data-lovesec],body.light[data-page="essence"] .ess-card[data-essread],body.light[data-page="way"] .ess-card[data-wayread],body.light[data-page="seventeen"] .ess-card[data-wat^="sv-q"]{border-bottom-color:rgba(90,70,40,.16)!important}
+
+/* Today tiers: Now (full cards) · Also today (slips) */
+.td-slips{border-top:1px solid rgba(255,255,255,.06)}
+.td-slipwrap{border-bottom:1px solid rgba(255,255,255,.06)}
+.td-slip{display:flex;align-items:baseline;gap:12px;width:100%;text-align:left;background:none;border:0;padding:13px 2px;cursor:pointer;-webkit-tap-highlight-color:transparent;color:inherit}
+.td-slip-k{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13.5px;color:var(--page-accent);flex-shrink:0;min-width:96px;opacity:.85}
+.td-slip-t{font-family:'Cormorant Garamond',serif;font-size:16.5px;color:#E8DCC8;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-slip-c{font-size:16px;color:rgba(255,255,255,.3);transition:transform .3s}
+.td-slip.open .td-slip-c{transform:rotate(90deg)}
+.td-slipbody{padding:0 0 18px}
+.td-slipbody .today-sec{display:none}
+body.light .td-slip-t{color:#33291A}body.light .td-slips,body.light .td-slipwrap{border-color:rgba(90,70,40,.14)}
+@media (max-width:480px){.td-slip-k{min-width:78px;font-size:12.5px}.td-slip-t{font-size:15.5px}}
