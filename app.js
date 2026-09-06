@@ -2988,8 +2988,8 @@ var CURATED = {
     weeks: [
       { theme: 'Seen', lines: [
         { as: 'human', text: 'I see how much you carry that you never announce. You don’t have to earn rest around me.' },
-        { as: 'woman', text: 'You are not too much, and you have never been too little. The way you take up space is a gift to watch.' },
-        { as: 'lover', text: 'Choosing you is the easiest thing I do. I’d cross that ocean every time.' } ] },
+        { as: 'woman', text: 'The one who walks into a room and does not apologise for the space she fills. I have watched you do it, and it is a gift to watch.' },
+        { as: 'lover', text: 'The one I would cross that ocean for, every time it was asked. Choosing you is the easiest thing I do.' } ] },
       { theme: 'Heard', lines: [
         { as: 'human', text: 'Your feelings make sense. You never need to build a case for me to take them seriously.' },
         { as: 'woman', text: 'I love the way your mind works. I’d rather hear you think out loud than most people sing.' },
@@ -2997,43 +2997,43 @@ var CURATED = {
       { theme: 'Across the Water', lines: [
         { as: 'human', text: 'This distance shows me your follow-through. You love with discipline, and I never take it for granted.' },
         { as: 'woman', text: 'You build life around you wherever you stand. I watch you do it from here, and I’m proud of you.' },
-        { as: 'lover', text: 'Every night, the ocean between us is smaller than what holds us together.' } ] },
+        { as: 'lover', text: 'The one who calls at the same hour every night, so the ocean stays smaller than what holds us.' } ] },
       { theme: 'Safe Harbour', lines: [
-        { as: 'human', text: 'You are safe with me — your bad days, your unfinished thoughts, your silence too.' },
-        { as: 'woman', text: 'You never have to shrink or perform softness here. Come as the whole weather system you are.' },
+        { as: 'human', text: 'The one who brings me her bad days, her unfinished thoughts, her silence. All of it is safe here.' },
+        { as: 'woman', text: 'The one who says the hard thing on the call instead of saving it for later. You bring the whole weather system, and I have never once wanted less of it.' },
         { as: 'lover', text: 'My arms are the one border you will never need papers for.' } ] },
       { theme: 'Becoming', lines: [
-        { as: 'human', text: 'I see who you are becoming, and I’m not afraid of her. I’m cheering.' },
-        { as: 'woman', text: 'Your ambition doesn’t threaten me. It’s one of the reasons I love you.' },
-        { as: 'lover', text: 'Grow. I’ll keep choosing every version of you.' } ] },
+        { as: 'human', text: 'The one who keeps becoming in front of me and does not hide the drafts. I see who you are turning into, and I am not afraid of her.' },
+        { as: 'woman', text: 'The one whose ambition fills the room and asks no one’s permission. It is one of the reasons I love you.' },
+        { as: 'lover', text: 'The one who keeps growing where I can see it. Every version of you has been chosen, and the next one already is.' } ] },
       { theme: 'Enough', lines: [
-        { as: 'human', text: 'You don’t have to be useful to be loved. Sit. Be. That is enough for me.' },
+        { as: 'human', text: 'The one who sat with me on the call and said nothing, and it was enough. You did that. It counted.' },
         { as: 'woman', text: 'You are beautiful in the unphotographed moments — mid-laugh, mid-thought, half-asleep.' },
         { as: 'lover', text: 'I miss the ordinary nearness of you. Your head on my shoulder outranks every plan I have.' } ] },
       { theme: 'Deep Water', lines: [
         { as: 'human', text: 'Your gentleness is not weakness. It is the deepest water in you.' },
         { as: 'woman', text: 'You make hard places soft wherever you enter — that is a power, and I have watched you use it.' },
-        { as: 'lover', text: 'Loving you has taught my prayers new words.' } ] },
+        { as: 'lover', text: 'The one my prayers learned new words for. I did not have them before you.' } ] },
       { theme: 'Partners', lines: [
-        { as: 'human', text: 'Your voice counts in every plan I make. Nothing I am building is built without you in the room.' },
+        { as: 'human', text: 'The one whose voice is in every plan I make. Nothing I am building is built without you in the room.' },
         { as: 'woman', text: 'I don’t want a smaller you beside me. I want all of you, at full height.' },
-        { as: 'lover', text: 'We are not waiting for our life to start. This — even this distance — is us, living it.' } ] },
+        { as: 'lover', text: 'The one who lives our life now instead of waiting for it to start. Even this distance, you live it with me.' } ] },
       { theme: 'Repair', lines: [
         { as: 'human', text: 'When we disagree, you are never my opponent. It is you and me versus the problem.' },
         { as: 'woman', text: 'Your anger is information, not a flaw. I can stand in your weather without leaving.' },
-        { as: 'lover', text: 'There is no version of a hard week that makes me want you less.' } ] },
+        { as: 'lover', text: 'The one who stays on the line through the hard week. No version of that week makes me want you less.' } ] },
       { theme: 'Delight', lines: [
         { as: 'human', text: 'You make ordinary days feel like somewhere to be, not something to get through.' },
         { as: 'woman', text: 'Your laugh is my favourite sound on either side of the Atlantic.' },
         { as: 'lover', text: 'I still get glad — stupidly glad — when your name lights up my phone.' } ] },
       { theme: 'My Word', lines: [
-        { as: 'human', text: 'You can put weight on my word. What I say to you, I keep.' },
+        { as: 'human', text: 'The one who put weight on my word before I had proved it would hold. What I say to you, I keep.' },
         { as: 'woman', text: 'The home we are building will fit the woman you actually are — not the one anyone expected you to be.' },
-        { as: 'lover', text: 'One day soon I will say good morning without a screen. Until then, every call is me practicing.' } ] },
+        { as: 'lover', text: 'The one who takes good morning through a screen and makes it a morning anyway. Soon, without the screen.' } ] },
       { theme: 'Blessing', lines: [
         { as: 'human', text: 'You are enough today. Not when the goals land, not when the distance closes — today.' },
         { as: 'woman', text: 'You turn distance into devotion and waiting into strength. That is your praise-name this week.' },
-        { as: 'lover', text: 'My head chose its path before I knew it — and the path had you on it. I bless the day it did.' } ] }
+        { as: 'lover', text: 'The one who kept choosing me across an ocean, night after night, when no one was watching her do it. I bless every one of those nights.' } ] }
     ]
   };
   function marieWeekIdx() { return Math.floor(dayMidnight(Date.now()) / 864e5 / 7) % MARIE.weeks.length; }
@@ -4280,7 +4280,7 @@ var CURATED = {
       h += '<div class="kata-done">The examination is closed.</div>';
     } else {
       h += '<div class="zz-timer" id="zzTimer">3:00</div>' +
-        '<div class="kw-label">Did I keep faith with what I said today?</div><textarea class="mirror-input kw-inp" id="zz1" rows="1"></textarea>' +
+        '<div class="kw-label">Where did I act before the wave finished?</div><textarea class="mirror-input kw-inp" id="zz1" rows="1"></textarea>' +
         '<div class="kw-label">Did I practice what I already know, or only recognize it?</div><textarea class="mirror-input kw-inp" id="zz2" rows="1"></textarea>' +
         '<div class="kw-label">Where did my mind stop today? One phrase, no analysis.</div><textarea class="mirror-input kw-inp" id="zz3" rows="1"></textarea>' +
         '<div class="today-actions"><button class="tbtn" id="zzSeal">Close the examination</button></div>';
