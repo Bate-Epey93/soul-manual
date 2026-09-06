@@ -44,21 +44,6 @@
     });
   }
   // a single water droplet into a wooden basin (sōzu / shishi-odoshi feel)
-  function waterDrop() {
-    if (!PREFS.sound) return;
-    var a = ac(); if (!a) return;
-    function plip(delay, f0, f1, vol, dur) {
-      var t = a.currentTime + delay;
-      var o = a.createOscillator(), g = a.createGain(), bp = a.createBiquadFilter();
-      o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.7);
-      bp.type = 'bandpass'; bp.frequency.value = (f0 + f1) / 2; bp.Q.value = 5;
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.007); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(bp); bp.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
-    }
-    plip(0, 1650, 620, 0.26, 0.26);    // the drop striking water
-    plip(0.03, 2300, 1380, 0.10, 0.15); // bright surface splash
-    plip(0.20, 900, 430, 0.09, 0.28);   // faint echo droplet in the basin
-  }
   function chimeStart() { bell(0, 523.25, 0.12, 2.4); }
   function chimeEnd() { bell(0, 523.25, 0.12, 2.6); bell(1.3, 659.25, 0.1, 2.6); bell(2.6, 783.99, 0.08, 3.2); }
 
@@ -1634,8 +1619,8 @@ var CURATED = {
     on('tdLoveRead', function (e) { e.stopPropagation(); openReader('love', todayCtx.loveIdx || 0); });
     on('tdWayKata', function (e) { e.stopPropagation(); openKata(); });
     on('tdWayZengzi', function (e) { e.stopPropagation(); navTo('way'); setTimeout(function () { var c = document.querySelector('[data-wat="way-zengzi"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); });
-    on('tdForge', function () { navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', todayCtx.forgeIdx); }, 450); });
-    on('tdForgeRead', function (e) { e.stopPropagation(); navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', todayCtx.forgeIdx); }, 450); });
+    on('tdForge', function () { openForge(todayCtx.forgeIdx); });
+    on('tdForgeRead', function (e) { e.stopPropagation(); openForge(todayCtx.forgeIdx); });
     on('tdEdge', function () { navTo('edge'); setTimeout(function () { scrollToEdge(todayCtx.edgeKey); }, 450); });
     on('tdEdgeRead', function (e) { e.stopPropagation(); navTo('edge'); setTimeout(function () { scrollToEdge(todayCtx.edgeKey); }, 450); });
     var mSave = page.querySelector('#tdMirrorSave');
@@ -2188,6 +2173,9 @@ var CURATED = {
         '<div class="wc-foot"><span>trough</span><span>' + logged + ' day' + (logged === 1 ? '' : 's') + ' logged</span><span>peak</span></div>' +
       '</div>';
   }
+  /* navigate to a Waters card / Forge protocol and open it in place */
+  function openWat(id) { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="' + id + '"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); }
+  function openForge(n) { navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', n); }, 450); }
   function scrollToNth(sel, n) {
     var els = document.querySelectorAll(sel);
     var el = els[n] || els[0];
@@ -2206,24 +2194,24 @@ var CURATED = {
 
   /* named weather routes to a practice: EFT · breath · waters · forge · edge */
   var FAM_PRACTICE = {
-    hurt:      { label: 'Breathing Through Conflict', sub: 'The Forge \u2014 repair runs through the body first.', go: function () { navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', 1); }, 450); } },
+    hurt:      { label: 'Breathing Through Conflict', sub: 'The Forge \u2014 repair runs through the body first.', go: function () { openForge(1); } },
     anger:     { label: 'EFT \u2014 For Anger That Needs to Speak', sub: 'Give the heat a channel before it picks one.', go: function () { openEftByTitle('Anger'); } },
     fear:      { label: 'EFT \u2014 For Groundedness', sub: 'The body anchors what the mind rehearses.', go: function () { openEftByTitle('Groundedness'); } },
-    sadness:   { label: 'The Two Waters', sub: 'Salt for what leaves. Cool water for what remains.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="twowaters"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
+    sadness:   { label: 'The Two Waters', sub: 'Salt for what leaves. Cool water for what remains.', go: function () { openWat('twowaters'); } },
     shame:     { label: 'The Temperature Practice', sub: 'The record surfaced. Warmth, not tribunal.', go: function () { openTemperature(); } },
     longing:   { label: 'For Marie', sub: 'Distance felt as feeling \u2014 send one line across the water.', go: function () { navTo('marie'); } },
 
     overwhelm: { label: 'EFT \u2014 For Crisis & Overwhelm', sub: 'Too much, too fast \u2014 tap the volume down first.', go: function () { openEftByTitle('Crisis'); } },
-    quiet:     { label: 'The Reservoir', sub: 'Good weather is for depositing, not just passing through.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="reservoir"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
+    quiet:     { label: 'The Reservoir', sub: 'Good weather is for depositing, not just passing through.', go: function () { openWat('reservoir'); } },
     borrowed:  { label: 'Return to Essence', sub: 'A feeling from another tongue \u2014 read the grammar it lives in.', go: function () { navTo('essence'); } },
-    manual:    { label: 'Return-in-Place', sub: 'Thirty seconds: exhale long, feet down, one line.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="inplace"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } }
+    manual:    { label: 'Return-in-Place', sub: 'Thirty seconds: exhale long, feet down, one line.', go: function () { openWat('inplace'); } }
   };
   var ALT_PRACTICE = [null,
     { label: 'Solar Plexus Breathing', sub: 'Trough days ask for the breath, not the page.', go: function () { openTimer(); } },
-    { label: 'The Reservoir', sub: 'Low and moving \u2014 park attention in the belly awhile.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="reservoir"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
-    { label: 'Return-in-Place', sub: 'Level water \u2014 practice the return while it is cheap.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="inplace"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } },
-    { label: 'The Forge \u2014 today\u2019s protocol', sub: 'Rising current \u2014 spend it on the field kit.', go: function () { navTo('forge'); setTimeout(function () { scrollToNth('#forgeContent .forge-protocol', todayCtx.forgeIdx || 0); }, 450); } },
-    { label: 'Compose the \u00e0f\u1ecd\u0300\u1e63\u1eb9 sentence', sub: 'Peak \u2014 hold the word now, speak it into force at the rite.', go: function () { navTo('waters'); setTimeout(function () { var c = document.querySelector('[data-wat="twowaters"]'); if (c) { c.classList.add('open'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 450); } }
+    { label: 'The Reservoir', sub: 'Low and moving \u2014 park attention in the belly awhile.', go: function () { openWat('reservoir'); } },
+    { label: 'Return-in-Place', sub: 'Level water \u2014 practice the return while it is cheap.', go: function () { openWat('inplace'); } },
+    { label: 'The Forge \u2014 today\u2019s protocol', sub: 'Rising current \u2014 spend it on the field kit.', go: function () { openForge(todayCtx.forgeIdx || 0); } },
+    { label: 'Compose the \u00e0f\u1ecd\u0300\u1e63\u1eb9 sentence', sub: 'Peak \u2014 hold the word now, speak it into force at the rite.', go: function () { openWat('twowaters'); } }
   ];
   function openEftByTitle(frag) {
     navTo('eft');
@@ -2324,15 +2312,6 @@ var CURATED = {
         '<div class="q-prog"><div class="q-prog-bar"><span style="width:' + pct + '%;background:' + q.focus + '"></span></div><span class="q-prog-num">' + done + '/' + acts.length + '</span></div>' +
         rows +
         '<div class="today-actions"><button class="tbtn ghost" id="tdQMap">Open the Map →</button></div>' +
-      '</div>';
-  }
-  function debtBarHTML() {
-    var d = debtInfo();
-    return '<div class="today-sec">The Debt</div>' +
-      '<div class="today-card glass" id="tdDebt">' +
-        '<div class="debt-row"><span class="debt-cur">$' + fmtMoney(d.current) + '</span><span class="debt-meta">$' + fmtMoney(d.paid) + ' cleared · ' + d.months + ' mo to zero</span></div>' +
-        '<div class="debt-bar"><span style="width:' + d.pct.toFixed(0) + '%"></span></div>' +
-        '<div class="debt-foot">Zero date · Jan 2028 — tap to update</div>' +
       '</div>';
   }
   function renderMapDebt() {

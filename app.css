@@ -1,6 +1,5 @@
 /* ===== Soul Manual — zen layer v2 =====
    overlays · reader · today · nav · ledger · settings · toast · readability ===== */
-
 /* ---------------------------------------------------------------- */
 /* 1. READABILITY — larger, calmer reading surfaces; fewer borders  */
 /* ---------------------------------------------------------------- */
@@ -17,7 +16,6 @@
 .crisis-step-detail{font-size:13px!important;line-height:1.8!important;color:rgba(255,255,255,.7)!important}
 .med-practice{font-size:13.5px!important;line-height:1.8!important;color:rgba(255,255,255,.75)!important}
 .med-carry{font-size:18px!important}
-
 /* soften card chrome: drop full-perimeter borders, add air */
 .concept-card,.med-card,.eft-seq-card,.dtree-card,.drama-card,.forge-protocol{border-color:transparent!important;background:rgba(255,255,255,.022)!important;border-radius:16px!important}
 .concept-card{padding:20px!important}
@@ -27,11 +25,8 @@
 .crisis-card{border-color:rgba(184,134,11,.1)!important;padding:22px!important;margin-bottom:22px!important}
 .cards{gap:12px!important}
 .crossref-card{border-color:transparent!important;background:rgba(255,255,255,.018)!important}
-.container{padding:32px 18px 110px!important}
-
 /* hide the original 12-tab strip — replaced by grouped nav */
 .nav-tabs{display:none!important}
-
 /* ---------------------------------------------------------------- */
 /* ENSŌ MOTIFS — brush-circle marks replacing emojis + watermarks   */
 /* ---------------------------------------------------------------- */
@@ -48,25 +43,21 @@ body.light .page-enso{opacity:.09}
 .zen-enso svg{opacity:.055;animation:ensoSpin 150s linear infinite}
 @keyframes ensoSpin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.zen-enso svg{animation:none}}
-.znav-item .zi{line-height:0}
 .znav-item .enso{width:18px;height:18px;vertical-align:0}
 @media (min-width:860px){.znav-item .enso{width:15px;height:15px}}
 .header-ornament .enso{width:24px;height:24px;opacity:.85}
 .zen-fab .enso{width:26px;height:26px;vertical-align:0}
-.tc-kicker .enso{width:13px;height:13px;vertical-align:-2px}
 .eft-seq-title .enso{width:20px;height:20px}
 .path-title .enso{width:20px;height:20px}
 .card-section-tag .enso-host,.filter-btn .enso-host{margin-right:5px}
 .card-section-tag .enso{width:9px;height:9px;vertical-align:-1px}
 .filter-btn .enso{width:11px;height:11px;vertical-align:-1px}
-.zgear{line-height:0}
-
 /* ---------------------------------------------------------------- */
 /* 2. GROUPED NAV — bottom bar on mobile, floating pills on desktop */
 /* ---------------------------------------------------------------- */
 .znav{position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;justify-content:space-around;align-items:stretch;background:rgba(12,10,8,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.06);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
 .znav-item{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;color:rgba(255,255,255,.34);font-family:monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;-webkit-tap-highlight-color:transparent;transition:color .3s;border-radius:12px;min-width:56px}
-.znav-item .zi{font-size:17px;line-height:1;font-family:'Cormorant Garamond',serif}
+.znav-item .zi{line-height:1;font-size:17px;font-family:'Cormorant Garamond',serif}
 .znav-item.active{color:#C4A265}
 .znav-item.active .zi{text-shadow:0 0 14px rgba(196,162,101,.55)}
 @media (min-width:860px){
@@ -78,13 +69,11 @@ body.light .page-enso{opacity:.09}
 .zsubnav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
 .zsubnav button{background:rgba(255,255,255,.035);border:none;color:rgba(255,255,255,.42);font-family:monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;padding:9px 16px;border-radius:20px;cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}
 .zsubnav button.active{background:rgba(196,162,101,.14);color:#C4A265}
-
 /* ---------------------------------------------------------------- */
 /* 3. TODAY PAGE                                                    */
 /* ---------------------------------------------------------------- */
 .today-date{font-family:monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:rgba(196,162,101,.55);margin-bottom:6px}
 .today-greet{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:#E8DCC8;margin-bottom:26px;line-height:1.2}
-.today-sec{font-family:monospace;font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.28);margin:26px 0 12px}
 .today-card{background:rgba(255,255,255,.025);border-radius:18px;padding:22px;cursor:pointer;transition:background .3s;-webkit-tap-highlight-color:transparent}
 .today-card:hover{background:rgba(255,255,255,.04)}
 .today-card .tc-kicker{font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;color:#C4A265}
@@ -103,7 +92,6 @@ body.light .page-enso{opacity:.09}
 .today-tile .tt-sub{font-family:monospace;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:4px}
 .today-ledger-line{font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin-top:26px;font-style:italic;cursor:pointer}
 .today-ledger-line em{color:rgba(196,162,101,.75);font-style:normal}
-
 /* ---------------------------------------------------------------- */
 /* 4. READER MODE                                                   */
 /* ---------------------------------------------------------------- */
@@ -123,11 +111,9 @@ body.light .page-enso{opacity:.09}
 .reader-quote{font-family:'Cormorant Garamond',serif;font-size:19px;font-style:italic;line-height:1.7;color:rgba(232,220,200,.8);border-left:2px solid rgba(196,162,101,.4);padding:4px 0 4px 20px;margin:26px 0}
 .reader-attr{font-family:monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);margin:-14px 0 26px;padding-left:22px}
 .reader-block{background:rgba(212,160,56,.06);border-radius:14px;padding:18px 20px;margin:28px 0;font-size:15px;line-height:1.85;color:rgba(255,255,255,.78)}
-.reader-block-label{font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#D4A038;margin-bottom:8px}
 .reader-carry{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;text-align:center;color:#E8DCC8;line-height:1.5;margin:36px 0;padding:0 10px}
 .reader-actions{display:flex;justify-content:center;gap:12px;margin-top:34px;flex-wrap:wrap}
 .reader-fin{width:56px;height:1px;background:linear-gradient(90deg,transparent,rgba(196,162,101,.4),transparent);margin:34px auto}
-
 /* ---------------------------------------------------------------- */
 /* 5. LEDGER PAGE                                                   */
 /* ---------------------------------------------------------------- */
@@ -144,17 +130,14 @@ body.light .page-enso{opacity:.09}
 .ledger-row .lr-sub{font-family:monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:3px}
 .ledger-row .lr-delta{font-family:monospace;font-size:11px;color:#5BB88B;white-space:nowrap}
 .ledger-empty{text-align:center;color:rgba(255,255,255,.35);font-style:italic;font-size:13.5px;padding:40px 20px;line-height:1.8}
-
 /* intensity chips (0–10) in tapping sessions */
 .zen-scale{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 .zen-scale button{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);font-family:monospace;font-size:11px;cursor:pointer;transition:all .25s;-webkit-tap-highlight-color:transparent}
 .zen-scale button.sel{background:rgba(196,162,101,.25);border-color:#C4A265;color:#F2E2AC;transform:scale(1.12)}
 .zen-scale-label{font-family:monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;margin-top:14px}
-
 /* ---------------------------------------------------------------- */
 /* 6. SETTINGS                                                      */
 /* ---------------------------------------------------------------- */
-.zgear{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:850;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .3s;-webkit-tap-highlight-color:transparent}
 .zgear:hover{color:rgba(255,255,255,.7)}
 @media (min-width:860px){.zgear{top:18px;right:18px}}
 .zsheet-wrap{position:fixed;inset:0;z-index:960;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
@@ -166,7 +149,6 @@ body.light .page-enso{opacity:.09}
 .zset-row{display:flex;gap:8px;flex-wrap:wrap}
 .zset-row button{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.55);font-family:monospace;font-size:11px;padding:10px 16px;border-radius:22px;cursor:pointer;transition:all .25s;-webkit-tap-highlight-color:transparent}
 .zset-row button.sel{background:rgba(196,162,101,.16);border-color:#C4A265;color:#E8DCC8}
-
 /* ---------------------------------------------------------------- */
 /* 7. UPDATE TOAST                                                  */
 /* ---------------------------------------------------------------- */
@@ -175,14 +157,11 @@ body.light .page-enso{opacity:.09}
 .ztoast span{font-size:12.5px;color:rgba(255,255,255,.75);white-space:nowrap}
 .ztoast button{background:rgba(196,162,101,.16);border:none;color:#E8CE8E;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 16px;border-radius:18px;cursor:pointer}
 @media (min-width:860px){.ztoast{bottom:30px}}
-
 /* ---------------------------------------------------------------- */
 /* 8. LIGHT (PARCHMENT) THEME — for zen-layer components.           */
 /*    Original app surfaces are re-themed at runtime (see app.js).  */
 /* ---------------------------------------------------------------- */
-body.light{background:#F4ECDB!important;color:rgba(42,33,20,.85)!important}
 body.light::before{display:none}
-body.light .znav{background:rgba(244,236,219,.9);border-color:rgba(90,70,40,.12)}
 body.light .znav-item{color:rgba(90,70,40,.45)}
 body.light .znav-item.active{color:#8A6B34}
 body.light .zsubnav button{background:rgba(90,70,40,.06);color:rgba(90,70,40,.55)}
@@ -192,7 +171,6 @@ body.light .today-card,body.light .today-tile,body.light .ledger-stat,body.light
 body.light .today-card .tc-sub{color:rgba(60,48,28,.6)}
 body.light .today-card .tc-kicker{color:#8A6B34}
 body.light .today-sec,body.light .today-tile .tt-sub{color:rgba(90,70,40,.4)}
-body.light .today-date{color:rgba(138,107,52,.8)}
 body.light .today-ledger-line{color:rgba(60,48,28,.55)}
 body.light .tbtn{background:rgba(138,107,52,.12);color:#4A3A1E}
 body.light .tbtn.ghost{background:rgba(90,70,40,.07);color:rgba(60,48,28,.6)}
@@ -216,7 +194,6 @@ body.light .zset-row button.sel{background:rgba(138,107,52,.18);border-color:#8A
 body.light .ztoast{background:#EFE6D2;border-color:rgba(138,107,52,.4)}
 body.light .ztoast span{color:rgba(50,40,22,.8)}
 body.light .ledger-stat .ls-num{color:#33291A}
-body.light .ledger-row .lr-title{color:rgba(50,40,22,.85)}
 body.light .ledger-day{color:rgba(138,107,52,.7)}
 body.light .ledger-empty{color:rgba(90,70,40,.5)}
 body.light .zen-banner{background:linear-gradient(135deg,rgba(138,107,52,.1),rgba(107,91,138,.06))}
@@ -229,17 +206,12 @@ body.light .excerpt-text{color:rgba(60,48,28,.85)!important}
 body.light .card-subtitle{color:rgba(60,48,28,.6)!important}
 body.light .concept-card,body.light .med-card,body.light .eft-seq-card,body.light .dtree-card,body.light .drama-card,body.light .forge-protocol{background:rgba(90,70,40,.05)!important}
 body.light .crossref-card{background:rgba(90,70,40,.04)!important}
-
 /* the zen overlay itself always stays dark & immersive */
-.zen-overlay{color-scheme:dark}
-
 /* ================================================================ */
 /* ===== original zen overlay styles (v1) ===== */
-
-.zen-overlay{position:fixed;inset:0;z-index:1000;background:#080706;display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.zen-overlay{color-scheme:dark;position:fixed;inset:0;z-index:1000;background:#080706;display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .zen-overlay.open{display:flex;animation:zenFade .6s ease}
 @keyframes zenFade{from{opacity:0}to{opacity:1}}
-
 .zen-bg{position:absolute;inset:0;pointer-events:none}
 .zen-blob{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(70px);opacity:.35;will-change:transform}
 .zen-blob.b1{background:radial-gradient(circle,var(--zen-c1,#C4A265) 0%,transparent 60%);top:-25vmax;left:-20vmax;animation:blobA 26s ease-in-out infinite alternate}
@@ -248,17 +220,13 @@ body.light .crossref-card{background:rgba(90,70,40,.04)!important}
 @keyframes blobA{from{transform:translate(0,0) scale(1)}to{transform:translate(14vmax,10vmax) scale(1.18)}}
 @keyframes blobB{from{transform:translate(0,0) scale(1.1)}to{transform:translate(-12vmax,-8vmax) scale(.92)}}
 @media (prefers-reduced-motion:reduce){.zen-blob{animation:none}}
-
 .zen-grain{position:absolute;inset:0;opacity:.05;pointer-events:none;background-image:repeating-conic-gradient(rgba(255,255,255,.06) 0 .0001deg,transparent 0 .0002deg)}
-
 .zen-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top)) 18px 0;z-index:5}
 .zen-kicker{font-family:monospace;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.32)}
 .zen-iconbtn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s;flex-shrink:0}
 .zen-iconbtn:hover{background:rgba(255,255,255,.1)}
 .zen-top-group{display:flex;gap:10px;align-items:center}
-
 .zen-stage{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:100%;max-width:560px;padding:0 24px;text-align:center}
-
 .zen-orb-wrap{position:relative;width:min(62vw,280px);height:min(62vw,280px);display:flex;align-items:center;justify-content:center;margin:26px 0}
 .zen-ring{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(255,255,255,.07)}
 .zen-orb{width:58%;height:58%;border-radius:50%;background:radial-gradient(circle at 42% 38%,var(--zen-hi,#F2E2AC) 0%,var(--zen-c1,#C4A265) 55%,rgba(196,162,101,.15) 100%);box-shadow:0 0 60px var(--zen-glow,rgba(196,162,101,.35)),0 0 140px var(--zen-glow,rgba(196,162,101,.22));transform:scale(1);display:flex;align-items:center;justify-content:center}
@@ -268,12 +236,10 @@ body.light .crossref-card{background:rgba(90,70,40,.04)!important}
 .zen-echo{position:absolute;width:58%;height:58%;border-radius:50%;border:1.5px solid var(--zen-c1,#C4A265);opacity:0;pointer-events:none}
 .zen-echo.go{animation:echoOut 1.1s ease-out}
 @keyframes echoOut{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.75);opacity:0}}
-
 .zen-svgring{position:absolute;inset:-7%;width:114%;height:114%;transform:rotate(-90deg)}
 .zen-svgring circle{fill:none;stroke-width:1.6}
 .zen-svgring .track{stroke:rgba(255,255,255,.06)}
 .zen-svgring .fill{stroke:var(--zen-c1,#C4A265);stroke-linecap:round;transition:stroke-dashoffset 1s linear;opacity:.7}
-
 .zen-point{font-family:monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--zen-c1,#C4A265);min-height:14px;margin-bottom:6px}
 .zen-phrase{font-family:'Cormorant Garamond',serif;font-size:clamp(21px,5.6vw,28px);font-weight:400;line-height:1.35;color:#EDE4D3;min-height:76px;display:flex;align-items:center;justify-content:center;transition:opacity .45s ease}
 .zen-phrase.dim{opacity:0}
@@ -281,31 +247,26 @@ body.light .crossref-card{background:rgba(90,70,40,.04)!important}
 .zen-sub{font-size:12px;color:rgba(255,255,255,.38);line-height:1.7;min-height:18px;max-width:420px;margin:10px auto 0;transition:opacity .45s ease}
 .zen-sub.dim{opacity:0}
 .zen-count{font-family:monospace;font-size:clamp(30px,8vw,40px);font-weight:300;letter-spacing:.08em;color:#EDE4D3;margin-top:4px}
-
 .zen-dots{display:flex;gap:9px;justify-content:center;margin-top:22px;min-height:8px}
 .zen-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);transition:all .4s}
 .zen-dot.done{background:var(--zen-c1,#C4A265);opacity:.45}
 .zen-dot.now{background:var(--zen-c1,#C4A265);box-shadow:0 0 10px var(--zen-glow,rgba(196,162,101,.6));transform:scale(1.35)}
-
 .zen-bottom{position:absolute;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 24px calc(26px + env(safe-area-inset-bottom));z-index:5}
 .zen-controls{display:flex;gap:14px;align-items:center}
 .zen-ctl{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.7);border-radius:50%;width:46px;height:46px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s,transform .2s}
 .zen-ctl:active{transform:scale(.93)}
 .zen-ctl.main{width:62px;height:62px;font-size:20px;background:rgba(196,162,101,.14);border-color:rgba(196,162,101,.35);color:#E8DCC8}
 .zen-hint{font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.22)}
-
 .zen-btn{background:rgba(196,162,101,.12);border:1px solid rgba(196,162,101,.4);color:#E8DCC8;font-family:monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:13px 30px;border-radius:30px;cursor:pointer;transition:all .3s}
 .zen-btn:hover{background:rgba(196,162,101,.22)}
 .zen-btn.ghost{background:none;border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.5)}
 .zen-chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0 6px}
 .zen-chip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-family:monospace;font-size:12px;padding:11px 20px;border-radius:26px;cursor:pointer;transition:all .3s}
 .zen-chip.sel{background:rgba(196,162,101,.16);border-color:#C4A265;color:#E8DCC8}
-
 .zen-fab{position:fixed;right:16px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:790;width:52px;height:52px;border-radius:50%;border:1px solid rgba(196,162,101,.45);background:radial-gradient(circle at 40% 35%,#E8CE8E 0%,#C4A265 60%,#8a6f42 100%);box-shadow:0 4px 24px rgba(196,162,101,.35),0 0 50px rgba(196,162,101,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:21px;transition:transform .25s;animation:fabGlow 5s ease-in-out infinite}
 .zen-fab:active{transform:scale(.92)}
 @media (min-width:860px){.zen-fab{bottom:24px;right:24px}}
 @keyframes fabGlow{0%,100%{box-shadow:0 4px 24px rgba(196,162,101,.3),0 0 40px rgba(196,162,101,.1)}50%{box-shadow:0 4px 30px rgba(196,162,101,.5),0 0 70px rgba(196,162,101,.2)}}
-
 .zen-begin{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:14px 0 4px;background:rgba(196,162,101,.09);border:1px solid rgba(196,162,101,.35);color:#E8DCC8;font-family:monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;padding:13px 16px;border-radius:10px;cursor:pointer;transition:all .3s}
 .zen-begin:hover{background:rgba(196,162,101,.18)}
 .zen-begin .zb-orb{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265);box-shadow:0 0 8px rgba(196,162,101,.6);animation:fabGlow 4s ease-in-out infinite}
@@ -313,24 +274,18 @@ body.light .crossref-card{background:rgba(90,70,40,.04)!important}
 .eft-read-link:hover{color:rgba(255,255,255,.6)}
 .eft-seq-hint{font-family:monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(196,162,101,.55);margin-top:8px;display:flex;align-items:center;gap:7px}
 .eft-seq-hint .zb-orb{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265);box-shadow:0 0 7px rgba(196,162,101,.55)}
-
 .zen-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(196,162,101,.1),rgba(107,91,138,.07));border:1px solid rgba(196,162,101,.25);border-radius:14px;padding:16px 18px;margin-bottom:20px;cursor:pointer;transition:all .3s}
 .zen-banner:hover{border-color:rgba(196,162,101,.5)}
 .zen-banner .zb-orb{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#F2E2AC,#C4A265 65%,#8a6f42);box-shadow:0 0 18px rgba(196,162,101,.4);animation:fabGlow 5s ease-in-out infinite}
 .zen-banner-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:#E8DCC8}
 .zen-banner-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
-
 @media (max-height:640px){.zen-orb-wrap{width:min(48vw,200px);height:min(48vw,200px);margin:14px 0}.zen-phrase{min-height:58px}}
-
 /* ---------------------------------------------------------------- */
 /* MOBILE FIT — kill horizontal wobble; declutter legend + footer   */
 /* ---------------------------------------------------------------- */
-html{overflow-x:hidden;overflow-x:clip}
-body{overflow-x:hidden;overflow-x:clip}
-.container{overflow-x:clip;max-width:min(780px,100%)}
+html{overflow-x:clip}
 .source-legend{display:none!important}
 .footer-text{font-size:10px}
-
 /* ---------------------------------------------------------------- */
 /* LIQUID GLASS — Tahoe-style gloss on cards & buttons              */
 /* ---------------------------------------------------------------- */
@@ -346,7 +301,6 @@ body.light .glass::before{background:linear-gradient(168deg,rgba(255,255,255,.55
 body.light .glass::after{background:radial-gradient(240px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.6),transparent 62%)}
 body.light .glass:hover{border-color:rgba(125,95,45,.32)!important}
 body.light .glass.expanded,body.light .glass.active{border-color:rgba(150,110,50,.5)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 0 26px -10px rgba(170,130,60,.45)}
-
 /* chapter marks on the 13 concept cards + detail view */
 .chapter-enso{margin-left:12px;align-self:center;flex-shrink:0;opacity:.75;line-height:0}
 .chapter-enso .enso{width:30px;height:30px}
@@ -356,10 +310,8 @@ body.light .glass.expanded,body.light .glass.active{border-color:rgba(150,110,50
 .detail-enso{position:absolute;top:-6px;right:-28px;width:210px;height:210px;opacity:.06;pointer-events:none;z-index:-1}
 body.light .detail-enso{opacity:.1}
 .tc-kicker .enso{width:14px;height:14px;vertical-align:-2.5px}
-
 /* header: hide the contents inventory paragraph */
 .intro{display:none!important}
-
 /* ---------------------------------------------------------------- */
 /* PAIR 1 — wave check-in · live map · debt · wave tint             */
 /* ---------------------------------------------------------------- */
@@ -367,7 +319,6 @@ body.light .detail-enso{opacity:.1}
 .today-wavewash{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:120%;height:260px;pointer-events:none;z-index:-1;opacity:0;background:radial-gradient(ellipse 60% 100% at 50% 0,var(--wave-tint),transparent 70%);transition:opacity 1.2s ease,background 1.2s ease}
 body.has-wave .today-wavewash{opacity:.14}
 body.light.has-wave .today-wavewash{opacity:.2}
-
 /* wave check-in */
 .wave-card .wave-q{font-family:'Cormorant Garamond',serif;font-size:19px;color:#E8DCC8;margin-bottom:16px}
 .wave-scale{display:flex;justify-content:space-between;gap:6px}
@@ -392,7 +343,6 @@ body.light .wave-guide{color:rgba(60,45,25,.62)}
 .wc-bar.empty span{background:rgba(255,255,255,.05);height:4px!important}
 .wc-foot{display:flex;justify-content:space-between;margin-top:8px;font-family:monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3)}
 body.light .wc-foot{color:rgba(60,45,25,.45)}
-
 /* this-quarter card */
 .q-prog{display:flex;align-items:center;gap:10px;margin:6px 0 14px}
 .q-prog-bar{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
@@ -406,7 +356,6 @@ body.light .wc-foot{color:rgba(60,45,25,.45)}
 .q-act-text{font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.62);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .q-act.checked .q-act-text{color:rgba(255,255,255,.34)}
 body.light .q-act-text{color:rgba(60,45,25,.7)}
-
 /* debt bar (today) */
 .debt-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
 .debt-cur{font-family:'Cormorant Garamond',serif;font-size:26px;color:#E8DCC8}
@@ -415,7 +364,6 @@ body.light .q-act-text{color:rgba(60,45,25,.7)}
 .debt-bar span{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#7BA05B,#D4A038);transition:width .6s ease}
 .debt-bar.big{height:11px}
 .debt-foot{font-family:monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-top:8px}
-
 /* debt thermometer (map) */
 .mapdebt{padding:20px;border-radius:16px;margin-bottom:24px}
 .mapdebt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -429,13 +377,11 @@ body.light .q-act-text{color:rgba(60,45,25,.7)}
 .mapdebt-form input:focus{outline:none;border-color:rgba(196,162,101,.5)}
 .mapdebt-hint{font-size:10.5px;color:rgba(255,255,255,.3);margin-top:9px;line-height:1.5}
 body.light .mapdebt-form input{background:rgba(90,70,40,.05);border-color:rgba(90,70,40,.18);color:#3a2c18}
-
 /* map milestone / action checks */
 .map-ms.has-check,.map-act.has-check{position:relative;padding-left:34px}
 .mcheck{position:absolute;left:0;top:2px;width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(196,162,101,.4);background:rgba(0,0,0,.2);color:#0A0908;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .3s,border-color .3s;-webkit-tap-highlight-color:transparent;z-index:2}
 .map-ms.checked .mcheck,.map-act.checked .mcheck{background:#C4A265;border-color:#C4A265}
 .map-ms.checked .map-ms-text,.map-act.checked .map-act-text{opacity:.5;text-decoration:line-through;text-decoration-color:rgba(196,162,101,.4)}
-
 /* ---------------------------------------------------------------- */
 /* PAIR 2 — 30-day entry · EFT charts · adaptive · heatmap          */
 /* ---------------------------------------------------------------- */
@@ -443,7 +389,6 @@ body.light .mapdebt-form input{background:rgba(90,70,40,.05);border-color:rgba(9
 .today-entry-cta{display:block;width:100%;text-align:left;background:rgba(196,162,101,.08);border:1px dashed rgba(196,162,101,.3);color:#E8DCC8;font-family:'Cormorant Garamond',serif;font-size:16px;padding:15px 18px;border-radius:14px;cursor:pointer;margin-bottom:8px;transition:background .3s;-webkit-tap-highlight-color:transparent}
 .today-entry-cta:hover{background:rgba(196,162,101,.14)}
 #tdEntry .q-act{cursor:pointer}
-
 /* entry tracker (Paths page) */
 .entry-tracker{padding:18px 20px;border-radius:16px;margin:14px 0 20px}
 .et-title{font-family:'Cormorant Garamond',serif;font-size:18px;color:#E8DCC8;display:block;margin-bottom:6px}
@@ -456,7 +401,6 @@ body.light .mapdebt-form input{background:rgba(90,70,40,.05);border-color:rgba(9
 .entry-tracker .tbtn{width:100%;justify-content:center}
 body.light .et-sub{color:rgba(60,45,25,.62)}
 body.light .et-title,body.light .et-day{color:#3a2c18}
-
 /* EFT per-sequence stat + ledger progress */
 .eft-stat{font-family:monospace;font-size:9.5px;letter-spacing:.1em;color:var(--wave-tint,#C4A265);margin-top:8px;opacity:.85}
 .eft-prog{display:flex;flex-direction:column;gap:10px}
@@ -474,7 +418,6 @@ body.light .et-title,body.light .et-day{color:#3a2c18}
 .ep-fill.b{background:rgba(184,92,56,.7)}
 .ep-fill.a{background:rgba(123,160,91,.85)}
 body.light .ep-title{color:#3a2c18}
-
 /* practice heatmap */
 .heatmap{padding:16px;border-radius:16px}
 .heat{display:flex;gap:4px;justify-content:space-between}
@@ -484,7 +427,6 @@ body.light .ep-title{color:#3a2c18}
 .heat-cell.l1{background:rgba(196,162,101,.3)}
 .heat-cell.l2{background:rgba(196,162,101,.5)}
 .heat-cell.l3{background:rgba(196,162,101,.72)}
-.heat-cell.l4{background:rgba(224,184,76,.95)}
 .heat-legend{display:flex;align-items:center;gap:5px;justify-content:flex-end;margin-top:10px;font-family:monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3)}
 .heat-legend i{width:11px;height:11px;border-radius:3px;display:inline-block;background:rgba(255,255,255,.04)}
 .heat-legend i.l1{background:rgba(196,162,101,.3)}
@@ -492,33 +434,20 @@ body.light .ep-title{color:#3a2c18}
 .heat-legend i.l3{background:rgba(196,162,101,.72)}
 .heat-legend i.l4{background:rgba(224,184,76,.95)}
 body.light .heat-cell{background:rgba(90,70,40,.08)}
-body.light .heat-legend{color:rgba(60,45,25,.45)}
-
 /* ---------------------------------------------------------------- */
 /* TINTED CARDS — whole-card wash for one-sided-border cards        */
 /* ---------------------------------------------------------------- */
-.tinted-card{
-  background:
-    radial-gradient(130% 90% at 14% 0%, rgba(255,255,255,.10), transparent 46%),
+.tinted-card{background:radial-gradient(130% 90% at 14% 0%, rgba(255,255,255,.10), transparent 46%),
     linear-gradient(158deg, var(--tint-bg), var(--tint-bg2) 55%, var(--tint-bg2) 100%),
-    rgba(255,255,255,.014) !important;
-  border:1px solid var(--tint-bd) !important;
-  border-radius:16px !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.15), inset 0 0 52px -16px var(--tint-bg), 0 12px 32px -20px rgba(0,0,0,.75);
-}
+    rgba(255,255,255,.014) !important;border:1px solid var(--tint-bd) !important;border-radius:16px !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.15), inset 0 0 52px -16px var(--tint-bg), 0 12px 32px -20px rgba(0,0,0,.75)}
 .tinted-card:hover{border-color:var(--tint-bd)!important}
 .tinted-card .map-hz-year,.tinted-card .map-q-theme,.tinted-card .entry-week-title,.tinted-card .proto-block-key,.tinted-card .ess-title{color:#EDE4D3}
 .tinted-card .ess-part-text,.tinted-card .ess-text p,.tinted-card .wat-steps li,.tinted-card .wat-note{color:rgba(255,255,255,.78)}
-body.light .tinted-card{
-  background:
-    radial-gradient(130% 90% at 14% 0%, rgba(255,255,255,.55), transparent 48%),
+body.light .tinted-card{background:radial-gradient(130% 90% at 14% 0%, rgba(255,255,255,.55), transparent 48%),
     linear-gradient(158deg, var(--tint-bg), var(--tint-bg2) 55%, var(--tint-bg2) 100%),
-    rgba(255,255,255,.55) !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), inset 0 0 52px -18px var(--tint-bg), 0 12px 30px -22px rgba(90,70,40,.5);
-}
+    rgba(255,255,255,.55) !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8), inset 0 0 52px -18px var(--tint-bg), 0 12px 30px -22px rgba(90,70,40,.5)}
 body.light .tinted-card .map-hz-year,body.light .tinted-card .map-q-theme,body.light .tinted-card .entry-week-title,body.light .tinted-card .proto-block-key,body.light .tinted-card .ess-title{color:#3a2c18}
 body.light .tinted-card .ess-part-text,body.light .tinted-card .ess-text p,body.light .tinted-card .wat-steps li,body.light .tinted-card .wat-note{color:rgba(50,38,20,.85)}
-
 /* ---------------------------------------------------------------- */
 /* PAIR 3 — self-drawing ensō · mirror journal · export             */
 /* ---------------------------------------------------------------- */
@@ -530,7 +459,6 @@ body.light .tinted-card .ess-part-text,body.light .tinted-card .ess-text p,body.
 .page-enso svg{animation:inkSettle 1.5s cubic-bezier(.4,0,.2,1) both}
 @keyframes inkSettle{from{opacity:0;transform:scale(.9) rotate(-7deg)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.page-enso svg,.draw-enso path{animation:none!important;stroke-dashoffset:0!important}}
-
 /* mirror journal */
 .mirror-q{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.4;color:#E8DCC8;margin-bottom:14px;font-style:italic}
 body.light .mirror-q{color:#3a2c18}
@@ -553,17 +481,14 @@ body.light .mj-q{color:rgba(60,45,25,.55)}
 body.light .mj-a{color:rgba(40,30,15,.85)}
 .mj-empty{font-size:13px;color:rgba(255,255,255,.35);text-align:center;padding:20px;font-style:italic}
 .mirror-card .today-actions,.mj-today{margin-top:0}
-
 /* settings: data section */
 .zset-hint{font-size:11px;line-height:1.5;color:rgba(255,255,255,.35);margin:8px 0 4px}
 body.light .zset-hint{color:rgba(60,45,25,.5)}
-
 /* ---------------------------------------------------------------- */
 /* CROSSREF & EXPANDERS — never clip long text                      */
 /* ---------------------------------------------------------------- */
 .crossref-card.expanded .crossref-body{max-height:none!important}
 .community-card.expanded .community-card-body,.masc-prac.expanded .masc-prac-body{max-height:3000px!important}
-
 /* ---------------------------------------------------------------- */
 /* LIGHT MODE — ensure every custom component stays readable         */
 /* (app.css classes are NOT auto-remapped, so set ink explicitly)   */
@@ -580,13 +505,11 @@ body.light .ledger-stat .ls-label{color:rgba(51,41,26,.52)}
 body.light .ledger-row .lr-title{color:rgba(51,41,26,.82)}
 body.light .ledger-row .lr-sub,body.light .lr-delta,body.light .ep-arrow{color:rgba(51,41,26,.5)}
 body.light .heat-legend{color:rgba(51,41,26,.5)}
-
 /* light-mode panel backgrounds (white washes vanish on parchment) */
 body.light .today-card:not(.tinted-card),body.light .today-tile,body.light .wave-chart,body.light .mapdebt,body.light .ledger-row,body.light .mj-today,body.light .mj-entry,body.light .ep-row,body.light .heat-cell{background:rgba(120,95,55,.06)!important}
 body.light .q-act{background:rgba(120,95,55,.05)}
 body.light .q-prog-bar,body.light .wc-bar,body.light .et-bar,body.light .ep-track,body.light .heat-legend i{background:rgba(90,70,40,.1)}
 body.light .debt-bar{background:rgba(184,92,56,.14)}
-
 /* ---------------------------------------------------------------- */
 /* REMINDERS — time pickers in settings                             */
 /* ---------------------------------------------------------------- */
@@ -596,7 +519,6 @@ body.light .debt-bar{background:rgba(184,92,56,.14)}
 .zset-times input[type=time]:focus{outline:none;border-color:rgba(196,162,101,.5)}
 body.light .zset-times label{color:rgba(51,41,26,.55)}
 body.light .zset-times input[type=time]{background:rgba(90,70,40,.05);border-color:rgba(90,70,40,.18);color:#33291A;color-scheme:light}
-
 /* ---------------------------------------------------------------- */
 /* POLISH v12 — review fixes: light controls · reduced-motion · a11y */
 /* ---------------------------------------------------------------- */
@@ -607,9 +529,9 @@ body.light .ztoast button{background:rgba(138,107,52,.2);color:#3E2F18}
 body.light .reader-block-label{color:#8A6B34}
 /* unify stray golds to the #C4A265 family */
 .heat-cell.l4{background:rgba(196,162,101,.95)}
-.reader-block-label{color:#C4A265}
+.reader-block-label{font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#C4A265;margin-bottom:8px}
 /* lift the faintest section captions to a legible contrast */
-.today-sec{color:rgba(255,255,255,.4)}
+.today-sec{font-family:monospace;font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.4);margin:26px 0 12px}
 /* keyboard focus ring for the checklist/toggle controls */
 .q-act:focus-visible,.mcheck:focus-visible,.wave-dot:focus-visible{outline:2px solid rgba(196,162,101,.7);outline-offset:2px;border-radius:12px}
 /* reduced-motion: silence decorative + perpetual motion, keep functional breathing/countdown */
@@ -617,7 +539,6 @@ body.light .reader-block-label{color:#8A6B34}
   .zen-fab,.zen-begin .zb-orb,.zen-banner .zb-orb,.zen-fab .enso,.zen-echo.go{animation:none!important}
   .page,.concept-card,.med-card,.today-card,.eft-seq-card,.crossref-card,.header{animation:none!important}
 }
-
 /* ---------------------------------------------------------------- */
 /* v13 — START HERE: curated first-read cross-references            */
 /* ---------------------------------------------------------------- */
@@ -635,9 +556,6 @@ body.light .reader-block-label{color:#8A6B34}
 .sh-today{font-family:monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;background:var(--wave-tint,#C4A265);color:#0A0908;border-radius:9px;padding:2.5px 8px;margin-left:8px;vertical-align:2px;white-space:nowrap}
 /* staggered self-draw of the three marks */
 .sh-title .draw-enso path{animation-duration:2s}
-.sh-p0 .draw-enso path{animation-delay:.2s;animation-duration:1.6s}
-.sh-p1 .draw-enso path{animation-delay:.55s;animation-duration:1.6s}
-.sh-p2 .draw-enso path{animation-delay:.9s;animation-duration:1.6s}
 /* the chosen cards in the full list */
 .crossref-card.sh-marked{background:rgba(196,162,101,.05)!important}
 .sh-cardmark{margin-left:8px;line-height:0;display:inline-block;vertical-align:-2px;color:#C4A265;flex-shrink:0}
@@ -650,14 +568,12 @@ body.light .sh-pick{background:rgba(255,255,255,.4)}
 body.light .sh-why{color:rgba(60,45,25,.68)}
 body.light .sh-cardwhy{color:rgba(138,107,52,.95)}
 body.light .crossref-card.sh-marked{background:rgba(138,107,52,.06)!important}
-
 /* v13 — tap-target hit extension (visual size unchanged) */
 .zen-scale button,.zen-iconbtn{position:relative}
-.zgear{position:fixed}
+.zgear{line-height:0;position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:850;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .3s;-webkit-tap-highlight-color:transparent}
 .zen-scale button::after{content:'';position:absolute;inset:-6px;border-radius:50%}
 .zgear::after{content:'';position:absolute;inset:-5px;border-radius:50%}
 .zen-iconbtn::after{content:'';position:absolute;inset:-4px;border-radius:50%}
-
 /* ---------------------------------------------------------------- */
 /* v15 — RETURN TO ESSENCE + THE WATERS                             */
 /* ---------------------------------------------------------------- */
@@ -682,7 +598,6 @@ body.light .ess-title,body.light .ess-trad-name{color:#33291A}
 body.light .ess-text{color:rgba(45,35,20,.8)}
 body.light .ess-part-text,body.light .ess-trad-row{color:rgba(45,35,20,.72)}
 body.light .ess-part,body.light .ess-trad{background:rgba(90,70,40,.05)}
-
 /* waters */
 .wprin{border-radius:16px;padding:18px 20px;margin-bottom:18px;background:rgba(196,162,101,.05)}
 .wprin-body{max-height:0;overflow:hidden;transition:max-height .5s ease;font-size:13.5px;line-height:1.8;color:rgba(255,255,255,.7)}
@@ -702,7 +617,6 @@ body.light .wfn.grow{background:rgba(160,120,20,.12);color:#7A5C10}
 body.light .wat-steps li{color:rgba(45,35,20,.78)}
 .wat-note{font-size:12.5px;line-height:1.7;font-style:italic;color:rgba(196,162,101,.75);margin:10px 0 4px}
 body.light .wat-note{color:#8A6B34}
-
 /* kept word + oríkì */
 .kw-label{font-family:monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);margin:12px 0 6px}
 .kw-label em{color:rgba(196,162,101,.7);text-transform:none;letter-spacing:0;font-size:10px}
@@ -720,10 +634,8 @@ body.light .kw-line{color:rgba(45,35,20,.78)}
 .ok-moment{font-size:12px;color:rgba(255,255,255,.45);margin-top:3px;font-style:italic}
 body.light .ok-name{color:#33291A}
 body.light .ok-moment{color:rgba(60,45,25,.6)}
-
 /* two waters overlay input */
 .tw-input{width:min(86vw,420px);font-size:16px}
-
 /* today return card + oríkì line */
 .ess-prac-line{font-size:12.5px;line-height:1.65;color:rgba(255,255,255,.55);margin-top:8px}
 .ess-prac-line strong{color:#7E9E8E;font-weight:600}
@@ -732,7 +644,6 @@ body.light .ess-prac-line strong{color:#4A6B5A}
 .today-oriki{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:rgba(218,165,32,.75);margin:-16px 0 22px}
 body.light .today-oriki{color:#8A6B34}
 .sh-ess .sh-src{font-size:12px}
-
 /* ---------------------------------------------------------------- */
 /* FOR MARIE — weekly praise-speech                                 */
 /* ---------------------------------------------------------------- */
@@ -744,7 +655,6 @@ body.light .mar-text{color:#3a2c18}
 body.light .mar-line{border-bottom-color:rgba(90,70,40,.12)}
 .mar-week.now .mar-text{font-size:19px}
 .mar-intro{margin-bottom:6px}
-
 /* ---------------------------------------------------------------- */
 /* ESSENCE DEEPENING — deeper water + held-against-your-life        */
 /* ---------------------------------------------------------------- */
@@ -758,7 +668,6 @@ body.light .ess-foryou p{color:rgba(50,38,20,.82)}
 .ess-foryou-r{border-left:3px solid var(--wave-tint,#C4A265)}
 .ess-sources{font-size:11px;line-height:1.8;color:rgba(255,255,255,.38);margin:14px 0 4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)}
 body.light .ess-sources{color:rgba(60,45,25,.55);border-top-color:rgba(90,70,40,.12)}
-
 /* ---------------------------------------------------------------- */
 /* AMBIENT CANVAS — topic motion behind cards                       */
 /* ---------------------------------------------------------------- */
@@ -770,12 +679,10 @@ body.light .ess-sources{color:rgba(60,45,25,.55);border-top-color:rgba(90,70,40,
 body.light .amb{opacity:.6}
 /* keep card content above the canvas */
 .today-card>*:not(.amb),.ess-card>*:not(.amb),.wat-card>*:not(.amb),.concept-card>*:not(.amb),.med-card>*:not(.amb),.forge-protocol>*:not(.amb){position:relative;z-index:1}
-
 /* toast: dismissible, never sticky unless the update prompt */
 .ztoast .zt-x{background:none;border:none;color:rgba(255,255,255,.42);font-size:12px;line-height:1;padding:8px;cursor:pointer;flex-shrink:0}
 .ztoast .zt-x:hover{color:rgba(255,255,255,.8)}
 body.light .ztoast .zt-x{color:rgba(60,45,25,.5)}
-
 /* ---------------------------------------------------------------- */
 /* THE NAMING — lexicon finder                                      */
 /* ---------------------------------------------------------------- */
@@ -813,18 +720,13 @@ body.light .nm-vs span{color:rgba(60,45,25,.45)}
 .nm-row{display:flex;gap:10px;align-items:stretch}
 .nm-row .nm-search{flex:1;min-width:0}
 .nm-go{flex-shrink:0;align-self:center}
-
 /* ---------------------------------------------------------------- */
 /* PAGE WEATHER — a fixed climate behind each page                  */
 /* ---------------------------------------------------------------- */
-#pageWeather{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.62;transition:opacity 1.1s ease}
-#pageWeather.wx-in{animation:wxIn 1.4s ease}
 @keyframes wxIn{from{opacity:0}to{opacity:.62}}
-body.light #pageWeather{opacity:.42}
-body.light #pageWeather.wx-in{animation:wxInLight 1.4s ease}
 @keyframes wxInLight{from{opacity:0}to{opacity:.42}}
 /* content sits above the weather; fixed chrome keeps its own positioning */
-.container{position:relative;z-index:1}
+.container{padding:32px 18px 110px!important;overflow-x:clip;max-width:min(780px,100%);position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){#pageWeather{opacity:.34}#pageWeather.wx-in{animation:none}}
 .wave-suggest{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 .wave-suggest .ws-body{flex:1;min-width:0}
@@ -834,7 +736,6 @@ body.light #pageWeather.wx-in{animation:wxInLight 1.4s ease}
 body.light .ws-name{color:#33291A}
 body.light .ws-sub{color:rgba(60,45,25,.6)}
 body.light .wave-suggest{background:rgba(90,70,40,.05);border-color:rgba(90,70,40,.14)}
-
 /* ---------------------------------------------------------------- */
 /* THE WAY — thesis · reframe table · kata tracker · zengzi         */
 /* ---------------------------------------------------------------- */
@@ -864,7 +765,6 @@ body.light .kata-stat .ks-label{color:rgba(60,45,25,.5)}
 .kata-done{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:rgba(196,162,101,.85);margin:12px 0 4px;text-align:center}
 .zz-timer{font-family:monospace;font-size:22px;letter-spacing:.1em;color:rgba(255,255,255,.5);text-align:center;margin:10px 0 4px}
 body.light .zz-timer{color:rgba(60,45,25,.6)}
-
 /* ---------------------------------------------------------------- */
 /* THE SECOND ARCHITECTURE — love & marriage                        */
 /* ---------------------------------------------------------------- */
@@ -884,7 +784,6 @@ body.light .lv-ref-why{color:rgba(60,45,25,.65)}
 body.light .lv-ref{border-bottom-color:rgba(90,70,40,.12)}
 .lv-today-ref{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:rgba(255,255,255,.6);margin-top:8px;line-height:1.5}
 body.light .lv-today-ref{color:rgba(60,45,25,.68)}
-
 /* ---------------------------------------------------------------- */
 /* THE SEVENTEEN                                                     */
 /* ---------------------------------------------------------------- */
@@ -895,7 +794,10 @@ body.light .lv-today-ref{color:rgba(60,45,25,.68)}
 body.light .sv-tab{background:rgba(90,70,40,.05);border-color:rgba(90,70,40,.15);color:rgba(60,45,25,.6)}
 body.light .sv-tab.on{color:#33291A}
 .sv-grade{display:inline-block;font-family:monospace;font-size:8.5px;letter-spacing:.08em;padding:2px 6px;border-radius:6px;margin-left:6px;vertical-align:1px;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6)}
-.sv-g-A{border-color:rgba(123,160,91,.6);color:#9FC27F}.sv-g-B{border-color:rgba(110,127,163,.6);color:#9FB0D6}.sv-g-C{border-color:rgba(196,162,101,.5);color:#D8C08A}.sv-g-S{border-color:rgba(107,91,138,.6);color:#B8A5D9}
+.sv-g-A{border-color:rgba(123,160,91,.6);color:#9FC27F}
+.sv-g-B{border-color:rgba(110,127,163,.6);color:#9FB0D6}
+.sv-g-C{border-color:rgba(196,162,101,.5);color:#D8C08A}
+.sv-g-S{border-color:rgba(107,91,138,.6);color:#B8A5D9}
 .sv-clusters{border-radius:16px;padding:6px 14px}
 .sv-cluster{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
 .sv-cluster:last-child{border-bottom:none}
@@ -906,7 +808,9 @@ body.light .sv-tab.on{color:#33291A}
 .sv-cl-weeks{margin-left:auto;font-family:monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35)}
 .sv-cl-mech{font-size:12px;color:rgba(255,255,255,.5);margin:3px 0 8px}
 .sv-qchip{font-family:monospace;font-size:9px;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.6);margin-right:5px;cursor:pointer}
-body.light .sv-cl-name{color:#33291A}body.light .sv-cl-mech{color:rgba(60,45,25,.6)}body.light .sv-qchip{color:rgba(60,45,25,.7);border-color:rgba(90,70,40,.18)}
+body.light .sv-cl-name{color:#33291A}
+body.light .sv-cl-mech{color:rgba(60,45,25,.6)}
+body.light .sv-qchip{color:rgba(60,45,25,.7);border-color:rgba(90,70,40,.18)}
 .sv-step-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .sv-clock{font-family:monospace;font-size:15px;letter-spacing:.08em;color:rgba(255,255,255,.55)}
 .sv-clock.over{color:rgba(217,130,108,.9)}
@@ -918,7 +822,9 @@ body.light .sv-cl-name{color:#33291A}body.light .sv-cl-mech{color:rgba(60,45,25,
 .sv-breath{display:flex;flex-direction:column;align-items:center;gap:14px;padding:22px 0 8px}
 .sv-orb{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(196,162,101,.5),rgba(196,162,101,.08) 70%);transition:transform 2s ease}
 .sv-route-btn{margin-left:auto;color:rgba(217,130,108,.85)}
-body.light .sv-prompt{color:#33291A}body.light .sv-prev-text{color:rgba(50,38,20,.8)}body.light .sv-clock{color:rgba(60,45,25,.6)}
+body.light .sv-prompt{color:#33291A}
+body.light .sv-prev-text{color:rgba(50,38,20,.8)}
+body.light .sv-clock{color:rgba(60,45,25,.6)}
 .sv-prlist{border-radius:16px;padding:4px 14px}
 .sv-pr{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.05)}
 .sv-pr:last-child{border-bottom:none}
@@ -929,7 +835,8 @@ body.light .sv-prompt{color:#33291A}body.light .sv-prev-text{color:rgba(50,38,20
 .sv-pr-rec{font-size:12.5px;line-height:1.65;color:rgba(255,255,255,.62)}
 .sv-pr-foot{display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap}
 .sv-pr-last{font-size:11px;color:rgba(255,255,255,.4);flex:1}
-body.light .sv-pr-name{color:#33291A}body.light .sv-pr-rec{color:rgba(50,38,20,.75)}
+body.light .sv-pr-name{color:#33291A}
+body.light .sv-pr-rec{color:rgba(50,38,20,.75)}
 .sv-ratio{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:#E8DCC8;line-height:1.1;margin:6px 0}
 .sv-count{font-family:'Cormorant Garamond',serif;font-size:24px;color:#E8DCC8;min-width:36px;text-align:center}
 body.light .sv-ratio,body.light .sv-count{color:#33291A}
@@ -948,7 +855,6 @@ body.light .sv-q-text{color:#33291A}
 .sv-signs li{color:rgba(255,255,255,.78)}
 body.light .sv-ul li{color:rgba(50,38,20,.78)}
 .sv-td-live{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-
 .sv-notes{margin:6px 0 14px}
 .sv-note{padding:12px 14px;margin-bottom:8px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 .sv-note-s{font-family:'Cormorant Garamond',serif;font-size:15.5px;color:#E8DCC8;margin-bottom:5px;line-height:1.3}
@@ -956,14 +862,13 @@ body.light .sv-ul li{color:rgba(50,38,20,.78)}
 .sv-note-w{font-size:12.5px;line-height:1.7;color:rgba(232,220,200,.85);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
 .sv-note-w span{display:block;font-family:monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:#C4A265;margin-bottom:3px}
 body.light .sv-note{background:rgba(90,70,40,.04);border-color:rgba(90,70,40,.12)}
-body.light .sv-note-s{color:#33291A}body.light .sv-note-g{color:rgba(50,38,20,.75)}body.light .sv-note-w{color:rgba(50,38,20,.85);border-top-color:rgba(90,70,40,.12)}
-
+body.light .sv-note-s{color:#33291A}
+body.light .sv-note-g{color:rgba(50,38,20,.75)}
+body.light .sv-note-w{color:rgba(50,38,20,.85);border-top-color:rgba(90,70,40,.12)}
 /* ================================================================ */
 /* AESTHETIC PASS v42 — masthead · one accent per page · kickers ·   */
 /* card silhouettes · Today tiers                                    */
 /* ================================================================ */
-body{--page-accent:#C4A265;--page-accent-rgb:196,162,101}
-
 /* 1. masthead: whole on Today, a hairline everywhere else */
 .header .intro{display:none}
 body[data-page]:not([data-page="today"]) .header{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -975,31 +880,18 @@ body[data-page]:not([data-page="today"]) .header .dedication{display:none}
 body[data-page]:not([data-page="today"]) .header .main-title{font-size:15px;letter-spacing:.06em;color:rgba(232,220,200,.42);margin:0;font-style:italic}
 body.light[data-page]:not([data-page="today"]) .header{border-bottom-color:rgba(90,70,40,.14)}
 body.light[data-page]:not([data-page="today"]) .header .main-title{color:rgba(60,45,25,.5)}
-
 /* 3. one accent per page — borders and kickers inherit; motifs keep their own tint */
-.page .today-card,.page .ess-card,.page .wat-card,.page .mk-card{border-left-color:var(--page-accent)!important}
 .page .tc-kicker,.page .ess-kicker,.page .today-sec,.page .kw-label,.page .ws-label,.page .lv-ref-ch,.page .sv-cl-id,.page .reader-block-label{color:var(--page-accent)!important}
 .page .tbtn:not(.ghost){border-color:rgba(var(--page-accent-rgb),.45)}
-
 /* 4. kickers: running heads, not dashboard labels */
-.page .tc-kicker,.page .ess-kicker,.page .today-sec,.page .kw-label,.page .ws-label,.page .lv-ref-ch,.page .sv-pr-meta,.page .sv-cl-weeks,.page .ks-label,.page .mj-date,.page .sv-wk-d,.page .sv-note-w span,.page .wat-head .ess-kicker,.page .sv-wk-k{
-  font-family:'Cormorant Garamond',serif!important;font-style:italic;font-size:14px!important;letter-spacing:.01em!important;text-transform:none!important;line-height:1.35}
+.page .tc-kicker,.page .ess-kicker,.page .today-sec,.page .kw-label,.page .ws-label,.page .lv-ref-ch,.page .sv-pr-meta,.page .sv-cl-weeks,.page .ks-label,.page .mj-date,.page .sv-wk-d,.page .sv-note-w span,.page .wat-head .ess-kicker,.page .sv-wk-k{font-family:'Cormorant Garamond',serif!important;font-style:italic;font-size:14px!important;letter-spacing:.01em!important;text-transform:none!important;line-height:1.35}
 .page .today-sec{font-size:15px!important;margin:30px 0 10px;opacity:.85}
 .page .tc-kicker{margin-bottom:6px}
 .page .sv-pr-meta,.page .sv-cl-weeks,.page .mj-date,.page .sv-wk-d,.page .ks-label{opacity:.6}
-
 /* 5. silhouettes — plate (default glass) · page (prose reads) · slip (Today rotation) */
-body[data-page="love"] .ess-card[data-lovesec],
-body[data-page="essence"] .ess-card[data-essread],
-body[data-page="way"] .ess-card[data-wayread],
-body[data-page="seventeen"] .ess-card[data-wat^="sv-q"],
-body[data-page="marie"] .ess-card{
-  background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;
-  border:0!important;border-bottom:1px solid rgba(255,255,255,.07)!important;border-radius:0!important;padding:24px 2px!important;margin-bottom:0!important}
 body[data-page="love"] .ess-card[data-lovesec] .ess-title,body[data-page="essence"] .ess-card[data-essread] .ess-title,body[data-page="way"] .ess-card[data-wayread] .ess-title{font-size:22px}
 body[data-page="love"] .ess-card[data-lovesec] canvas.amb,body[data-page="essence"] .ess-card[data-essread] canvas.amb,body[data-page="way"] .ess-card[data-wayread] canvas.amb,body[data-page="seventeen"] .ess-card[data-wat^="sv-q"] canvas.amb{opacity:.35}
 body.light[data-page="love"] .ess-card[data-lovesec],body.light[data-page="essence"] .ess-card[data-essread],body.light[data-page="way"] .ess-card[data-wayread],body.light[data-page="seventeen"] .ess-card[data-wat^="sv-q"]{border-bottom-color:rgba(90,70,40,.16)!important}
-
 /* Today tiers: Now (full cards) · Also today (slips) */
 .td-slips{border-top:1px solid rgba(255,255,255,.06)}
 .td-slipwrap{border-bottom:1px solid rgba(255,255,255,.06)}
@@ -1010,22 +902,19 @@ body.light[data-page="love"] .ess-card[data-lovesec],body.light[data-page="essen
 .td-slip.open .td-slip-c{transform:rotate(90deg)}
 .td-slipbody{padding:0 0 18px}
 .td-slipbody .today-sec{display:none}
-body.light .td-slip-t{color:#33291A}body.light .td-slips,body.light .td-slipwrap{border-color:rgba(90,70,40,.14)}
+body.light .td-slips,body.light .td-slipwrap{border-color:rgba(90,70,40,.14)}
 @media (max-width:480px){.td-slip-k{min-width:78px;font-size:12.5px}.td-slip-t{font-size:15.5px}}
-
 /* ---- v43: weather intensity · page turn · Parchment · nav icons ---- */
-body{--wx-op:.62}
-#pageWeather{opacity:var(--wx-op)}
+body{overflow-x:clip;--page-accent:#C4A265;--page-accent-rgb:196,162,101;--wx-op:.62}
+#pageWeather{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:var(--wx-op);transition:opacity 1.1s ease}
 #pageWeather.wx-in{animation:wxIn2 1.4s ease}
 @keyframes wxIn2{from{opacity:0}to{opacity:var(--wx-op)}}
 body.light #pageWeather{opacity:calc(var(--wx-op) * .7)}
 body.light #pageWeather.wx-in{animation:wxIn3 1.4s ease}
 @keyframes wxIn3{from{opacity:0}to{opacity:calc(var(--wx-op) * .7)}}
-
 .page.page-in{animation:pageIn .28s cubic-bezier(.2,.7,.3,1)}
 @keyframes pageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.page.page-in{animation:none}}
-
 /* Parchment: paper, ink, and an accent that survives on paper */
 body.light{background:#F3EBDD!important;color:#2A2116}
 body.light .container{color:#2A2116}
@@ -1034,30 +923,20 @@ body.light .page .today-card,body.light .page .ess-card,body.light .page .wat-ca
 body.light .today-card,body.light .ess-card,body.light .wat-card,body.light .glass{background:rgba(255,250,240,.55)!important;border-color:rgba(90,70,40,.13)}
 body.light .main-title,body.light .ess-title,body.light .tc-title,body.light .reader-title{color:#241B10!important}
 body.light .tc-sub,body.light .ess-text,body.light .reader-text{color:rgba(42,33,22,.82)!important}
-body.light .znav{background:rgba(243,235,221,.9)!important;border-top-color:rgba(90,70,40,.14)!important}
+body.light .znav{background:rgba(243,235,221,.9)!important;border-color:rgba(90,70,40,.12);border-top-color:rgba(90,70,40,.14)!important}
 body.light .td-slip-t{color:#241B10}
-
 /* nav icons: give the brush room */
 .znav .zi svg{width:26px!important;height:26px!important}
 .znav .zi{display:block;line-height:0;margin-bottom:5px}
-
 /* ---- v44: softer page silhouette — a wash, not a rule ---- */
 body[data-page="love"] .ess-card[data-lovesec],
 body[data-page="essence"] .ess-card[data-essread],
 body[data-page="way"] .ess-card[data-wayread],
 body[data-page="seventeen"] .ess-card[data-wat^="sv-q"],
-body[data-page="marie"] .ess-card{
-  position:relative;
-  background:radial-gradient(130% 100% at 12% 0%,rgba(var(--page-accent-rgb),.075),rgba(var(--page-accent-rgb),.018) 55%,transparent 80%)!important;
-  border:0!important;border-radius:22px!important;padding:26px 22px 28px!important;margin-bottom:14px!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important}
+body[data-page="marie"] .ess-card{background:radial-gradient(130% 100% at 12% 0%,rgba(var(--page-accent-rgb),.075),rgba(var(--page-accent-rgb),.018) 55%,transparent 80%)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.07)!important;border-radius:22px!important;padding:26px 22px 28px!important;margin-bottom:14px!important;position:relative}
 body[data-page="love"] .ess-card[data-lovesec]::after,
 body[data-page="essence"] .ess-card[data-essread]::after,
 body[data-page="way"] .ess-card[data-wayread]::after,
 body[data-page="seventeen"] .ess-card[data-wat^="sv-q"]::after,
-body[data-page="marie"] .ess-card::after{
-  content:'';position:absolute;left:10%;right:10%;bottom:-8px;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(var(--page-accent-rgb),.28) 35%,rgba(var(--page-accent-rgb),.28) 65%,transparent);
-  filter:blur(.4px)}
-body.light[data-page="love"] .ess-card[data-lovesec],body.light[data-page="essence"] .ess-card[data-essread],body.light[data-page="way"] .ess-card[data-wayread],body.light[data-page="seventeen"] .ess-card[data-wat^="sv-q"],body.light[data-page="marie"] .ess-card{
-  background:radial-gradient(130% 100% at 12% 0%,rgba(var(--page-accent-rgb),.11),rgba(255,250,240,.35) 55%,rgba(255,250,240,.2) 80%)!important;box-shadow:none!important}
+body[data-page="marie"] .ess-card::after{content:'';position:absolute;left:10%;right:10%;bottom:-8px;height:1px;background:linear-gradient(90deg,transparent,rgba(var(--page-accent-rgb),.28) 35%,rgba(var(--page-accent-rgb),.28) 65%,transparent);filter:blur(.4px)}
+body.light[data-page="love"] .ess-card[data-lovesec],body.light[data-page="essence"] .ess-card[data-essread],body.light[data-page="way"] .ess-card[data-wayread],body.light[data-page="seventeen"] .ess-card[data-wat^="sv-q"],body.light[data-page="marie"] .ess-card{background:radial-gradient(130% 100% at 12% 0%,rgba(var(--page-accent-rgb),.11),rgba(255,250,240,.35) 55%,rgba(255,250,240,.2) 80%)!important;box-shadow:none!important}
