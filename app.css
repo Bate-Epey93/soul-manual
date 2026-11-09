@@ -954,3 +954,16 @@ body.light .zfab-menu{background:rgba(243,235,221,.96);border-color:rgba(90,70,4
 body.light .sv-routefoot{color:rgba(50,38,20,.8)}
 body[data-page="today"] .header .dedication{display:none}
 body[data-page="today"] .header{margin-bottom:10px}
+
+/* v48: one page transition only — no stacked fades, no per-card self-draw on page change */
+.page{animation:none!important}
+.page.page-in{animation:pageIn .26s cubic-bezier(.2,.7,.3,1)!important}
+.page.page-in .today-card,.page.page-in .ess-card,.page.page-in .glass,.page.page-in .enso-host svg path{animation:none!important}
+.page-in .tsec,.page-in .ess-card{opacity:1}
+/* Today card spacing */
+#page-today > .tsec{margin-bottom:22px}
+#page-today > .tsec + .tsec{margin-top:4px}
+/* v48: no shimmer on page change — transitions and splash leftovers must not run under the page-in */
+#splash.done *,#splash.gone *{animation:none!important}
+.page.page-in *{transition:none!important}
+.zsubnav button,.zsubnav button.glass{transition:none!important}

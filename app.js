@@ -1288,6 +1288,8 @@ var CURATED = {
     var h = location.hash.replace(/^#\/?/, '');
     var page = VALID.indexOf(h) !== -1 ? h : 'today';
     activate(page);
+    var pin = document.getElementById('page-' + page);
+    if (pin && !ambReduced) { pin.classList.remove('page-in'); void pin.offsetWidth; pin.classList.add('page-in'); }
     // scope the decoration scans to the page being shown (subnav is rebuilt per activate)
     var el = document.getElementById('page-' + page);
     if (page === 'concepts') decorateConceptCards();
@@ -1306,7 +1308,6 @@ var CURATED = {
     groupChoice[g.id] = page;
     showPage(page, null);
     var pel = document.getElementById('page-' + page);
-    if (pel && !ambReduced) { pel.classList.remove('page-in'); void pel.offsetWidth; pel.classList.add('page-in'); }
     navEl.querySelectorAll('.znav-item').forEach(function (b) { b.classList.toggle('active', b.dataset.group === g.id); });
     subnavEl.innerHTML = '';
     if (g.pages.length > 1) {
