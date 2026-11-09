@@ -623,7 +623,7 @@ var CURATED = {
     'page-arch': 'torii', 'page-mirror': 'eye', 'page-crisis': 'warning',
     'page-trees': 'fork', 'page-eft': 'target', 'page-guide': 'road',
     'page-meditations': 'lotus', 'page-ledger': 'chart',
-    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart', 'page-way': 'road', 'page-love': 'bond', 'page-naming': 'letter', 'page-seventeen': 'magnify'
+    'page-essence': 'yinyang', 'page-waters': 'drop', 'page-marie': 'heart', 'page-way': 'road', 'page-love': 'bond', 'page-naming': 'letter', 'page-seventeen': 'magnify', 'page-beginner': 'sprout'
   };
   function pageEnsoHTML(pageId) {
     return '<div class="page-enso">' +
@@ -1169,6 +1169,12 @@ var CURATED = {
       rEls.rKicker.textContent = ('The Way · ' + wy.kicker).toUpperCase();
       h += '<h1 class="reader-title">' + motifSVG(wy.motif, 'way-' + wy.id, { color: wy.color, style: 'width:26px;height:26px;margin-right:8px;vertical-align:-3px' }) + wy.title + '</h1>';
       h += '<div class="reader-text">' + wy.body + '</div><div class="reader-fin"></div>';
+    } else if (kind === 'beginner') {
+      var bg = BEGINNER.sections[i];
+      rEls.rKicker.textContent = ('Beginner\u2019s Mind \u00b7 ' + bg.kicker).toUpperCase();
+      h += '<h1 class="reader-title">' + motifSVG(bg.motif, 'beg-' + bg.id, { color: bg.color, style: 'width:26px;height:26px;margin-right:8px;vertical-align:-3px' }) + bg.title + '</h1>';
+      h += '<div class="reader-text">' + bg.body + '</div>';
+      h += '<div class="reader-block ess-foryou-r"><div class="reader-block-label">Held against your life</div>' + bg.forYou + '</div><div class="reader-fin"></div>';
     } else if (kind === 'love') {
       var lv = LOVE.sections[i];
       rEls.rKicker.textContent = ('The Second Architecture · ' + lv.kicker).toUpperCase();
@@ -1244,11 +1250,11 @@ var CURATED = {
   var GROUPS = [
     { id: 'today', label: 'Today', motif: 'sun', pages: ['today'] },
     { id: 'learn', label: 'Learn', motif: null, enso: { w: 5.5, gap: 1.9, rot: 2.6 }, pages: ['concepts', 'essence', 'love', 'arch', 'mirror', 'dramas', 'guide'] },
-    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'way', 'seventeen', 'naming', 'marie', 'eft', 'forge', 'edge', 'ledger'] },
+    { id: 'practice', label: 'Practice', motif: 'target', pages: ['meditations', 'waters', 'way', 'beginner', 'seventeen', 'naming', 'forge', 'edge', 'eft', 'marie', 'ledger'] },
     { id: 'mapg', label: 'Map', motif: 'road', pages: ['map', 'trees'] },
     { id: 'crisisg', label: 'Crisis', motif: 'warning', pages: ['crisis'] }
   ];
-  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', love: 'Love & Marriage', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', way: 'The Way', seventeen: 'The Seventeen', naming: 'The Naming', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
+  var PAGE_LABELS = { today: 'Today', concepts: 'Concepts', essence: 'Essence', love: 'Love & Marriage', arch: 'Architecture', mirror: 'Mirror', dramas: 'Dramas', guide: 'Paths', meditations: 'Meditations', waters: 'The Waters', way: 'The Way', beginner: 'Beginner\u2019s Mind', seventeen: 'The Seventeen', naming: 'The Naming', marie: 'For Marie', eft: 'EFT', forge: 'Forge', edge: 'Living Edge', ledger: 'Ledger', map: 'The Map', trees: 'Decide', crisis: 'Crisis' };
   var VALID = Object.keys(PAGE_LABELS);
   var groupChoice = {}; // last-visited page per group
   var navEl = null, subnavEl = null;
@@ -1307,7 +1313,7 @@ var CURATED = {
       g.pages.forEach(function (p) {
         var b = document.createElement('button');
         b.textContent = PAGE_LABELS[p];
-        b.className = p === page ? 'active' : '';
+        b.className = (p === page ? 'active' : '') + (['eft', 'marie', 'ledger'].indexOf(p) !== -1 ? ' minor' : '');
         b.onclick = function () { navTo(p); };
         subnavEl.appendChild(b);
       });
@@ -1322,6 +1328,7 @@ var CURATED = {
     if (page === 'way') renderWay();
     if (page === 'love') renderLove();
     if (page === 'seventeen') renderSeventeen();
+    if (page === 'beginner') renderBeginner();
     if (page === 'naming') renderNaming();
     if (page === 'guide') decorateEntry();
     if (page === 'eft') refreshEftStats();
@@ -1338,7 +1345,7 @@ var CURATED = {
 
   function createPages() {
     var anchor = document.getElementById('page-concepts');
-    ['today', 'ledger', 'essence', 'waters', 'marie', 'naming', 'way', 'love', 'seventeen'].forEach(function (id) {
+    ['today', 'ledger', 'essence', 'waters', 'marie', 'naming', 'way', 'love', 'seventeen', 'beginner'].forEach(function (id) {
       var d = document.createElement('div');
       d.className = 'page'; d.id = 'page-' + id;
       anchor.parentNode.insertBefore(d, anchor);
@@ -1536,11 +1543,14 @@ var CURATED = {
     var reads = ['essence', 'chapter', 'forge', 'edge', 'love', 'marie', 'entry', 'med'].filter(function (k) { return b.sec[k]; });
     var doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 864e5);
     var readOfDay = reads.length ? reads[doy % reads.length] : null;
-    var NOW = ['head', 'wave', 'way', 'seventeen', readOfDay];
+    var isSun = new Date().getDay() === 0, fe = doy % 2 ? 'forge' : 'edge';
+    var readsNoFE = reads.filter(function (k) { return k !== 'forge' && k !== 'edge'; });
+    readOfDay = readsNoFE.length ? readsNoFE[doy % readsNoFE.length] : readOfDay;
+    var NOW = ['head', 'wave', kataMarkedToday() ? null : 'way', readOfDay, fe, isSun ? 'seventeen' : null].filter(Boolean);
     var h = pageEnsoHTML('page-today'), slips = '';
     b.order.forEach(function (k) {
       if (!b.sec[k]) return;
-      if (NOW.indexOf(k) !== -1) { h += '<div class="tsec" data-tsec="' + k + '">' + b.sec[k] + '</div>'; return; }
+      if (NOW.indexOf(k) !== -1) { h += '<div class="tsec" data-tsec="' + k + '">' + (k === 'head' ? b.sec[k] : b.sec[k].replace(/<div class="today-sec">[\s\S]*?<\/div>/, '')) + '</div>'; return; }
       var html = b.sec[k];
       var tm = html.match(/class="tc-title[^"]*"[^>]*>([\s\S]*?)<\/div>/), km = html.match(/class="today-sec">([\s\S]*?)<\/div>/);
       var kick = km ? km[1].replace(/<[^>]+>/g, '').trim() : ({ practice: 'Practice', ledger: 'Ledger' })[k] || k;
@@ -1723,6 +1733,7 @@ var CURATED = {
     gear.innerHTML = ensoSVG('gear', { w: 6, gap: 2.7, rot: 0.5, dot: 7, style: 'width:16px;height:16px' });
     gear.setAttribute('aria-label', 'Settings');
     gear.onclick = openSheet;
+    gear.style.display = 'none';
     document.body.appendChild(gear);
 
     sheetWrap = document.createElement('div');
@@ -1747,6 +1758,7 @@ var CURATED = {
   function openSheet() {
     var sheet = sheetWrap.querySelector('#zSheet');
     sheet.innerHTML = '<h3>Settings</h3>';
+    var dedEl = document.querySelector('.header .dedication'); var dedTxt = dedEl ? dedEl.textContent : '';
     sheet.appendChild(optRow('Theme', [{ v: 'dark', n: 'Night' }, { v: 'light', n: 'Parchment' }], PREFS.theme, function (v) { PREFS.theme = v; savePrefs(); applyTheme(); }));
     sheet.appendChild(optRow('Text size', [{ v: 0.92, n: 'S' }, { v: 1, n: 'M' }, { v: 1.08, n: 'L' }, { v: 1.18, n: 'XL' }], PREFS.zoom, function (v) { PREFS.zoom = parseFloat(v); savePrefs(); applyZoom(); }));
     sheet.appendChild(optRow('Breathing pattern', Object.keys(PATTERNS).map(function (k) { return { v: k, n: PATTERNS[k].name }; }), PREFS.pattern, function (v) { PREFS.pattern = v; savePrefs(); }));
@@ -1776,7 +1788,7 @@ var CURATED = {
     sheet.appendChild(rHint);
 
     var data = document.createElement('div');
-    data.innerHTML = '<div class="zset-label">Your data</div><div class="zset-row"><button id="zExport">Export backup</button><button id="zImport">Import</button></div><div class="zset-hint">A private JSON backup of your wave, ledger, map, journal and settings — kept only on this device unless you export it.</div>';
+    data.innerHTML = (dedTxt ? '<div class="zset-label">About</div><div class="zset-hint" style="font-style:italic;font-family:\'Cormorant Garamond\',serif;font-size:14px;line-height:1.6">' + dedTxt + '</div>' : '') + '<div class="zset-label">Your data</div><div class="zset-row"><button id="zExport">Export backup</button><button id="zImport">Import</button></div><div class="zset-hint">A private JSON backup of your wave, ledger, map, journal and settings — kept only on this device unless you export it.</div>';
     data.querySelector('#zExport').onclick = exportData;
     var fin = document.createElement('input'); fin.type = 'file'; fin.accept = 'application/json,.json'; fin.style.display = 'none';
     fin.onchange = function () { if (fin.files && fin.files[0]) importData(fin.files[0]); };
@@ -2093,7 +2105,15 @@ var CURATED = {
     fab.className = 'zen-fab';
     fab.setAttribute('aria-label', 'Solar plexus meditation timer');
     fab.innerHTML = motifSVG('sun', 'fab', { color: 'rgba(26,20,10,0.78)', style: 'width:28px;height:28px' });
-    fab.onclick = openTimer;
+    fab.onclick = function () {
+      var m = document.getElementById('zFabMenu');
+      if (m) { m.remove(); return; }
+      m = document.createElement('div'); m.id = 'zFabMenu'; m.className = 'zfab-menu glass';
+      m.innerHTML = '<button data-f="timer">Solar plexus timer</button><button data-f="zazen">Zazen \u00b7 10 min</button><button data-f="settings">Settings</button>';
+      document.body.appendChild(m);
+      m.querySelectorAll('button').forEach(function (b) { b.onclick = function () { m.remove(); ({ timer: openTimer, zazen: openZazen, settings: openSheet })[b.dataset.f](); }; });
+      setTimeout(function () { document.addEventListener('click', function h(e) { if (!m.contains(e.target) && e.target !== fab) { m.remove(); document.removeEventListener('click', h); } }); }, 0);
+    };
     document.body.appendChild(fab);
   }
 
@@ -3223,6 +3243,7 @@ var CURATED = {
       nmChipRow('Time', 'time', [{ v: 'past', n: 'what happened' }, { v: 'now', n: 'what\u2019s happening' }, { v: 'ahead', n: 'what might' }]) +
       nmChipRow('Body (optional)', 'body', [{ v: 'chest', n: 'chest' }, { v: 'throat', n: 'throat' }, { v: 'gut', n: 'gut' }, { v: 'shoulders', n: 'shoulders' }, { v: 'jaw', n: 'jaw' }, { v: 'face', n: 'face' }]) +
       ((st.dir || st.temp || st.time || st.blur || st.q) ? '<div class="today-actions"><button class="tbtn ghost" id="nmClear">Clear</button></div>' : '') +
+      '<button class="eft-read-link nm-shoshin" id="nmShoshin">I already know this \u2192 Beginner\u2019s Mind</button>' +
       '</div>';
 
     h += '<div class="today-sec">Or start from the blur</div><div class="nm-chips nm-blur">';
@@ -3248,6 +3269,7 @@ var CURATED = {
 
     function rerender() { renderNaming(); glassify(page); tintCards(page); if (PREFS.theme === 'light') applyInlineTheme(true, page); }
 
+    var shs = page.querySelector('#nmShoshin'); if (shs) shs.onclick = function (e) { e.stopPropagation(); navTo('beginner'); };
     var inp = page.querySelector('#nmSearch');
     var deb = null;
     function nmUpdateResults() {
@@ -3802,7 +3824,8 @@ var CURATED = {
     marie:       { s: 'petals',    c: '#E88BA0' },  // petals carried over water
     way:         { s: 'stillwater',c: '#7E9E8E' },  // still water — ice returning to liquid
     love:        { s: 'embers',    c: '#D9826C' },  // the hearth kept
-    seventeen:   { s: 'sunbeam',   c: '#C4A265' }   // dust in the light over the notebook
+    seventeen:   { s: 'sunbeam',   c: '#C4A265' },  // dust in the light over the notebook
+    beginner:    { s: 'mistlight', c: '#7E9E8E' }   // morning mist, nothing special
   };
 
   var wxCanvas = null, wxInst = null, wxFade = 0;
@@ -3832,7 +3855,7 @@ var CURATED = {
     inst.kind = w.s; inst.rgb = ambRGB(w.c); inst.parts = null;
     var quiet = ['concepts', 'essence', 'love', 'arch', 'dramas', 'guide', 'seventeen', 'naming', 'mirror', 'ledger'].indexOf(page) !== -1;
     var hr = new Date().getHours(), night = hr >= 22 || hr < 5, dawn = hr >= 5 && hr < 9;
-    var op = (quiet ? 0.3 : 0.62) * (night ? 0.55 : dawn ? 0.85 : 1);
+    var op = (quiet ? 0 : 0.62) * (night ? 0.55 : dawn ? 0.85 : 1);
     document.body.style.setProperty('--wx-op', op.toFixed(2));
     wxCanvas.classList.remove('wx-in'); void wxCanvas.offsetWidth; wxCanvas.classList.add('wx-in');
     ambDraw(inst, 4.2);
@@ -4639,13 +4662,16 @@ var CURATED = {
     var h = pageEnsoHTML('page-seventeen') +
       '<div style="margin-bottom:14px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">' + SEVENTEEN.title + '</h2>' +
       '<p style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.42)">' + SEVENTEEN.sub + '</p></div>';
-    h += '<div class="sv-tabs">' + [['plan', 'Plan'], ['session', 'Session'], ['practices', 'Practices'], ['ledger', 'Ledger'], ['questions', 'Questions'], ['routing', 'Routing']].map(function (t) {
+    h += '<div class="sv-tabs">' + [['plan', 'Plan & Ledger'], ['session', 'Session'], ['practices', 'Practices'], ['questions', 'Questions']].map(function (t) {
       return '<button class="sv-tab' + (svTab === t[0] ? ' on' : '') + (t[0] === 'routing' ? ' sv-route' : '') + '" data-svtab="' + t[0] + '">' + t[1] + '</button>';
     }).join('') + '</div>';
+    if (svTab === 'ledger' || svTab === 'routing') svTab = 'plan';
     h += '<div id="svBody">' + ({ plan: svPlanHTML, session: svSessionHTML, practices: svPracticesHTML, ledger: svLedgerHTML, questions: svQuestionsHTML, routing: svRoutingHTML })[svTab]() + '</div>';
     page.innerHTML = h;
     page.querySelectorAll('[data-svtab]').forEach(function (b) { b.onclick = function () { renderSeventeen(b.dataset.svtab); window.scrollTo(0, 0); }; });
-    ({ plan: svBindPlan, session: svBindSession, practices: svBindPractices, ledger: svBindLedger, questions: svBindQuestions, routing: function () {} })[svTab](page);
+    ({ plan: function (pg) { svBindPlan(pg); svBindLedger(pg); }, session: svBindSession, practices: svBindPractices, ledger: svBindLedger, questions: svBindQuestions, routing: function () {} })[svTab](page);
+    var rf = document.createElement('div'); rf.className = 'sv-routefoot'; rf.innerHTML = '<span>If a session is heavier than the container:</span> 9-8-8 (call or text) \u00b7 911 \u00b7 <button id="svRouteMore">routing in full</button>';
+    page.appendChild(rf); rf.querySelector('#svRouteMore').onclick = function () { location.hash = '/crisis'; };
     glassify(page); tintCards(page); ambientDecorate(page);
     if (PREFS.theme === 'light') applyInlineTheme(true, page);
   }
@@ -4665,6 +4691,7 @@ var CURATED = {
     });
     h += '</div>';
     h += '<div class="today-sec">The rules</div><div class="ess-card wat-card glass open" style="border-left:3px solid #7E9E8E"><div class="ess-body"><ol class="wat-steps">' + SEVENTEEN.rules.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ol><div class="wat-note">' + SEVENTEEN.success + '</div></div></div>';
+    h += svLedgerHTML();
     h += '<div class="today-sec">The weekly rhythm</div><div class="ess-card wat-card glass open" style="border-left:3px solid #6E7FA3"><div class="ess-body"><ol class="wat-steps"><li><strong>Sunday, 45 to 60 minutes:</strong> the inquiry session. One question from the live cluster. End with one if-then.</li><li><strong>Daily, 10 minutes or less:</strong> the live practices. Two at most. The first is always cyclic sighing.</li><li><strong>Sunday, 5 minutes:</strong> the ledger. Did last week’s action happen? The only scoreboard.</li></ol></div></div>';
     return h;
   }
@@ -4754,7 +4781,7 @@ var CURATED = {
     page.querySelector('#svRouteFlag').onclick = function () {
       var s = svStore(); s.sessions.push({ week: svWeekKey(), q: svS.q, t: Date.now(), steps: svS.w, ifThen: '', routing: true, stopped: true });
       svSave(s); svS = null; clearInterval(svTimer);
-      renderSeventeen('routing'); window.scrollTo(0, 0);
+      location.hash = '/crisis';
     };
   }
 
@@ -4872,6 +4899,64 @@ var CURATED = {
       '<div class="tc-sub" style="font-style:normal"><strong>Routing options.</strong> ' + r.options + '</div>' +
       '<div class="wat-note">' + r.close + '</div>' +
       '<div class="today-actions"><button class="tbtn" onclick="location.hash=\'/crisis\'">Crisis page</button></div></div>';
+  }
+
+  /* ================================================================
+     BEGINNER'S MIND — six talks, one practice that records nothing
+     ================================================================ */
+  function renderBeginner() {
+    var page = document.getElementById('page-beginner');
+    if (!page || typeof BEGINNER === 'undefined') return;
+    var h = pageEnsoHTML('page-beginner') +
+      '<div style="margin-bottom:18px"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:400;color:#E8DCC8;margin-bottom:6px">' + BEGINNER.title + '</h2>' +
+      '<p style="font-size:13.5px;line-height:1.7;color:rgba(255,255,255,0.42)">' + BEGINNER.sub + '</p></div>';
+    h += '<div class="today-card glass lv-thesis" style="border-left:3px solid #7E9E8E"><div class="ess-kicker" style="color:#7E9E8E">Shōshin</div><div class="lv-thesis-text">' + BEGINNER.thesis + '</div></div>';
+    BEGINNER.sections.forEach(function (sc, i) {
+      h += '<div class="ess-card wat-card glass" data-begread="' + i + '" style="border-left:3px solid ' + sc.color + '">' +
+        '<div class="ess-kicker" style="color:' + sc.color + '">' + sc.kicker + '</div>' +
+        '<div class="ess-title">' + motifSVG(sc.motif, 'beg-' + sc.id, { color: sc.color }) + ' ' + sc.title + '</div>' +
+        '<div class="ess-body"><div class="ess-text">' + sc.body + '</div>' +
+        '<div class="ess-foryou"><div class="ess-kicker" style="color:' + sc.color + '">Held against your life</div>' + sc.forYou + '</div>' +
+        '<div class="today-actions"><button class="tbtn" data-begopen="' + i + '">Read</button></div></div></div>';
+    });
+    var p = BEGINNER.practice;
+    h += '<div class="ess-card wat-card glass open" data-wat="zazen" style="border-left:3px solid #7E9E8E">' +
+      '<div class="wat-head"><div class="ess-kicker" style="color:#7E9E8E">' + p.cadence + '</div></div>' +
+      '<div class="ess-title">' + motifSVG('crescent', 'beg-zazen', { color: '#7E9E8E' }) + ' ' + p.title + '</div>' +
+      '<div class="ess-body"><ol class="wat-steps">' + p.steps.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>' +
+      '<div class="wat-note">' + p.note + '</div><div class="today-actions"><button class="tbtn" id="begSit">Sit</button></div></div></div>';
+    h += '<div class="ess-sources">' + BEGINNER.sources + '</div>';
+    page.innerHTML = h;
+    page.querySelectorAll('.wat-card').forEach(function (c) { c.onclick = function (e) { if (e.target.closest('button')) return; c.classList.toggle('open'); }; });
+    page.querySelectorAll('[data-begopen]').forEach(function (b) { b.onclick = function (e) { e.stopPropagation(); openReader('beginner', +b.dataset.begopen); }; });
+    page.querySelector('#begSit').onclick = function (e) { e.stopPropagation(); openZazen(); };
+    glassify(page); tintCards(page); ambientDecorate(page);
+    if (PREFS.theme === 'light') applyInlineTheme(true, page);
+  }
+  /* zazen: ten minutes, a bell, nothing recorded */
+  function openZazen() {
+    openOverlay('#7E9E8E');
+    newSession();
+    Z.zKicker.textContent = 'ZAZEN \u00b7 10 MIN';
+    Z.zPoint.textContent = '';
+    Z.zPhrase.textContent = 'Sit.';
+    Z.zSub.textContent = 'Spine upright, eyes half-open, hands resting. Breathe through the nose. When the mind leaves, return without comment.';
+    Z.zCount.style.display = 'block';
+    var left = 600; Z.zCount.textContent = fmt(left);
+    ac(); chimeStart();
+    after(12000, function () { if (S) { Z.zPhrase.textContent = ''; Z.zSub.textContent = ''; Z.zHint.textContent = ''; } });
+    every(1000, function () {
+      if (!S || S.paused) return;
+      left--; Z.zCount.textContent = fmt(Math.max(0, left));
+      if (left <= 0) {
+        stopSession(); newSession(); chimeEnd();
+        Z.zCount.style.display = 'none';
+        Z.zPhrase.textContent = 'Nothing special.';
+        Z.zSub.textContent = 'Ten minutes. That is all it was.';
+        Z.zCtls.innerHTML = ''; ctlBtn('Stand', 'zen-btn', function () { closeOverlay(false); });
+      }
+    });
+    Z.zCtls.innerHTML = ''; ctlBtn('&#10005;', 'zen-ctl', function () { closeOverlay(false); });
   }
 
   /* ================================================================
