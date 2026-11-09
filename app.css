@@ -456,7 +456,7 @@ body.light .tinted-card .ess-part-text,body.light .tinted-card .ess-text p,body.
 .draw-enso path{stroke-dasharray:100;stroke-dashoffset:100;animation:ensoDraw 2.8s cubic-bezier(.3,0,.25,1) forwards}
 @keyframes ensoDraw{to{stroke-dashoffset:0}}
 /* page-entry ink settle */
-.page-enso svg{animation:inkSettle 1.5s cubic-bezier(.4,0,.2,1) both}
+.page-enso svg{animation:none}
 @keyframes inkSettle{from{opacity:0;transform:scale(.9) rotate(-7deg)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.page-enso svg,.draw-enso path{animation:none!important;stroke-dashoffset:0!important}}
 /* mirror journal */
@@ -913,7 +913,7 @@ body.light #pageWeather{opacity:calc(var(--wx-op) * .7)}
 body.light #pageWeather.wx-in{animation:wxIn3 1.4s ease}
 @keyframes wxIn3{from{opacity:0}to{opacity:calc(var(--wx-op) * .7)}}
 .page.page-in{animation:pageIn .28s cubic-bezier(.2,.7,.3,1)}
-@keyframes pageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes pageIn{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.page.page-in{animation:none}}
 /* Parchment: paper, ink, and an accent that survives on paper */
 body.light{background:#F3EBDD!important;color:#2A2116}
@@ -957,13 +957,10 @@ body[data-page="today"] .header{margin-bottom:10px}
 
 /* v48: one page transition only — no stacked fades, no per-card self-draw on page change */
 .page{animation:none!important}
-.page.page-in{animation:pageIn .26s cubic-bezier(.2,.7,.3,1)!important}
-.page.page-in .today-card,.page.page-in .ess-card,.page.page-in .glass,.page.page-in .enso-host svg path{animation:none!important}
-.page-in .tsec,.page-in .ess-card{opacity:1}
+.page.page-in{animation:pageIn .22s ease-out!important}
 /* Today card spacing */
 #page-today > .tsec{margin-bottom:22px}
 #page-today > .tsec + .tsec{margin-top:4px}
 /* v48: no shimmer on page change — transitions and splash leftovers must not run under the page-in */
 #splash.done *,#splash.gone *{animation:none!important}
-.page.page-in *{transition:none!important}
 .zsubnav button,.zsubnav button.glass{transition:none!important}
